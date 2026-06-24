@@ -9,26 +9,30 @@ export default function LoginPage() {
   const [erro, setErro] = useState('')
   const router = useRouter()
 
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault()
-    setErro('')
+    async function handleSubmit(e: React.FormEvent) {
+      e.preventDefault()
+      setErro('')
 
-    const { createClient } = await import('@/lib/supabase/client')
-    const supabase = createClient()
+      const { createClient } = await import('@/lib/supabase/client')
+      const supabase = createClient()
 
-    const { error } = await supabase.auth.signInWithPassword({
-      email,
-      password: senha,
-    })
+      const { error } = await supabase.auth.signInWithPassword({
+        email,
+        password: senha,
+      })
 
-    if (error) {
-      setErro(error.message)
-      return
+      if (error) {
+        console.error('Login error:', error)
+        setErro(error.message)
+        return
+      }
+
+      const { data: { user } } = await supabase.auth.getUser()
+      console.log('User logged in:', user?.email)
+
+      router.push('/admin')
+      router.refresh()
     }
-
-    router.push('/admin')
-    router.refresh()
-  }
 
   return (
     <div className="flex flex-1 items-center justify-center bg-background">
