@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useRef, useId } from 'react'
-import { X, Loader2 } from 'lucide-react'
+import { X } from 'lucide-react'
 import type { Palestra, PalestraFormData, DiaEvento } from '@/types'
 
 interface PalestraDialogProps {

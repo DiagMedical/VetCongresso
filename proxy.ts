@@ -1,14 +1,13 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl
 
   if (!pathname.startsWith('/admin')) {
     return NextResponse.next()
   }
 
-  // Allow login page without auth
   if (pathname === '/admin/login') {
     return NextResponse.next()
   }
@@ -22,15 +21,18 @@ export async function middleware(request: NextRequest) {
 
   const { createServerClient } = await import('@supabase/ssr')
 
+  const response = NextResponse.next()
+
   const supabase = createServerClient(supabaseUrl, supabaseKey, {
     cookies: {
       getAll() {
         return request.cookies.getAll()
       },
       setAll(cookiesToSet) {
-        cookiesToSet.forEach(({ name, value }) =>
+        cookiesToSet.forEach(({ name, value, options }) => {
           request.cookies.set(name, value)
-        )
+          response.cookies.set(name, value, options)
+        })
       },
     },
   })
@@ -41,11 +43,9 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(new URL('/admin/login', request.url))
   }
 
-  return NextResponse.next()
+  return response
 }
 
 export const config = {
   matcher: ['/admin/:path*'],
 }
-
-export default middleware

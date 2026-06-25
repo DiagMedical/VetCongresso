@@ -87,7 +87,7 @@ vetcongresso/
 │   └── index.ts                   # Domínio types
 ├── public/
 │   └── logo.svg
-├── middleware.ts                  # Auth guard /admin/* (middleware)
+├── proxy.ts                       # Auth guard /admin/* (proxy, substitui middleware.ts)
 ├── vercel.json                    # Cron config para lembrete
 ├── .env.example
 ├── next.config.ts
@@ -545,3 +545,15 @@ Dia 3:
 | `ZAPI_TOKEN` | *(vazio)* | ❌ |
 | `ZAPI_ENABLED` | `0` | ✅ |
 | `CRON_SECRET` | `openssl rand -hex 32` | ✅ |
+
+---
+
+### 14. Changelog
+
+| Data | Mudança | Detalhes |
+|------|---------|----------|
+| 25/06/2026 | **Migração `middleware.ts` → `proxy.ts`** | Renomeado conforme Next.js 16 — `middleware.ts` estava deprecado |
+| | **Fix cookie persistence no proxy** | `setAll` agora escreve cookies no `NextResponse`, resolvendo redirect loop no login admin |
+| | **Fix lint: aspas não escapadas** | `palestras-client.tsx:141` — substituídas por entidades HTML |
+| | **Fix lint: unused import** | `palestra-dialog.tsx:4` — `Loader2` removido |
+| | **Redirect `/login` → `/admin/login`** | Rota duplicada eliminada, evita formulário de login desatualizado |

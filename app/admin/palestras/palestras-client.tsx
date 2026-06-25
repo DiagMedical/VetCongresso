@@ -138,7 +138,7 @@ export function PalestrasClient({ palestras }: PalestrasClientProps) {
               <BookOpen className="mx-auto size-12" />
             </div>
             <p className="text-sm font-medium text-foreground">Nenhuma palestra cadastrada</p>
-            <p className="mt-1 text-xs text-muted">Clique em "Nova Palestra" para começar.</p>
+            <p className="mt-1 text-xs text-muted">Clique em &ldquo;Nova Palestra&rdquo; para começar.</p>
           </div>
         )}
       </div>
