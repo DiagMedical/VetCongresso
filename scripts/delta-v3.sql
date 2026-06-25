@@ -24,12 +24,15 @@ CREATE TABLE IF NOT EXISTS configuracoes (
     updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
--- 3. Fix trigger: permitir INSERT com status 'espera' mesmo se lotado
+-- 3. Fix trigger: permitir INSERT com status 'espera' mesmo se lotado + lock serializável
 CREATE OR REPLACE FUNCTION check_vagas_disponiveis()
 RETURNS TRIGGER AS $$
 DECLARE
     vagas_livres INT;
 BEGIN
+    -- Lock the palestra row to serialize concurrent inserts (anti-overbooking)
+    PERFORM 1 FROM palestras WHERE id = NEW.palestra_id FOR UPDATE;
+
     SELECT p.vagas_totais - COUNT(i.id)
     INTO vagas_livres
     FROM palestras p
@@ -70,3 +73,6 @@ WHERE status IN ('confirmado', 'check-in', 'espera');
 
 -- 7. Coluna lembrete_enviado para controle de disparo
 ALTER TABLE inscritos ADD COLUMN IF NOT EXISTS lembrete_enviado BOOLEAN DEFAULT FALSE;
+
+-- 8. Coluna aceite_lgpd (LGPD consentimento)
+ALTER TABLE inscritos ADD COLUMN IF NOT EXISTS aceite_lgpd BOOLEAN DEFAULT FALSE;

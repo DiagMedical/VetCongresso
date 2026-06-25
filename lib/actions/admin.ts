@@ -223,6 +223,7 @@ export async function adicionarParticipante(data: {
       email: parsed.data.email,
       telefone: parsed.data.telefone,
       origem: 'manual',
+      aceite_lgpd: false,
     })
     .select('id')
     .single()

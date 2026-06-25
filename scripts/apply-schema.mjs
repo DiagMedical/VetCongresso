@@ -2,12 +2,22 @@ import pg from 'pg'
 
 const { Client } = pg
 
+const required = ['DB_HOST', 'DB_PASSWORD']
+const missing = required.filter((key) => !process.env[key])
+if (missing.length > 0) {
+  console.error(`Variáveis obrigatórias faltando: ${missing.join(', ')}`)
+  console.error('Crie um arquivo .env ou exporte as variáveis:')
+  console.error('  DB_HOST=db.seuprojeto.supabase.co')
+  console.error('  DB_PASSWORD=sua_senha')
+  process.exit(1)
+}
+
 const client = new Client({
-  host: 'db.yjrcrdzqxeoclmctkkay.supabase.co',
+  host: process.env.DB_HOST,
   port: 5432,
   database: 'postgres',
   user: 'postgres',
-  password: 'DiagMedical321@#$&',
+  password: process.env.DB_PASSWORD,
   ssl: { rejectUnauthorized: false },
 })
 
@@ -35,6 +45,7 @@ CREATE TABLE IF NOT EXISTS inscritos (
     telefone TEXT NOT NULL,
     status TEXT DEFAULT 'confirmado' CHECK (status IN ('confirmado', 'check-in', 'cancelado_por_falta', 'espera')),
     origem TEXT DEFAULT 'site',
+    aceite_lgpd BOOLEAN DEFAULT FALSE,
     checkin_at TIMESTAMPTZ,
     cancelado_at TIMESTAMPTZ,
     created_at TIMESTAMPTZ DEFAULT NOW()
@@ -61,6 +72,9 @@ RETURNS TRIGGER AS $$
 DECLARE
     vagas_livres INT;
 BEGIN
+    -- Lock the palestra row to serialize concurrent inserts (anti-overbooking)
+    PERFORM 1 FROM palestras WHERE id = NEW.palestra_id FOR UPDATE;
+
     SELECT p.vagas_totais - COUNT(i.id)
     INTO vagas_livres
     FROM palestras p
@@ -68,7 +82,7 @@ BEGIN
     WHERE p.id = NEW.palestra_id
     GROUP BY p.id;
 
-    IF vagas_livres <= 0 THEN
+    IF vagas_livres <= 0 AND NEW.status IS DISTINCT FROM 'espera' THEN
         RAISE EXCEPTION 'Palestra lotada';
     END IF;
 

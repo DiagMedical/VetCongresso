@@ -97,7 +97,7 @@ export function Scanner({ onScan }: ScannerProps) {
 
       {scanning && (
         <div className="relative overflow-hidden rounded-lg border border-border">
-          <video ref={videoRef} className="max-w-full" playsInline />
+          <video ref={videoRef} className="max-w-full" playsInline aria-label="Leitor de QR Code pela câmera" />
           <canvas ref={canvasRef} className="hidden" />
           <div className="absolute inset-0 border-[3px] border-primary/50 rounded-lg pointer-events-none" />
         </div>

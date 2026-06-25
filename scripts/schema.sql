@@ -29,6 +29,7 @@ CREATE TABLE IF NOT EXISTS inscritos (
     telefone TEXT NOT NULL,
     status TEXT DEFAULT 'confirmado' CHECK (status IN ('confirmado', 'check-in', 'cancelado_por_falta', 'espera')),
     origem TEXT DEFAULT 'site',
+    aceite_lgpd BOOLEAN DEFAULT FALSE,
     checkin_at TIMESTAMPTZ,
     cancelado_at TIMESTAMPTZ,
     created_at TIMESTAMPTZ DEFAULT NOW()
@@ -87,6 +88,9 @@ RETURNS TRIGGER AS $$
 DECLARE
     vagas_livres INT;
 BEGIN
+    -- Lock the palestra row to serialize concurrent inserts (anti-overbooking)
+    PERFORM 1 FROM palestras WHERE id = NEW.palestra_id FOR UPDATE;
+
     SELECT p.vagas_totais - COUNT(i.id)
     INTO vagas_livres
     FROM palestras p

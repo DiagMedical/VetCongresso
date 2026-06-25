@@ -66,13 +66,13 @@ export function PalestrasClient({ palestras }: PalestrasClientProps) {
         <table className="w-full text-sm">
           <thead className="bg-card">
             <tr className="text-left text-muted">
-              <th className="px-4 py-3 font-medium">Dia</th>
-              <th className="px-4 py-3 font-medium">Tema</th>
-              <th className="px-4 py-3 font-medium">Palestrante</th>
-              <th className="px-4 py-3 font-medium">Horário</th>
-              <th className="px-4 py-3 font-medium">Vagas</th>
-              <th className="px-4 py-3 font-medium">Status</th>
-              <th className="px-4 py-3 font-medium">Ações</th>
+              <th scope="col" className="px-4 py-3 font-medium">Dia</th>
+              <th scope="col" className="px-4 py-3 font-medium">Tema</th>
+              <th scope="col" className="px-4 py-3 font-medium">Palestrante</th>
+              <th scope="col" className="px-4 py-3 font-medium">Horário</th>
+              <th scope="col" className="px-4 py-3 font-medium">Vagas</th>
+              <th scope="col" className="px-4 py-3 font-medium">Status</th>
+              <th scope="col" className="px-4 py-3 font-medium">Ações</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-border">

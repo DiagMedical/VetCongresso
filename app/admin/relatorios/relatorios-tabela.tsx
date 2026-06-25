@@ -16,15 +16,15 @@ export function RelatoriosTabela({ data }: Props) {
         <table className="w-full text-sm">
           <thead className="bg-card">
             <tr className="text-left text-muted">
-              <th className="px-4 py-3 font-medium">Palestra</th>
-              <th className="px-4 py-3 font-medium">Palestrante</th>
-              <th className="px-4 py-3 font-medium">Dia</th>
-              <th className="px-4 py-3 font-medium">Vagas</th>
-              <th className="px-4 py-3 font-medium">Reservas</th>
-              <th className="px-4 py-3 font-medium">Check-ins</th>
-              <th className="px-4 py-3 font-medium">Cancelados</th>
-              <th className="px-4 py-3 font-medium">Espera</th>
-              <th className="px-4 py-3 font-medium">Ocupação</th>
+              <th scope="col" className="px-4 py-3 font-medium">Palestra</th>
+              <th scope="col" className="px-4 py-3 font-medium">Palestrante</th>
+              <th scope="col" className="px-4 py-3 font-medium">Dia</th>
+              <th scope="col" className="px-4 py-3 font-medium">Vagas</th>
+              <th scope="col" className="px-4 py-3 font-medium">Reservas</th>
+              <th scope="col" className="px-4 py-3 font-medium">Check-ins</th>
+              <th scope="col" className="px-4 py-3 font-medium">Cancelados</th>
+              <th scope="col" className="px-4 py-3 font-medium">Espera</th>
+              <th scope="col" className="px-4 py-3 font-medium">Ocupação</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-border">

@@ -557,3 +557,12 @@ Dia 3:
 | | **Fix lint: aspas não escapadas** | `palestras-client.tsx:141` — substituídas por entidades HTML |
 | | **Fix lint: unused import** | `palestra-dialog.tsx:4` — `Loader2` removido |
 | | **Redirect `/login` → `/admin/login`** | Rota duplicada eliminada, evita formulário de login desatualizado |
+| 25/06/2026 | **F1.1: Coluna `aceite_lgpd` adicionada** | `schema.sql`, `delta-v3.sql`, `apply-schema.mjs` — corrige erro de runtime na reserva |
+| | **F1.1: `aceite_lgpd: false` no admin** | `admin.ts:adicionarParticipante` — insert manual agora inclui o campo |
+| | **F1.2: Credenciais硬coded removidas** | `apply-schema.mjs` — `DB_HOST` e `DB_PASSWORD` movidos para env |
+| | **F1.3: `vercel.json` criado** | Cron schedule para `/api/cron/lembrete` (8:00 daily) |
+| | **F2.1: TOCTOU race condition fix** | Trigger `check_vagas_disponiveis` agora usa `FOR UPDATE` lock na palestra |
+| | **F2.3: `scope=\"col\"` nas tabelas** | `palestras-client.tsx`, `relatorios-tabela.tsx` — acessibilidade |
+| | **F2.4: `aria-label` no scanner** | `scanner.tsx:100` — descrição para leitores de tela |
+| | **F3: Testes configurados (Vitest)** | 3 suites, 20 testes — schemas, utils, mensagens WhatsApp |
+| | **F4: README atualizado** | Documentação específica do projeto (setup, scripts, env, estrutura) |
