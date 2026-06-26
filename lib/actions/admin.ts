@@ -617,3 +617,35 @@ export async function exportarLeads(): Promise<LeadExport[]> {
     }
   })
 }
+
+export async function limparPalestrasDuplicadas() {
+  const supabase = await createClient()
+
+  const { data: palestras } = await supabase
+    .from('palestras')
+    .select('id, tema')
+    .eq('ativo', true)
+
+  if (!palestras) return { removidas: 0 }
+
+  const temasVistos = new Map<string, string[]>()
+  for (const p of palestras) {
+    const existing = temasVistos.get(p.tema) ?? []
+    existing.push(p.id)
+    temasVistos.set(p.tema, existing)
+  }
+
+  let removidas = 0
+  for (const [, ids] of temasVistos) {
+    if (ids.length > 1) {
+      const [keep, ...toDelete] = ids
+      for (const id of toDelete) {
+        await supabase.from('inscritos').delete().eq('palestra_id', id)
+        await supabase.from('palestras').delete().eq('id', id)
+        removidas++
+      }
+    }
+  }
+
+  return { removidas }
+}

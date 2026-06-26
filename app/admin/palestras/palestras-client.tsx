@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { BookOpen, Copy, Edit, Plus, Power, PowerOff } from 'lucide-react'
+import { BookOpen, Copy, Edit, Plus, Power, PowerOff, Trash2 } from 'lucide-react'
 import type { Palestra } from '@/types'
 import { PalestraDialog } from '@/components/admin/palestra-dialog'
 import type { PalestraFormData } from '@/types'
@@ -52,15 +52,35 @@ export function PalestrasClient({ palestras }: PalestrasClientProps) {
     setDialogOpen(true)
   }
 
+  const [cleanupMsg, setCleanupMsg] = useState('')
+
+  async function handleLimparDuplicatas() {
+    if (!confirm('Remover palestras duplicadas? Isso vai apagar também os inscritos vinculados.')) return
+    const { limparPalestrasDuplicadas } = await import('@/lib/actions/admin')
+    const { removidas } = await limparPalestrasDuplicadas()
+    setCleanupMsg(`${removidas} duplicata(s) removida(s)`)
+    router.refresh()
+  }
+
   return (
     <>
-      <button
-        onClick={openNew}
-        className="mb-4 flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm text-primary-foreground font-medium hover:brightness-110 transition-all"
-      >
-        <Plus className="size-4" />
-        Nova Palestra
-      </button>
+      <div className="mb-4 flex items-center gap-2">
+        <button
+          onClick={openNew}
+          className="flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm text-primary-foreground font-medium hover:brightness-110 transition-all"
+        >
+          <Plus className="size-4" />
+          Nova Palestra
+        </button>
+        <button
+          onClick={handleLimparDuplicatas}
+          className="flex items-center gap-2 rounded-md border border-danger/30 px-4 py-2 text-sm text-danger hover:bg-danger/5 transition-all"
+        >
+          <Trash2 className="size-4" />
+          Limpar Duplicatas
+        </button>
+        {cleanupMsg && <span className="text-xs text-success">{cleanupMsg}</span>}
+      </div>
 
       <div className="overflow-hidden rounded-lg border border-border">
         <table className="w-full text-sm">
