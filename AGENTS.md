@@ -99,3 +99,17 @@ This version has breaking changes — APIs, conventions, and file structure may 
 - `app/admin/page.tsx` — searchParams + DashboardFiltroData
 - `PLANO.md` — itens 4 e 5 movidos para concluído
 <!-- END:opencode-session -->
+
+<!-- BEGIN:opencode-session -->
+## Session — 26/06/2026 (3)
+
+### Leads por Dia — Gráfico de Linha
+
+**O que foi feito:**
+
+1. **Gráfico de linha "Leads por Dia"** — Novo card no `dashboard-charts.tsx` com `LineChart` (Recharts) mostrando tendência de leads ao longo dos dias. Exibe mensagem "Dados insuficientes" quando < 2 pontos.
+
+**Arquivos alterados:**
+- `components/admin/dashboard-charts.tsx` — import `LineChart`, `Line`, `TrendingUp`; novo card com dados de `reservas_por_dia`
+- `PLANO.md` — item 6 movido para concluído
+<!-- END:opencode-session -->

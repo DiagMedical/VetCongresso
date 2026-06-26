@@ -10,8 +10,10 @@ import {
   ResponsiveContainer,
   Legend,
   Cell,
+  LineChart,
+  Line,
 } from 'recharts'
-import { BarChart3, Activity } from 'lucide-react'
+import { BarChart3, Activity, TrendingUp } from 'lucide-react'
 import type { DashboardData } from '@/lib/actions/admin'
 
 interface DashboardChartsProps {
@@ -24,6 +26,13 @@ export function DashboardCharts({ data }: DashboardChartsProps) {
     Reservas: d.reservas,
     'Check-ins': d.checkins,
   }))
+
+  const evolucaoLeads = data.reservas_por_dia
+    .sort((a, b) => a.dia - b.dia)
+    .map((d) => ({
+      name: d.dia.toString(),
+      leads: d.reservas,
+    }))
 
   const porPalestra = data.reservas_por_palestra
     .sort((a, b) => b.reservas - a.reservas)
@@ -61,6 +70,42 @@ export function DashboardCharts({ data }: DashboardChartsProps) {
               <Bar dataKey="Reservas" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} />
               <Bar dataKey="Check-ins" fill="hsl(var(--success))" radius={[4, 4, 0, 0]} />
             </BarChart>
+          </ResponsiveContainer>
+        )}
+      </div>
+
+      <div className="rounded-lg border border-border bg-card p-4">
+        <h3 className="mb-4 text-sm font-semibold text-foreground">Leads por Dia (tendência)</h3>
+        {evolucaoLeads.length < 2 ? (
+          <div className="flex flex-col items-center justify-center py-8 text-center">
+            <TrendingUp className="mb-3 size-10 text-muted/40" />
+            <p className="text-sm text-muted">Dados insuficientes para exibir tendência</p>
+          </div>
+        ) : (
+          <ResponsiveContainer width="100%" height={220}>
+            <LineChart data={evolucaoLeads}>
+              <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+              <XAxis dataKey="name" tick={{ fontSize: 12, fill: 'hsl(var(--muted))' }} />
+              <YAxis tick={{ fontSize: 12, fill: 'hsl(var(--muted))' }} />
+              <Tooltip
+                contentStyle={{
+                  background: 'hsl(var(--card))',
+                  border: '1px solid hsl(var(--border))',
+                  borderRadius: '8px',
+                  fontSize: '13px',
+                }}
+              />
+              <Legend />
+              <Line
+                type="monotone"
+                dataKey="leads"
+                stroke="hsl(var(--primary))"
+                strokeWidth={2}
+                dot={{ fill: 'hsl(var(--primary))', r: 4 }}
+                activeDot={{ r: 6 }}
+                name="Leads"
+              />
+            </LineChart>
           </ResponsiveContainer>
         )}
       </div>
