@@ -43,4 +43,19 @@ This version has breaking changes — APIs, conventions, and file structure may 
 - `components/admin/nav.tsx`
 
 **Commit:** `a8ab537` — "Fix RLS email-based + admin management + delete palestra + error handling + login fix"
+
+### Fix #2 — Infinite recursion RLS
+
+**Problema:** `auth.email() IN (SELECT email FROM admins)` na política da própria tabela `admins` causa recursão infinita.
+
+**Solução:** Função `is_admin()` com `SECURITY DEFINER` que bypasse RLS na consulta interna.
+
+**Arquivos alterados:**
+- `scripts/fix-admin-rls.sql` — adicionada função `is_admin()`, policies usam `is_admin()`
+- `scripts/schema.sql` — idem
+- `scripts/apply-schema.mjs` — idem
+
+**Commit:** `51c679c` — "Fix infinite recursion RLS: usa SECURITY DEFINER function is_admin()"
+
+**⚠️ Precisa rodar `scripts/fix-admin-rls.sql` novamente no Supabase SQL Editor (substitui a versão anterior)**
 <!-- END:opencode-session -->
