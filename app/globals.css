@@ -13,8 +13,8 @@
   --success-foreground: 0 0% 100%;
   --danger: 0 84% 60%;
   --danger-foreground: 0 0% 100%;
-  --muted: 0 0% 40%;
-  --muted-foreground: 0 0% 100%;
+  --muted: 0 0% 38%;
+  --muted-foreground: 0 0% 45%;
   --border: 0 0% 80%;
   --ring: 213 100% 36%;
 }
@@ -51,8 +51,8 @@
   --color-muted-foreground: hsl(var(--muted-foreground));
   --color-border: hsl(var(--border));
   --color-ring: hsl(var(--ring));
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-geist-sans, Inter, system-ui, sans-serif);
+  --font-mono: var(--font-geist-mono, ui-monospace, SFMono-Regular, monospace);
 }
 
 @layer base {

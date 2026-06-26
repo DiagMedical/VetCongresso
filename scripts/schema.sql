@@ -157,6 +157,25 @@ DROP POLICY IF EXISTS "admin_all_configuracoes" ON configuracoes;
 CREATE POLICY "admin_all_configuracoes" ON configuracoes
     FOR ALL USING (auth.uid() IN (SELECT id FROM admins));
 
+-- Sorteio: tabela de leads independente
+CREATE TABLE IF NOT EXISTS sorteio_leads (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    nome TEXT NOT NULL,
+    whatsapp TEXT NOT NULL,
+    email TEXT NOT NULL UNIQUE,
+    created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+ALTER TABLE sorteio_leads ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS "public_insert_sorteio" ON sorteio_leads;
+CREATE POLICY "public_insert_sorteio" ON sorteio_leads
+    FOR INSERT WITH CHECK (TRUE);
+
+DROP POLICY IF EXISTS "admin_all_sorteio" ON sorteio_leads;
+CREATE POLICY "admin_all_sorteio" ON sorteio_leads
+    FOR ALL USING (auth.uid() IN (SELECT id FROM admins));
+
 -- ============================================================
 -- Seed Data — 11 palestras
 -- ============================================================

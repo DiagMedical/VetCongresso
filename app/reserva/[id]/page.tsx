@@ -34,7 +34,7 @@ export default async function ReservaPage(props: {
     <div className="flex flex-1 flex-col bg-background">
       <div className="mx-auto w-full max-w-lg px-4 py-8">
         <Link
-          href="/"
+          href="/palestras"
           className="mb-6 flex items-center gap-1 text-sm text-muted hover:text-foreground transition-colors"
         >
           <ArrowLeft className="size-4" />

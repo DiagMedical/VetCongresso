@@ -18,6 +18,7 @@ interface ReservaFormProps {
 export function ReservaForm({ palestra }: ReservaFormProps) {
   const router = useRouter()
   const uid = useId()
+  const formRef = useRef<HTMLFormElement>(null)
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({})
   const [enviando, setEnviando] = useState(false)
   const [aceite, setAceite] = useState(false)
@@ -33,12 +34,12 @@ export function ReservaForm({ palestra }: ReservaFormProps) {
   }
 
   function validateField(name: string, value: string | boolean) {
-    const form = document.forms[0] as HTMLFormElement
+    const form = formRef.current
     const data = {
       palestra_id: palestra.id,
-      nome: (form?.nome as HTMLInputElement)?.value ?? '',
-      email: (form?.email as HTMLInputElement)?.value ?? '',
-      telefone: (form?.telefone as HTMLInputElement)?.value ?? '',
+      nome: (form?.elements.namedItem('nome') as HTMLInputElement)?.value ?? '',
+      email: (form?.elements.namedItem('email') as HTMLInputElement)?.value ?? '',
+      telefone: (form?.elements.namedItem('telefone') as HTMLInputElement)?.value ?? '',
       aceite_lgpd: name === 'aceite_lgpd' ? (value as boolean) : aceite,
     }
     const parsed = reservaSchema.safeParse(data)
@@ -108,7 +109,7 @@ export function ReservaForm({ palestra }: ReservaFormProps) {
     }`
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4 animate-fade-in" noValidate>
+    <form ref={formRef} onSubmit={handleSubmit} className="space-y-4 animate-fade-in" noValidate>
 
       <div className="space-y-2">
         <label htmlFor="nome" className="text-sm font-medium text-foreground">

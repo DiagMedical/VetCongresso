@@ -14,8 +14,8 @@ const geistMono = Geist_Mono({
 })
 
 export const metadata: Metadata = {
-  title: 'VetCongresso - Silent Booking',
-  description: 'Sistema de reserva de vagas para palestras do congresso veterinário',
+  title: 'ABRAVEQ 2026 — Silent Booking | Diagnostic Vet',
+  description: 'Reserve sua vaga nas palestras silenciosas da XXVI Conferência Anual ABRAVEQ 2026. Patrocínio Diagnostic Vet.',
 }
 
 export default function RootLayout({
@@ -33,7 +33,9 @@ export default function RootLayout({
         <a href="#main-content" className="skip-link">
           Pular para o conteúdo
         </a>
-        <ThemeProvider>{children}</ThemeProvider>
+        <ThemeProvider>
+          <main id="main-content" className="flex flex-1 flex-col">{children}</main>
+        </ThemeProvider>
       </body>
     </html>
   )

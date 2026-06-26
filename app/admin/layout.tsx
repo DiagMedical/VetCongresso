@@ -8,9 +8,9 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
       <AdminHeader />
       <div className="flex flex-1 overflow-hidden">
         <AdminNav />
-        <main id="main-content" className="flex-1 overflow-auto bg-background p-6">
+        <div id="main-content" role="main" className="flex-1 overflow-auto bg-background p-6">
           {children}
-        </main>
+        </div>
       </div>
     </div>
   )

@@ -17,7 +17,9 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
         position="top-right"
         richColors
         closeButton
-        toastOptions={{ duration: 4000 }}
+        aria-label="Notificações"
+        toastOptions={{ duration: 6000 }}
+        visibleToasts={3}
       />
     </NextThemesProvider>
   )

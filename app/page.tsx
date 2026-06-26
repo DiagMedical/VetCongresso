@@ -1,105 +1,94 @@
-import { Suspense } from 'react'
-import { PalestraCard } from '@/components/palestra-card'
-import { listarPalestras } from '@/lib/actions/reserva'
-import type { DiaEvento } from '@/types'
+import Link from 'next/link'
+import Image from 'next/image'
+import { QrCompartilhe } from '@/components/qr-compartilhe'
+import { ArrowRight, Gift, Lock } from 'lucide-react'
 
-function PalestrasSkeleton() {
-  return (
-    <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-      {Array.from({ length: 6 }).map((_, i) => (
-        <div key={i} className="flex flex-col gap-3 rounded-lg border border-border bg-card p-4">
-          <div className="flex items-start justify-between gap-2">
-            <div className="h-5 w-3/4 animate-pulse rounded bg-muted/30" />
-            <div className="h-5 w-14 shrink-0 animate-pulse rounded-full bg-muted/30" />
-          </div>
-          <div className="h-4 w-1/2 animate-pulse rounded bg-muted/30" />
-          <div className="h-3 w-full animate-pulse rounded bg-muted/30" />
-          <div className="flex items-center gap-4">
-            <div className="h-3 w-24 animate-pulse rounded bg-muted/30" />
-            <div className="h-3 w-16 animate-pulse rounded bg-muted/30" />
-          </div>
-          <div className="mt-1 h-8 w-full animate-pulse rounded-md bg-muted/30" />
-        </div>
-      ))}
-    </div>
-  )
-}
-
-function DiaTab({ dia, atual }: { dia: DiaEvento | null; atual: DiaEvento | null }) {
-  const href = dia ? `/?dia=${dia}` : '/'
-  const label = dia ? `Dia ${dia}` : 'Todos'
-  const active = atual === dia
-
-  return (
-    <a
-      href={href}
-      className={`rounded-md px-4 py-1.5 text-sm font-medium transition-colors ${
-        active
-          ? 'bg-primary text-primary-foreground'
-          : 'bg-card text-muted hover:bg-primary/10'
-      }`}
-    >
-      {label}
-    </a>
-  )
-}
-
-async function PalestrasList({ dia }: { dia: DiaEvento | null }) {
-  const palestras = await listarPalestras()
-
-  const filtradas = dia
-    ? palestras.filter((p) => p.dia_evento === dia)
-    : palestras
-
-  if (filtradas.length === 0) {
-    return (
-      <p className="text-center text-muted py-12">
-        Nenhuma palestra encontrada para este dia.
-      </p>
-    )
-  }
-
-  return (
-    <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-      {filtradas.map((p) => (
-        <PalestraCard key={p.id} palestra={p} />
-      ))}
-    </div>
-  )
-}
-
-export default async function HomePage(props: {
-  searchParams?: Promise<{ dia?: string }>
-}) {
-  const searchParams = await props.searchParams
-  const diaParam = searchParams?.dia
-  const diaAtual = diaParam
-    ? ([1, 2, 3].includes(Number(diaParam)) ? (Number(diaParam) as DiaEvento) : null)
-    : null
+export default function LandingPage() {
+  const palestrasUrl = process.env.NEXT_PUBLIC_SITE_URL
+    ? `${process.env.NEXT_PUBLIC_SITE_URL}/palestras`
+    : '/palestras'
 
   return (
     <div className="flex flex-1 flex-col bg-background">
-      <section className="border-b border-border bg-card">
-        <div className="mx-auto max-w-5xl px-4 py-8 text-center">
-          <h1 className="text-3xl font-bold text-foreground">VetCongresso</h1>
-          <p className="mt-2 text-muted">
-            Reserve sua vaga nas palestras do congresso veterinário
-          </p>
+      <header className="flex items-center justify-between px-4 py-4 mx-auto w-full max-w-5xl">
+        <div className="flex items-center gap-3">
+          <Image
+            src="/logo-diagnostic-vet.png"
+            alt="Diagnostic Vet"
+            width={140}
+            height={39}
+            className="h-9 w-auto"
+            priority
+          />
         </div>
-      </section>
+        <Link
+          href="/admin/login"
+          className="flex items-center gap-1.5 rounded-md border border-border px-3 py-1.5 text-xs text-muted hover:text-foreground hover:border-foreground/30 transition-colors"
+        >
+          <Lock className="size-3" />
+          Admin
+        </Link>
+      </header>
 
-      <section className="mx-auto w-full max-w-5xl px-4 py-6">
-        <div className="flex flex-wrap gap-2 mb-6">
-          <DiaTab dia={null} atual={diaAtual} />
-          <DiaTab dia={1} atual={diaAtual} />
-          <DiaTab dia={2} atual={diaAtual} />
-          <DiaTab dia={3} atual={diaAtual} />
+      <main className="flex flex-1 flex-col items-center justify-center px-4 text-center">
+        <div className="flex flex-col items-center gap-2 mb-4">
+          <Image
+            src="/logo-abraveq.svg"
+            alt="ABRAVEQ"
+            width={200}
+            height={68}
+            className="h-20 w-auto"
+            priority
+          />
         </div>
 
-        <Suspense fallback={<PalestrasSkeleton />}>
-          <PalestrasList dia={diaAtual} />
-        </Suspense>
-      </section>
+        <h1 className="text-3xl font-bold text-foreground sm:text-4xl">
+          ABRAVEQ 2026
+        </h1>
+        <p className="mt-2 text-lg text-muted">
+          XXVI Conferência Anual
+        </p>
+
+        <div className="mt-2 flex items-center gap-2">
+          <span className="text-sm text-muted">Patrocinador oficial</span>
+          <Image
+            src="/logo-diagnostic-vet.png"
+            alt="Diagnostic Vet"
+            width={100}
+            height={28}
+            className="h-7 w-auto opacity-80"
+          />
+        </div>
+
+        <p className="mt-8 text-base text-muted max-w-md leading-relaxed">
+          Reserve sua vaga nas palestras silenciosas e garanta seu lugar.
+        </p>
+
+        <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
+          <Link
+            href="/palestras"
+            className="inline-flex items-center gap-2 rounded-md bg-primary px-8 py-3 text-base font-medium text-primary-foreground hover:brightness-110 transition-all"
+          >
+            Ver Programação
+            <ArrowRight className="size-5" />
+          </Link>
+          <Link
+            href="/sorteio"
+            className="inline-flex items-center gap-2 rounded-md border-2 border-primary/30 bg-card px-6 py-3 text-base font-medium text-foreground hover:border-primary/60 hover:bg-primary/5 transition-all"
+          >
+            <Gift className="size-5 text-primary" />
+            Sorteio
+          </Link>
+        </div>
+
+        <div className="mt-10">
+          <QrCompartilhe url={palestrasUrl} />
+        </div>
+      </main>
+
+      <footer className="mt-auto px-4 py-6 text-center text-xs text-muted">
+        <p>ABRAVEQ — Associação Brasileira dos Médicos Veterinários de Equídeos</p>
+      </footer>
     </div>
   )
 }

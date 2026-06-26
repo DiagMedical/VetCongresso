@@ -4,6 +4,7 @@ import { createClient } from '@/lib/supabase/server'
 import type { Inscrito } from '@/types'
 import { adicionarParticipanteSchema } from '@/lib/schemas'
 import { sendWhatsApp } from '@/lib/whatsapp/send'
+import { listarPalestras } from '@/lib/actions/reserva'
 
 export interface DashboardData {
   total_leads: number
@@ -253,25 +254,7 @@ export async function listarInscritos(palestraId?: string): Promise<Inscrito[]> 
 }
 
 export async function listarPalestrasComVagas() {
-  const supabase = await createClient()
-
-  const { data: palestras } = await supabase
-    .from('palestras')
-    .select('*')
-    .eq('ativo', true)
-    .order('dia_evento')
-    .order('horario_inicio')
-
-  const { data: vagas } = await supabase.from('vagas_disponiveis').select('*')
-
-  const vagasMap = new Map(
-    (vagas ?? []).map((v) => [v.id, v.vagas_restantes])
-  )
-
-  return (palestras ?? []).map((p) => ({
-    ...p,
-    vagas_restantes: vagasMap.get(p.id) ?? p.vagas_totais,
-  }))
+  return listarPalestras()
 }
 
 export interface LeadExport {
@@ -399,6 +382,176 @@ export async function getRelatorios(): Promise<RelatoriosData> {
   }
 }
 
+export interface AnalyticsData {
+  total_leads: number
+  total_reservas: number
+  total_checkins: number
+  total_cancelados: number
+  total_espera: number
+  taxa_comparecimento: number
+  ocupacao_media: number
+  tempo_medio_ate_checkin_horas: number
+  previsao_ocupacao_final: number
+  evolucao_diaria: { data: string; reservas: number; checkins: number }[]
+  ocupacao_por_dia: { dia: number; vagas: number; reservas: number; taxa: number }[]
+  horarios_pico: { hora: string; reservas: number }[]
+  por_palestra: RelatorioPalestra[]
+}
+
+export async function getAnalyticsData(): Promise<AnalyticsData> {
+  const supabase = await createClient()
+
+  const { data: palestras } = await supabase
+    .from('palestras')
+    .select('*')
+    .eq('ativo', true)
+    .order('dia_evento')
+    .order('horario_inicio')
+
+  const { data: inscritos } = await supabase
+    .from('inscritos')
+    .select('*, palestra:palestra_id(tema, palestrante, vagas_totais, dia_evento)')
+    .order('created_at')
+
+  const total_leads = inscritos?.length ?? 0
+  const total_reservas = inscritos?.filter((i) => ['confirmado', 'check-in'].includes(i.status)).length ?? 0
+  const total_checkins = inscritos?.filter((i) => i.status === 'check-in').length ?? 0
+  const total_cancelados = inscritos?.filter((i) => i.status === 'cancelado_por_falta').length ?? 0
+  const total_espera = inscritos?.filter((i) => i.status === 'espera').length ?? 0
+  const taxa_comparecimento = total_reservas > 0 ? Math.round((total_checkins / total_reservas) * 100) : 0
+
+  // Tempo médio created_at -> checkin_at
+  let totalHoras = 0
+  let countHoras = 0
+  for (const i of inscritos ?? []) {
+    if (i.checkin_at && i.created_at) {
+      const diff = new Date(i.checkin_at).getTime() - new Date(i.created_at).getTime()
+      totalHoras += diff / (1000 * 60 * 60)
+      countHoras++
+    }
+  }
+  const tempo_medio_ate_checkin_horas = countHoras > 0 ? Math.round((totalHoras / countHoras) * 10) / 10 : 0
+
+  // Evolução diária (últimos 30 dias)
+  const evolucaoMap = new Map<string, { reservas: number; checkins: number }>()
+  const trintaDiasAtras = new Date()
+  trintaDiasAtras.setDate(trintaDiasAtras.getDate() - 30)
+  for (const i of inscritos ?? []) {
+    const dataCriacao = new Date(i.created_at)
+    if (dataCriacao < trintaDiasAtras) continue
+    const chave = dataCriacao.toISOString().split('T')[0]
+    const entry = evolucaoMap.get(chave) ?? { reservas: 0, checkins: 0 }
+    if (['confirmado', 'check-in', 'espera'].includes(i.status)) entry.reservas++
+    if (i.status === 'check-in') entry.checkins++
+    evolucaoMap.set(chave, entry)
+  }
+  const evolucao_diaria: AnalyticsData['evolucao_diaria'] = []
+  for (let d = 0; d < 30; d++) {
+    const dt = new Date(trintaDiasAtras)
+    dt.setDate(dt.getDate() + d)
+    const chave = dt.toISOString().split('T')[0]
+    const entry = evolucaoMap.get(chave) ?? { reservas: 0, checkins: 0 }
+    if (entry.reservas > 0 || entry.checkins > 0) {
+      evolucao_diaria.push({ data: dt.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' }), ...entry })
+    }
+  }
+
+  // Ocupação por dia do evento
+  const vagasPorDia = new Map<number, number>()
+  const reservasPorDia = new Map<number, number>()
+  for (const p of palestras ?? []) {
+    vagasPorDia.set(p.dia_evento, (vagasPorDia.get(p.dia_evento) ?? 0) + p.vagas_totais)
+  }
+  for (const i of inscritos ?? []) {
+    if (!['confirmado', 'check-in'].includes(i.status)) continue
+    const palestraData = i.palestra as { dia_evento: number } | null
+    if (!palestraData) continue
+    reservasPorDia.set(palestraData.dia_evento, (reservasPorDia.get(palestraData.dia_evento) ?? 0) + 1)
+  }
+  const ocupacao_por_dia: AnalyticsData['ocupacao_por_dia'] = []
+  for (let d = 1; d <= 3; d++) {
+    const vagas = vagasPorDia.get(d) ?? 0
+    const reservas = reservasPorDia.get(d) ?? 0
+    ocupacao_por_dia.push({
+      dia: d,
+      vagas,
+      reservas,
+      taxa: vagas > 0 ? Math.round((reservas / vagas) * 100) : 0,
+    })
+  }
+
+  // Horários de pico (por hora do dia)
+  const horaMap = new Map<string, number>()
+  for (const i of inscritos ?? []) {
+    const h = new Date(i.created_at).getHours().toString().padStart(2, '0')
+    horaMap.set(h, (horaMap.get(h) ?? 0) + 1)
+  }
+  const horarios_pico: AnalyticsData['horarios_pico'] = []
+  for (let h = 0; h < 24; h++) {
+    const chave = h.toString().padStart(2, '0')
+    const total = horaMap.get(chave) ?? 0
+    if (total > 0) {
+      horarios_pico.push({ hora: `${chave}h`, reservas: total })
+    }
+  }
+
+  // Previsão — ocupação final projetada com base no ritmo atual
+  const diasDesdePrimeiraReserva = inscritos && inscritos.length > 0
+    ? Math.max(1, Math.ceil((Date.now() - new Date(inscritos[0].created_at).getTime()) / (1000 * 60 * 60 * 24)))
+    : 1
+  const totalVagas = (palestras ?? []).reduce((acc, p) => acc + p.vagas_totais, 0)
+  const ritmoDiario = total_reservas / diasDesdePrimeiraReserva
+  const totalPrevisto = Math.round(ritmoDiario * 60) // projeta 60 dias
+  const previsao_ocupacao_final = totalVagas > 0 ? Math.min(100, Math.round((totalPrevisto / totalVagas) * 100)) : 0
+
+  // Per-lecture stats (reuse from getRelatorios logic)
+  const palestraStats = new Map<string, { reservas: number; checkins: number; cancelados: number; espera: number }>()
+  for (const i of inscritos ?? []) {
+    const s = palestraStats.get(i.palestra_id) ?? { reservas: 0, checkins: 0, cancelados: 0, espera: 0 }
+    if (['confirmado', 'check-in'].includes(i.status)) s.reservas++
+    if (i.status === 'check-in') s.checkins++
+    if (i.status === 'cancelado_por_falta') s.cancelados++
+    if (i.status === 'espera') s.espera++
+    palestraStats.set(i.palestra_id, s)
+  }
+  const por_palestra: RelatorioPalestra[] = []
+  for (const p of palestras ?? []) {
+    const stats = palestraStats.get(p.id) ?? { reservas: 0, checkins: 0, cancelados: 0, espera: 0 }
+    por_palestra.push({
+      palestra_id: p.id,
+      tema: p.tema,
+      palestrante: p.palestrante,
+      dia: p.dia_evento,
+      vagas: p.vagas_totais,
+      reservas: stats.reservas,
+      checkins: stats.checkins,
+      cancelados: stats.cancelados,
+      espera: stats.espera,
+      taxa_ocupacao: p.vagas_totais > 0 ? Math.round((stats.reservas / p.vagas_totais) * 100) : 0,
+    })
+  }
+
+  const ocupacao_media = por_palestra.length > 0
+    ? Math.round(por_palestra.reduce((acc, p) => acc + p.taxa_ocupacao, 0) / por_palestra.length)
+    : 0
+
+  return {
+    total_leads,
+    total_reservas,
+    total_checkins,
+    total_cancelados,
+    total_espera,
+    taxa_comparecimento,
+    ocupacao_media,
+    tempo_medio_ate_checkin_horas,
+    previsao_ocupacao_final,
+    evolucao_diaria,
+    ocupacao_por_dia,
+    horarios_pico,
+    por_palestra,
+  }
+}
+
 export async function getConfiguracoes() {
   const supabase = await createClient()
   const { data } = await supabase.from('configuracoes').select('*')
@@ -444,9 +597,8 @@ export async function testarWhatsApp(inscritoId: string) {
   return sendWhatsApp(inscritoId, 'confirmacao')
 }
 
-export async function exportarLeads(_formato: 'xlsx' | 'csv'): Promise<LeadExport[]> {
+export async function exportarLeads(): Promise<LeadExport[]> {
   const supabase = await createClient()
-  void _formato
 
   const { data } = await supabase
     .from('inscritos')

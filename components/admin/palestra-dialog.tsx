@@ -1,8 +1,15 @@
 'use client'
 
-import { useState, useEffect, useRef, useId } from 'react'
-import { X } from 'lucide-react'
+import { useState, useId } from 'react'
 import type { Palestra, PalestraFormData, DiaEvento } from '@/types'
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog'
+import { Button } from '@/components/ui/button'
+import { Loader2 } from 'lucide-react'
 
 interface PalestraDialogProps {
   open: boolean
@@ -12,44 +19,9 @@ interface PalestraDialogProps {
 }
 
 export function PalestraDialog({ open, onClose, onSave, palestra }: PalestraDialogProps) {
-  const uid = useId()
   const [enviando, setEnviando] = useState(false)
   const [erro, setErro] = useState('')
-  const dialogRef = useRef<HTMLDivElement>(null)
   const editando = !!palestra
-
-  useEffect(() => {
-    if (open) {
-      const first = dialogRef.current?.querySelector<HTMLElement>('input, select, button')
-      first?.focus()
-    }
-  }, [open])
-
-  useEffect(() => {
-    function handleKey(e: KeyboardEvent) {
-      if (e.key === 'Escape' && open) {
-        onClose()
-      }
-      if (e.key === 'Tab' && dialogRef.current) {
-        const focusable = dialogRef.current.querySelectorAll<HTMLElement>(
-          'input, select, textarea, button, [tabindex]:not([tabindex="-1"])'
-        )
-        const first = focusable[0]
-        const last = focusable[focusable.length - 1]
-        if (e.shiftKey && document.activeElement === first) {
-          e.preventDefault()
-          last?.focus()
-        } else if (!e.shiftKey && document.activeElement === last) {
-          e.preventDefault()
-          first?.focus()
-        }
-      }
-    }
-    window.addEventListener('keydown', handleKey)
-    return () => window.removeEventListener('keydown', handleKey)
-  }, [open, onClose])
-
-  if (!open) return null
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
@@ -78,59 +50,48 @@ export function PalestraDialog({ open, onClose, onSave, palestra }: PalestraDial
   }
 
   return (
-    <div
-      ref={dialogRef}
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby={`${uid}-title`}
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 animate-fade-in"
-    >
-      <div className="w-full max-w-lg rounded-lg border border-border bg-card p-6">
-        <div className="mb-4 flex items-center justify-between">
-          <h2 id={`${uid}-title`} className="text-lg font-bold text-foreground">
-            {editando ? 'Editar Palestra' : 'Nova Palestra'}
-          </h2>
-          <button onClick={onClose} aria-label="Fechar" className="text-muted hover:text-foreground transition-colors">
-            <X className="size-5" aria-hidden="true" />
-          </button>
-        </div>
+    <Dialog open={open} onOpenChange={(v) => { if (!v) onClose() }}>
+      <DialogContent className="sm:max-w-lg" aria-describedby={undefined}>
+        <DialogHeader>
+          <DialogTitle>{editando ? 'Editar Palestra' : 'Nova Palestra'}</DialogTitle>
+        </DialogHeader>
 
         {erro && (
-          <p role="alert" className="mb-4 rounded-md bg-danger/10 p-3 text-sm text-danger">{erro}</p>
+          <p role="alert" className="rounded-md bg-destructive/10 p-3 text-sm text-destructive">{erro}</p>
         )}
 
         <form onSubmit={handleSubmit} className="space-y-4" noValidate>
           <div className="space-y-2">
-            <label htmlFor={`${uid}-tema`} className="text-sm font-medium text-foreground">
+            <label htmlFor="tema" className="text-sm font-medium text-foreground">
               Tema <span aria-hidden="true">*</span>
             </label>
-            <input id={`${uid}-tema`} name="tema" type="text" required
+            <input id="tema" name="tema" type="text" required
               defaultValue={palestra?.tema ?? ''}
               className="w-full rounded-md border border-border bg-background px-3 py-2 text-foreground" />
           </div>
 
           <div className="space-y-2">
-            <label htmlFor={`${uid}-palestrante`} className="text-sm font-medium text-foreground">
+            <label htmlFor="palestrante" className="text-sm font-medium text-foreground">
               Palestrante <span aria-hidden="true">*</span>
             </label>
-            <input id={`${uid}-palestrante`} name="palestrante" type="text" required
+            <input id="palestrante" name="palestrante" type="text" required
               defaultValue={palestra?.palestrante ?? ''}
               className="w-full rounded-md border border-border bg-background px-3 py-2 text-foreground" />
           </div>
 
           <div className="space-y-2">
-            <label htmlFor={`${uid}-descricao`} className="text-sm font-medium text-foreground">Descrição</label>
-            <textarea id={`${uid}-descricao`} name="descricao" rows={3}
+            <label htmlFor="descricao" className="text-sm font-medium text-foreground">Descrição</label>
+            <textarea id="descricao" name="descricao" rows={3}
               defaultValue={palestra?.descricao ?? ''}
               className="w-full rounded-md border border-border bg-background px-3 py-2 text-foreground resize-none" />
           </div>
 
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <label htmlFor={`${uid}-dia`} className="text-sm font-medium text-foreground">
+              <label htmlFor="dia_evento" className="text-sm font-medium text-foreground">
                 Dia <span aria-hidden="true">*</span>
               </label>
-              <select id={`${uid}-dia`} name="dia_evento" required
+              <select id="dia_evento" name="dia_evento" required
                 defaultValue={palestra?.dia_evento ?? 1}
                 className="w-full rounded-md border border-border bg-background px-3 py-2 text-foreground">
                 <option value={1}>Dia 1</option>
@@ -140,10 +101,10 @@ export function PalestraDialog({ open, onClose, onSave, palestra }: PalestraDial
             </div>
 
             <div className="space-y-2">
-              <label htmlFor={`${uid}-vagas`} className="text-sm font-medium text-foreground">
+              <label htmlFor="vagas_totais" className="text-sm font-medium text-foreground">
                 Vagas <span aria-hidden="true">*</span>
               </label>
-              <input id={`${uid}-vagas`} name="vagas_totais" type="number" min={1} required
+              <input id="vagas_totais" name="vagas_totais" type="number" min={1} required
                 defaultValue={palestra?.vagas_totais ?? 20}
                 className="w-full rounded-md border border-border bg-background px-3 py-2 text-foreground" />
             </div>
@@ -151,37 +112,35 @@ export function PalestraDialog({ open, onClose, onSave, palestra }: PalestraDial
 
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <label htmlFor={`${uid}-inicio`} className="text-sm font-medium text-foreground">
+              <label htmlFor="horario_inicio" className="text-sm font-medium text-foreground">
                 Início <span aria-hidden="true">*</span>
               </label>
-              <input id={`${uid}-inicio`} name="horario_inicio" type="datetime-local" required
+              <input id="horario_inicio" name="horario_inicio" type="datetime-local" required
                 defaultValue={palestra?.horario_inicio ? palestra.horario_inicio.slice(0, 16) : ''}
                 className="w-full rounded-md border border-border bg-background px-3 py-2 text-foreground" />
             </div>
 
             <div className="space-y-2">
-              <label htmlFor={`${uid}-fim`} className="text-sm font-medium text-foreground">
+              <label htmlFor="horario_fim" className="text-sm font-medium text-foreground">
                 Fim <span aria-hidden="true">*</span>
               </label>
-              <input id={`${uid}-fim`} name="horario_fim" type="datetime-local" required
+              <input id="horario_fim" name="horario_fim" type="datetime-local" required
                 defaultValue={palestra?.horario_fim ? palestra.horario_fim.slice(0, 16) : ''}
                 className="w-full rounded-md border border-border bg-background px-3 py-2 text-foreground" />
             </div>
           </div>
 
           <div className="flex gap-3 pt-2">
-            <button type="button" onClick={onClose}
-              className="flex-1 rounded-md border border-border min-h-[44px] px-4 py-2 text-foreground hover:bg-card transition-colors">
+            <Button type="button" variant="outline" onClick={onClose} className="flex-1">
               Cancelar
-            </button>
-            <button type="submit" disabled={enviando}
-              className="flex-1 rounded-md bg-primary min-h-[44px] px-4 py-2 text-primary-foreground font-medium hover:brightness-110 transition-all disabled:opacity-50"
-              aria-busy={enviando}>
+            </Button>
+            <Button type="submit" disabled={enviando} className="flex-1" aria-busy={enviando}>
+              {enviando && <Loader2 className="size-4 animate-spin" />}
               {enviando ? 'Salvando...' : editando ? 'Atualizar' : 'Criar'}
-            </button>
+            </Button>
           </div>
         </form>
-      </div>
-    </div>
+      </DialogContent>
+    </Dialog>
   )
 }

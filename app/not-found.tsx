@@ -6,7 +6,7 @@ export default function NotFound() {
       <h1 className="text-4xl font-bold text-foreground">404</h1>
       <p className="text-muted">Página não encontrada</p>
       <Link
-        href="/"
+        href="/palestras"
         className="rounded-md bg-primary px-4 py-2 text-sm text-primary-foreground"
       >
         Voltar ao início

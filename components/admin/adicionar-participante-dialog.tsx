@@ -1,10 +1,17 @@
 'use client'
 
-import { useState, useEffect, useRef, useId } from 'react'
-import { X, Plus, Loader2 } from 'lucide-react'
+import { useState, useId } from 'react'
+import { Plus, Loader2 } from 'lucide-react'
 import type { Palestra } from '@/types'
 import { adicionarParticipanteSchema } from '@/lib/schemas'
 import { toast } from 'sonner'
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog'
+import { Button } from '@/components/ui/button'
 
 interface AdicionarParticipanteDialogProps {
   open: boolean
@@ -18,42 +25,6 @@ export function AdicionarParticipanteDialog({ open, onClose, palestras, onAdicio
   const [palestraId, setPalestraId] = useState(palestras[0]?.id ?? '')
   const [enviando, setEnviando] = useState(false)
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({})
-  const dialogRef = useRef<HTMLDivElement>(null)
-  const triggerRef = useRef<HTMLButtonElement>(null)
-
-  useEffect(() => {
-    if (open) {
-      const first = dialogRef.current?.querySelector<HTMLElement>('input, select, button')
-      first?.focus()
-    }
-  }, [open])
-
-  useEffect(() => {
-    function handleKey(e: KeyboardEvent) {
-      if (e.key === 'Escape' && open) {
-        onClose()
-        triggerRef.current?.focus()
-      }
-      if (e.key === 'Tab' && dialogRef.current) {
-        const focusable = dialogRef.current.querySelectorAll<HTMLElement>(
-          'input, select, textarea, button, [tabindex]:not([tabindex="-1"])'
-        )
-        const first = focusable[0]
-        const last = focusable[focusable.length - 1]
-        if (e.shiftKey && document.activeElement === first) {
-          e.preventDefault()
-          last?.focus()
-        } else if (!e.shiftKey && document.activeElement === last) {
-          e.preventDefault()
-          first?.focus()
-        }
-      }
-    }
-    window.addEventListener('keydown', handleKey)
-    return () => window.removeEventListener('keydown', handleKey)
-  }, [open, onClose])
-
-  if (!open) return null
 
   function getErrorId(field: string) {
     return `${uid}-${field}-error`
@@ -96,25 +67,14 @@ export function AdicionarParticipanteDialog({ open, onClose, palestras, onAdicio
   }
 
   const inputClass = (field: string) =>
-    `w-full rounded-md border bg-background px-3 py-2 text-foreground ${fieldErrors[field] ? 'border-danger' : 'border-border'}`
+    `w-full rounded-md border bg-background px-3 py-2 text-foreground ${fieldErrors[field] ? 'border-destructive' : 'border-border'}`
 
   return (
-    <div
-      ref={dialogRef}
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby={`${uid}-title`}
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 animate-fade-in"
-    >
-      <div className="w-full max-w-md rounded-lg border border-border bg-card p-6">
-        <div className="mb-4 flex items-center justify-between">
-          <h2 id={`${uid}-title`} className="text-lg font-bold text-foreground">
-            Adicionar Participante
-          </h2>
-          <button onClick={onClose} aria-label="Fechar" className="text-muted hover:text-foreground transition-colors">
-            <X className="size-5" aria-hidden="true" />
-          </button>
-        </div>
+    <Dialog open={open} onOpenChange={(v) => { if (!v) onClose() }}>
+      <DialogContent className="sm:max-w-md" aria-describedby={undefined}>
+        <DialogHeader>
+          <DialogTitle>Adicionar Participante</DialogTitle>
+        </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-4" noValidate>
           <div className="space-y-2">
@@ -148,7 +108,7 @@ export function AdicionarParticipanteDialog({ open, onClose, palestras, onAdicio
               aria-describedby={fieldErrors.nome ? getErrorId('nome') : undefined}
               className={inputClass('nome')}
             />
-            {fieldErrors.nome && <p id={getErrorId('nome')} role="alert" className="text-xs text-danger">{fieldErrors.nome}</p>}
+            {fieldErrors.nome && <p id={getErrorId('nome')} role="alert" className="text-xs text-destructive">{fieldErrors.nome}</p>}
           </div>
 
           <div className="space-y-2">
@@ -164,7 +124,7 @@ export function AdicionarParticipanteDialog({ open, onClose, palestras, onAdicio
               aria-describedby={fieldErrors.email ? getErrorId('email') : undefined}
               className={inputClass('email')}
             />
-            {fieldErrors.email && <p id={getErrorId('email')} role="alert" className="text-xs text-danger">{fieldErrors.email}</p>}
+            {fieldErrors.email && <p id={getErrorId('email')} role="alert" className="text-xs text-destructive">{fieldErrors.email}</p>}
           </div>
 
           <div className="space-y-2">
@@ -180,28 +140,20 @@ export function AdicionarParticipanteDialog({ open, onClose, palestras, onAdicio
               aria-describedby={fieldErrors.telefone ? getErrorId('telefone') : undefined}
               className={inputClass('telefone')}
             />
-            {fieldErrors.telefone && <p id={getErrorId('telefone')} role="alert" className="text-xs text-danger">{fieldErrors.telefone}</p>}
+            {fieldErrors.telefone && <p id={getErrorId('telefone')} role="alert" className="text-xs text-destructive">{fieldErrors.telefone}</p>}
           </div>
 
           <div className="flex gap-2">
-            <button
-              type="button"
-              onClick={onClose}
-              className="flex-1 rounded-md border border-border min-h-[44px] px-4 py-2 text-sm text-muted hover:text-foreground transition-colors"
-            >
+            <Button type="button" variant="outline" onClick={onClose} className="flex-1">
               Cancelar
-            </button>
-            <button
-              type="submit"
-              disabled={enviando}
-              className="flex flex-1 items-center justify-center gap-2 rounded-md bg-primary min-h-[44px] px-4 py-2 text-sm text-primary-foreground font-medium hover:brightness-110 transition-all disabled:opacity-50"
-            >
-              {enviando ? <Loader2 className="size-4 animate-spin" aria-hidden="true" /> : <Plus className="size-4" aria-hidden="true" />}
+            </Button>
+            <Button type="submit" disabled={enviando} className="flex-1">
+              {enviando && <Loader2 className="size-4 animate-spin" />}
               {enviando ? 'Adicionando...' : 'Adicionar'}
-            </button>
+            </Button>
           </div>
         </form>
-      </div>
-    </div>
+      </DialogContent>
+    </Dialog>
   )
 }

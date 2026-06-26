@@ -14,6 +14,7 @@ export function RelatoriosTabela({ data }: Props) {
       </div>
       <div className="overflow-x-auto">
         <table className="w-full text-sm">
+          <caption className="sr-only">Detalhamento por Palestra</caption>
           <thead className="bg-card">
             <tr className="text-left text-muted">
               <th scope="col" className="px-4 py-3 font-medium">Palestra</th>

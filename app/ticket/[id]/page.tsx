@@ -1,6 +1,6 @@
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
-import { createClient } from '@/lib/supabase/server'
+import { buscarInscrito } from '@/lib/actions/reserva'
 import { QrTicket } from '@/components/qr-ticket'
 import { ArrowLeft } from 'lucide-react'
 import type { Inscrito } from '@/types'
@@ -9,21 +9,19 @@ export default async function TicketPage(props: {
   params: Promise<{ id: string }>
 }) {
   const { id } = await props.params
-  const supabase = await createClient()
 
-  const { data: inscrito } = await supabase
-    .from('inscritos')
-    .select('*, palestra:palestra_id(*)')
-    .eq('id', id)
-    .single()
-
-  if (!inscrito) notFound()
+  let inscrito: Inscrito
+  try {
+    inscrito = await buscarInscrito(id)
+  } catch {
+    notFound()
+  }
 
   return (
     <div className="flex flex-1 flex-col bg-background">
       <div className="mx-auto w-full max-w-md px-4 py-8">
         <Link
-          href="/"
+          href="/palestras"
           className="mb-6 flex items-center gap-1 text-sm text-muted hover:text-foreground transition-colors"
         >
           <ArrowLeft className="size-4" />

@@ -42,7 +42,7 @@ export function LeadsTable({ inscritos, palestras }: LeadsTableProps) {
   async function handleExport(formato: 'xlsx' | 'csv') {
     const { exportarLeads } = await import('@/lib/actions/admin')
     const { exportToXLSX, exportToCSV } = await import('@/lib/export')
-    const data = await exportarLeads(formato)
+    const data = await exportarLeads()
 
     if (formato === 'xlsx') {
       exportToXLSX(data, 'leads-vetcongresso')
@@ -113,6 +113,7 @@ export function LeadsTable({ inscritos, palestras }: LeadsTableProps) {
 
       <div className="overflow-hidden rounded-lg border border-border">
         <table className="w-full text-sm" aria-label="Lista de leads">
+          <caption className="sr-only">Lista de leads cadastrados</caption>
           <thead className="bg-card">
             <tr className="text-left text-muted">
               <th scope="col" className="px-4 py-3 font-medium">Nome</th>
