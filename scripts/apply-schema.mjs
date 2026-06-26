@@ -114,11 +114,11 @@ CREATE POLICY "public_read_inscrito" ON inscritos
 
 DROP POLICY IF EXISTS "admin_all_palestras" ON palestras;
 CREATE POLICY "admin_all_palestras" ON palestras
-    FOR ALL USING (auth.uid() IN (SELECT id FROM admins));
+    FOR ALL USING (auth.email() IN (SELECT email FROM admins));
 
 DROP POLICY IF EXISTS "admin_all_inscritos" ON inscritos;
 CREATE POLICY "admin_all_inscritos" ON inscritos
-    FOR ALL USING (auth.uid() IN (SELECT id FROM admins));
+    FOR ALL USING (auth.email() IN (SELECT email FROM admins));
 `
 
 const seed = `

@@ -640,3 +640,37 @@ export async function limparPalestrasDuplicadas() {
 
   return { removidas }
 }
+
+export type Admin = {
+  id: string
+  nome: string
+  email: string
+  created_at: string
+}
+
+export async function listarAdmins(): Promise<Admin[]> {
+  const supabase = await createClient()
+  const { data, error } = await supabase
+    .from('admins')
+    .select('*')
+    .order('created_at')
+  if (error) throw new Error(error.message)
+  return data as Admin[]
+}
+
+export async function adicionarAdmin(nome: string, email: string) {
+  const supabase = await createClient()
+  const { error } = await supabase
+    .from('admins')
+    .insert({ nome, email })
+  if (error) throw new Error(error.message)
+}
+
+export async function removerAdmin(id: string) {
+  const supabase = await createClient()
+  const { error } = await supabase
+    .from('admins')
+    .delete()
+    .eq('id', id)
+  if (error) throw new Error(error.message)
+}

@@ -93,3 +93,12 @@ export async function duplicarPalestra(id: string) {
 
   if (error) throw new Error(error.message)
 }
+
+export async function excluirPalestra(id: string) {
+  const supabase = await createClient()
+  const { error } = await supabase
+    .from('palestras')
+    .delete()
+    .eq('id', id)
+  if (error) throw new Error(error.message)
+}

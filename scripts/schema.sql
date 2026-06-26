@@ -130,21 +130,21 @@ DROP POLICY IF EXISTS "public_read_inscrito" ON inscritos;
 CREATE POLICY "public_read_inscrito" ON inscritos
     FOR SELECT USING (TRUE);
 
--- Policies admin
+-- Policies admin (email-based)
 DROP POLICY IF EXISTS "admin_all_palestras" ON palestras;
 CREATE POLICY "admin_all_palestras" ON palestras
-    FOR ALL USING (auth.uid() IN (SELECT id FROM admins));
+    FOR ALL USING (auth.email() IN (SELECT email FROM admins));
 
 DROP POLICY IF EXISTS "admin_all_inscritos" ON inscritos;
 CREATE POLICY "admin_all_inscritos" ON inscritos
-    FOR ALL USING (auth.uid() IN (SELECT id FROM admins));
+    FOR ALL USING (auth.email() IN (SELECT email FROM admins));
 
 -- RLS for mensagens_enviadas
 ALTER TABLE mensagens_enviadas ENABLE ROW LEVEL SECURITY;
 
 DROP POLICY IF EXISTS "admin_all_mensagens" ON mensagens_enviadas;
 CREATE POLICY "admin_all_mensagens" ON mensagens_enviadas
-    FOR ALL USING (auth.uid() IN (SELECT id FROM admins));
+    FOR ALL USING (auth.email() IN (SELECT email FROM admins));
 
 DROP POLICY IF EXISTS "service_insert_mensagens" ON mensagens_enviadas;
 CREATE POLICY "service_insert_mensagens" ON mensagens_enviadas
@@ -155,7 +155,12 @@ ALTER TABLE configuracoes ENABLE ROW LEVEL SECURITY;
 
 DROP POLICY IF EXISTS "admin_all_configuracoes" ON configuracoes;
 CREATE POLICY "admin_all_configuracoes" ON configuracoes
-    FOR ALL USING (auth.uid() IN (SELECT id FROM admins));
+    FOR ALL USING (auth.email() IN (SELECT email FROM admins));
+
+-- RLS for admins (admins gerenciam admins)
+DROP POLICY IF EXISTS "admin_all_admins" ON admins;
+CREATE POLICY "admin_all_admins" ON admins
+    FOR ALL USING (auth.email() IN (SELECT email FROM admins));
 
 -- Sorteio: tabela de leads independente
 CREATE TABLE IF NOT EXISTS sorteio_leads (
@@ -174,7 +179,12 @@ CREATE POLICY "public_insert_sorteio" ON sorteio_leads
 
 DROP POLICY IF EXISTS "admin_all_sorteio" ON sorteio_leads;
 CREATE POLICY "admin_all_sorteio" ON sorteio_leads
-    FOR ALL USING (auth.uid() IN (SELECT id FROM admins));
+    FOR ALL USING (auth.email() IN (SELECT email FROM admins));
+
+-- Seed do primeiro admin
+INSERT INTO admins (nome, email)
+SELECT 'Wellington', 'wellington@diagnosticmedical.com.br'
+WHERE NOT EXISTS (SELECT 1 FROM admins WHERE email = 'wellington@diagnosticmedical.com.br');
 
 -- ============================================================
 -- Seed Data — Palestras Reais VetTalks 2026

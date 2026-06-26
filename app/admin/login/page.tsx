@@ -37,8 +37,7 @@ export default function LoginPage() {
       const { data: { user } } = await supabase.auth.getUser()
       console.log('User logged in:', user?.email)
       toast.success('Login realizado!')
-      router.push('/admin')
-      router.refresh()
+      router.replace('/admin')
     } catch (err) {
       console.error('Unexpected error:', err)
       setErro('Erro inesperado')

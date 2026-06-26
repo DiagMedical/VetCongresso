@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { toast } from 'sonner'
 import { BookOpen, Copy, Edit, Plus, Power, PowerOff, Trash2 } from 'lucide-react'
 import type { Palestra } from '@/types'
 import { PalestraDialog } from '@/components/admin/palestra-dialog'
@@ -17,29 +18,56 @@ export function PalestrasClient({ palestras }: PalestrasClientProps) {
   const [editando, setEditando] = useState<Palestra | null>(null)
 
   async function handleSave(data: PalestraFormData) {
-    const { criarPalestra, editarPalestra } = await import('@/lib/actions/palestras')
+    try {
+      const { criarPalestra, editarPalestra } = await import('@/lib/actions/palestras')
 
-    if (editando) {
-      await editarPalestra(editando.id, data)
-    } else {
-      await criarPalestra(data)
+      if (editando) {
+        await editarPalestra(editando.id, data)
+      } else {
+        await criarPalestra(data)
+      }
+
+      setDialogOpen(false)
+      setEditando(null)
+      toast.success(editando ? 'Palestra atualizada!' : 'Palestra criada!')
+      router.refresh()
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : 'Erro ao salvar')
     }
-
-    setDialogOpen(false)
-    setEditando(null)
-    router.refresh()
   }
 
   async function handleToggleStatus(id: string) {
-    const { desativarPalestra } = await import('@/lib/actions/palestras')
-    await desativarPalestra(id)
-    router.refresh()
+    try {
+      const { desativarPalestra } = await import('@/lib/actions/palestras')
+      await desativarPalestra(id)
+      toast.success('Status alterado!')
+      router.refresh()
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : 'Erro ao alterar status')
+    }
   }
 
   async function handleDuplicar(id: string) {
-    const { duplicarPalestra } = await import('@/lib/actions/palestras')
-    await duplicarPalestra(id)
-    router.refresh()
+    try {
+      const { duplicarPalestra } = await import('@/lib/actions/palestras')
+      await duplicarPalestra(id)
+      toast.success('Palestra duplicada!')
+      router.refresh()
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : 'Erro ao duplicar')
+    }
+  }
+
+  async function handleExcluir(id: string, tema: string) {
+    if (!confirm(`Excluir palestra "${tema}"? Essa ação não pode ser desfeita.`)) return
+    try {
+      const { excluirPalestra } = await import('@/lib/actions/palestras')
+      await excluirPalestra(id)
+      toast.success('Palestra excluída!')
+      router.refresh()
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : 'Erro ao excluir')
+    }
   }
 
   function openNew() {
@@ -56,10 +84,16 @@ export function PalestrasClient({ palestras }: PalestrasClientProps) {
 
   async function handleLimparDuplicatas() {
     if (!confirm('Remover palestras duplicadas? Isso vai apagar também os inscritos vinculados.')) return
-    const { limparPalestrasDuplicadas } = await import('@/lib/actions/admin')
-    const { removidas } = await limparPalestrasDuplicadas()
-    setCleanupMsg(`${removidas} duplicata(s) removida(s)`)
-    router.refresh()
+    try {
+      const { limparPalestrasDuplicadas } = await import('@/lib/actions/admin')
+      const { removidas } = await limparPalestrasDuplicadas()
+      setCleanupMsg(`${removidas} duplicata(s) removida(s)`)
+      if (removidas > 0) toast.success(`${removidas} duplicata(s) removida(s)!`)
+      else toast.info('Nenhuma duplicata encontrada')
+      router.refresh()
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : 'Erro ao limpar duplicatas')
+    }
   }
 
   return (
@@ -143,6 +177,13 @@ export function PalestrasClient({ palestras }: PalestrasClientProps) {
                         title={p.ativo ? 'Desativar' : 'Ativar'}
                       >
                         {p.ativo ? <PowerOff className="size-4" /> : <Power className="size-4" />}
+                      </button>
+                      <button
+                        onClick={() => handleExcluir(p.id, p.tema)}
+                        className="rounded-md p-1.5 text-muted hover:bg-danger/10 hover:text-danger transition-colors"
+                        title="Excluir"
+                      >
+                        <Trash2 className="size-4" />
                       </button>
                     </div>
                   </td>

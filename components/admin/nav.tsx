@@ -1,6 +1,6 @@
 'use client'
 
-import { BarChart3, LayoutDashboard, QrCode, Users, BookOpen, MessageSquare, Settings, TrendingUp, Gift } from 'lucide-react'
+import { BarChart3, LayoutDashboard, QrCode, Users, BookOpen, MessageSquare, Settings, TrendingUp, Gift, Shield } from 'lucide-react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 
@@ -13,6 +13,7 @@ const links = [
   { href: '/admin/relatorios', label: 'Relatórios', icon: BarChart3 },
   { href: '/admin/analytics', label: 'Analytics', icon: TrendingUp },
   { href: '/admin/sorteio', label: 'Sorteio', icon: Gift },
+  { href: '/admin/admins', label: 'Admins', icon: Shield },
   { href: '/admin/config', label: 'Configurações', icon: Settings },
 ]
 
