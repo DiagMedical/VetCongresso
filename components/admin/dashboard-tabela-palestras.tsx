@@ -22,6 +22,7 @@ export function DashboardTabelaPalestras({ data }: Props) {
               <th scope="col" className="px-4 py-3 font-medium">Vagas</th>
               <th scope="col" className="px-4 py-3 font-medium">Inscritos</th>
               <th scope="col" className="px-4 py-3 font-medium">Check-ins</th>
+              <th scope="col" className="px-4 py-3 font-medium">% Check-in</th>
               <th scope="col" className="px-4 py-3 font-medium">% Ocupação</th>
             </tr>
           </thead>
@@ -33,6 +34,23 @@ export function DashboardTabelaPalestras({ data }: Props) {
                 <td className="px-4 py-3 text-foreground">{p.vagas}</td>
                 <td className="px-4 py-3 text-foreground">{p.reservas}</td>
                 <td className="px-4 py-3 text-foreground">{p.checkins}</td>
+                <td className="px-4 py-3">
+                  <div className="flex items-center gap-2">
+                    <div className="h-2 w-16 overflow-hidden rounded-full bg-muted/30">
+                      <div
+                        className={`h-full rounded-full ${
+                          p.taxa_checkin >= 70
+                            ? 'bg-success'
+                            : p.taxa_checkin >= 40
+                            ? 'bg-primary'
+                            : 'bg-danger'
+                        }`}
+                        style={{ width: `${p.taxa_checkin}%` }}
+                      />
+                    </div>
+                    <span className="text-xs text-muted">{p.taxa_checkin}%</span>
+                  </div>
+                </td>
                 <td className="px-4 py-3">
                   <div className="flex items-center gap-2">
                     <div className="h-2 w-16 overflow-hidden rounded-full bg-muted/30">

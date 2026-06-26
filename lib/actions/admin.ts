@@ -23,6 +23,7 @@ export interface DashboardData {
     cancelados: number
     espera: number
     taxa_ocupacao: number
+    taxa_checkin: number
   }[]
   ultimos_leads: {
     nome: string
@@ -32,42 +33,53 @@ export interface DashboardData {
   }[]
 }
 
-export async function getDashboardData(): Promise<DashboardData> {
+export async function getDashboardData(diaFiltro?: number): Promise<DashboardData> {
   const supabase = await createClient()
   const hoje = new Date().toISOString().split('T')[0]
 
-  const { count: total_leads } = await supabase
-    .from('inscritos')
-    .select('*', { count: 'exact', head: true })
+  let palestraIds: string[] | undefined
 
-  const { count: checkins_hoje } = await supabase
-    .from('inscritos')
-    .select('*', { count: 'exact', head: true })
-    .gte('checkin_at', hoje)
+  if (diaFiltro) {
+    const { data: palestrasDoDia } = await supabase
+      .from('palestras')
+      .select('id')
+      .eq('ativo', true)
+      .eq('dia_evento', diaFiltro)
 
-  const { count: palestras_ativas } = await supabase
-    .from('palestras')
-    .select('*', { count: 'exact', head: true })
-    .eq('ativo', true)
+    palestraIds = (palestrasDoDia ?? []).map((p) => p.id)
+  }
 
-  const { count: cancelamentos } = await supabase
-    .from('inscritos')
-    .select('*', { count: 'exact', head: true })
-    .eq('status', 'cancelado_por_falta')
+  const inscritosBase = supabase.from('inscritos')
 
-  const { count: espera } = await supabase
-    .from('inscritos')
-    .select('*', { count: 'exact', head: true })
-    .eq('status', 'espera')
+  async function executar<T>(query: ReturnType<typeof inscritosBase.select>) {
+    if (palestraIds && palestraIds.length > 0) {
+      const { data, count } = await (query as any).in('palestra_id', palestraIds) as { data: T | null; count: number | null }
+      return { data, count }
+    }
+    const { data, count } = await query as { data: T | null; count: number | null }
+    return { data, count }
+  }
 
-  const { data: palestras } = await supabase
-    .from('palestras')
-    .select('id, tema, palestrante, vagas_totais')
-    .eq('ativo', true)
+  const [{ count: total_leads }, { count: checkins_hoje }, { count: cancelamentos }, { count: espera }, { data: inscritos }] = await Promise.all([
+    executar<never>(inscritosBase.select('*', { count: 'exact', head: true })),
+    executar<never>(inscritosBase.select('*', { count: 'exact', head: true }).gte('checkin_at', hoje)),
+    executar<never>(inscritosBase.select('*', { count: 'exact', head: true }).eq('status', 'cancelado_por_falta')),
+    executar<never>(inscritosBase.select('*', { count: 'exact', head: true }).eq('status', 'espera')),
+    executar<{ palestra_id: string; status: string; checkin_at: string | null; created_at: string }[]>(inscritosBase.select('palestra_id, status, checkin_at, created_at')),
+  ])
 
-  const { data: inscritos } = await supabase
-    .from('inscritos')
-    .select('palestra_id, status, checkin_at, created_at')
+  // Fetch palestras (with count)
+  let palestrasQuery = supabase.from('palestras').select('*', { count: 'exact', head: true }).eq('ativo', true)
+  let palestrasDataQuery = supabase.from('palestras').select('id, tema, palestrante, vagas_totais').eq('ativo', true)
+  if (palestraIds && palestraIds.length > 0) {
+    palestrasQuery = palestrasQuery.eq('dia_evento', diaFiltro)
+    palestrasDataQuery = palestrasDataQuery.eq('dia_evento', diaFiltro)
+  }
+  const [{ count: palestras_ativas }, { data: palestras }] = await Promise.all([
+    palestrasQuery,
+    palestrasDataQuery,
+  ])
+  const palestrasData = palestras ?? []
 
   const reservas_por_dia: DashboardData['reservas_por_dia'] = []
   const diaMap = new Map<number, { reservas: number; checkins: number }>()
@@ -87,7 +99,7 @@ export async function getDashboardData(): Promise<DashboardData> {
   reservas_por_dia.sort((a, b) => a.dia - b.dia)
 
   const palestraMap = new Map(
-    (palestras ?? []).map((p) => [p.id, { tema: p.tema, palestrante: p.palestrante, vagas: p.vagas_totais }])
+    palestrasData.map((p) => [p.id, { tema: p.tema, palestrante: p.palestrante, vagas: p.vagas_totais }])
   )
 
   const reservaCount = new Map<string, { reservas: number; checkins: number; cancelados: number; espera: number }>()
@@ -119,17 +131,17 @@ export async function getDashboardData(): Promise<DashboardData> {
         vagas: info.vagas,
         ...counts,
         taxa_ocupacao: info.vagas > 0 ? Math.round((counts.reservas / info.vagas) * 100) : 0,
+        taxa_checkin: counts.reservas > 0 ? Math.round((counts.checkins / counts.reservas) * 100) : 0,
       })
     }
   }
 
-  const { data: ultimos } = await supabase
-    .from('inscritos')
-    .select('nome, email, created_at, palestra:palestra_id(tema)')
-    .order('created_at', { ascending: false })
-    .limit(10)
+  const { data: ultimos } = await executar<{ nome: string; email: string; created_at: string; palestra: { tema: string } | { tema: string }[] | null }[]>(
+    supabase.from('inscritos').select('nome, email, created_at, palestra:palestra_id(tema)')
+  )
+  const ultimosFiltrados = (ultimos ?? []).slice(0, 10).sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
 
-  const ultimos_leads: DashboardData['ultimos_leads'] = (ultimos ?? []).map((i) => {
+  const ultimos_leads: DashboardData['ultimos_leads'] = ultimosFiltrados.map((i) => {
     const palestra = Array.isArray(i.palestra) ? i.palestra[0] : i.palestra
     return {
       nome: i.nome,
@@ -320,6 +332,7 @@ export interface RelatorioPalestra {
   cancelados: number
   espera: number
   taxa_ocupacao: number
+  taxa_checkin: number
 }
 
 export interface RelatorioDia {
@@ -388,6 +401,7 @@ export async function getRelatorios(): Promise<RelatoriosData> {
       cancelados: stats.cancelados,
       espera: stats.espera,
       taxa_ocupacao: p.vagas_totais > 0 ? Math.round((stats.reservas / p.vagas_totais) * 100) : 0,
+      taxa_checkin: stats.reservas > 0 ? Math.round((stats.checkins / stats.reservas) * 100) : 0,
     })
   }
 
@@ -571,6 +585,7 @@ export async function getAnalyticsData(): Promise<AnalyticsData> {
       cancelados: stats.cancelados,
       espera: stats.espera,
       taxa_ocupacao: p.vagas_totais > 0 ? Math.round((stats.reservas / p.vagas_totais) * 100) : 0,
+      taxa_checkin: stats.reservas > 0 ? Math.round((stats.checkins / stats.reservas) * 100) : 0,
     })
   }
 

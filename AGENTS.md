@@ -80,3 +80,22 @@ This version has breaking changes — APIs, conventions, and file structure may 
 - `app/admin/page.tsx` — integrados os dois novos componentes
 - `PLANO.md` — altas movidas para concluído
 <!-- END:opencode-session -->
+
+<!-- BEGIN:opencode-session -->
+## Session — 26/06/2026 (2)
+
+### Dashboard — Taxa Check-in + Filtro por Data
+
+**O que foi feito:**
+
+1. **Taxa de check-in por palestra** — `DashboardData` e `RelatorioPalestra` agora incluem `taxa_checkin` (checkins/reservas*100). Nova coluna "% Check-in" na tabela resumo com barra colorida: 🟢 ≥70%, 🟡 40-69%, 🔴 <40%.
+
+2. **Filtro por data no dashboard** — Seletor de abas "Todos / Dia 1 / Dia 2 / Dia 3" via `searchParams`. `getDashboardData(diaFiltro?)` filtra palestras e inscritos pelo dia do evento.
+
+**Arquivos alterados/novos:**
+- `lib/actions/admin.ts` — `getDashboardData(diaFiltro?)`, `taxa_checkin` adicionado a todos os tipos e relatórios
+- `components/admin/dashboard-tabela-palestras.tsx` — coluna "% Check-in" com barra
+- `components/admin/dashboard-filtro-data.tsx` (novo) — tabs de filtro
+- `app/admin/page.tsx` — searchParams + DashboardFiltroData
+- `PLANO.md` — itens 4 e 5 movidos para concluído
+<!-- END:opencode-session -->
