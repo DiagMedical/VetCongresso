@@ -138,7 +138,15 @@ CRON_SECRET=                     # Segredo dos endpoints cron
 
 | # | Tarefa | Prioridade | Arquivos/Notas |
 |---|--------|-----------|----------------|
-| 1 | Exportação PDF (html2canvas + jspdf) | ⏳ Média | `lib/export.ts` |
-| 2 | Envio real de email via Resend (SDK + templates + gatilhos) | ⏳ Média | `lib/email/send.ts`, templates HTML, triggers |
-| 3 | Dashboard mais detalhado (gráficos históricos) | ⏳ Baixa | — |
-| 4 | Deploy automático via CI/CD | ⏳ Baixa | — |
+| 1 | **Tabela resumo por palestra** (nome, palestrante, vagas, inscritos, check-ins, % ocupação) | 🔴 Alta | `app/admin/page.tsx`, `lib/actions/admin.ts` |
+| 2 | **Ocupação em tempo real** (gráfico com cores verde/amarelo/vermelho) | 🔴 Alta | `components/admin/dashboard-charts.tsx` |
+| 3 | **Últimos leads** (tabela 10 mais recentes: nome, email, palestra, horário) | 🔴 Alta | `app/admin/page.tsx` |
+| 4 | **Taxa de check-in por palestra** (% inscritos que compareceram) | 🟡 Média | `lib/actions/admin.ts` |
+| 5 | **Filtro por data** (selector pra ver dados de um dia específico) | 🟡 Média | `app/admin/page.tsx` |
+| 6 | **Leads por dia** (gráfico de linha, reservas ao longo do tempo) | 🟡 Média | `components/admin/dashboard-charts.tsx` |
+| 7 | **Ranking de palestrantes** (ordenado por inscritos) | 🟢 Baixa | — |
+| 8 | Exportação PDF (html2canvas + jspdf) | ⏳ Pendente | `lib/export.ts` |
+| 9 | Envio real de email via Resend (SDK + templates + gatilhos) | ⏳ Pendente | `lib/email/send.ts`, templates HTML, triggers |
+| 10 | Deploy automático via CI/CD | ⏳ Pendente | — |
+
+> 🔴 Alta = essencial pro evento, 🟡 Média = bom ter, 🟢 Baixa = legal, ⏳ Pendente = depois
