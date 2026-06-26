@@ -2,7 +2,7 @@
 
 **PRD referência:** Architect v5
 **Última atualização:** 26/06/2026
-**Status:** ✅ Fases P0, 1, 2, 3 concluídas. Fase 4 parcial (BI + Config Email + Sorteio + Grade Real).
+**Status:** ✅ Fases P0, 1, 2, 3 concluídas. Fase 4 parcial (BI + Config Email + Sorteio + Grade Real + RLS fix + Admin management).
 
 ---
 
@@ -71,7 +71,7 @@ cp .env.example .env.local     # Configurar variáveis de ambiente
 | 4.1 | `/admin/analytics` — BI dashboard | ✅ | `app/admin/analytics/`, `lib/actions/admin.ts:getAnalyticsData()` |
 | 4.2 | `getAnalyticsData()` — KPIs + gráficos | ✅ | `lib/actions/admin.ts` |
 | 4.3 | Exportação PDF | ⏳ Pendente | `lib/export.ts` |
-| 4.4 | Email service (Resend) | ⏳ Config criada | `lib/email/config.ts`, `/admin/config` |
+| 4.4 | Email service (Resend) — config | ✅ | `lib/email/config.ts`, `/admin/config` |
 | 4.5 | Disparo automático de email | ⏳ Pendente | — |
 | 4.6 | Config de email no admin | ✅ | `app/admin/config/` |
 | 4.7 | **Sorteio Powerbank** | ✅ | `lib/actions/sorteio.ts`, `/sorteio`, `/sorteio/cadastro`, `/admin/sorteio` |
@@ -81,6 +81,11 @@ cp .env.example .env.local     # Configurar variáveis de ambiente
 | 4.11 | Logos: Diagnostic Vet maior, ABRAVEQ menor | ✅ | `app/page.tsx`, `app/sorteio/page.tsx` |
 | 4.12 | Navegação entre páginas | ✅ | Admin header → Site; Palestras/Sorteio header → Home + Admin |
 | 4.13 | Limpar duplicatas no admin | ✅ | `lib/actions/admin.ts:limparPalestrasDuplicadas()` |
+| 4.14 | RLS email-based + função is_admin() SECURITY DEFINER | ✅ | `scripts/fix-admin-rls.sql`, `scripts/schema.sql` |
+| 4.15 | Página de gerenciamento de admins `/admin/admins` | ✅ | `app/admin/admins/` |
+| 4.16 | Botão Excluir por palestra + try/catch + toast | ✅ | `app/admin/palestras/palestras-client.tsx`, `lib/actions/palestras.ts` |
+| 4.17 | QR Code server component (qrcode pkg, data URL) | ✅ | `components/qr-compartilhe.tsx` |
+| 4.18 | Login sem race condition (remove router.refresh) | ✅ | `app/admin/login/page.tsx` |
 
 ---
 
@@ -95,6 +100,7 @@ cp .env.example .env.local     # Configurar variáveis de ambiente
 /ticket/[id]        → Ticket com QR Code
 /login              → Login público (admin)
 /admin              → Dashboard
+/admin/admins       → Gerenciar admins (add/remover)
 /admin/analytics    → BI Analytics (gráficos + KPIs)
 /admin/palestras    → CRUD de palestras
 /admin/leads        → Lista de leads de palestras
@@ -122,8 +128,17 @@ CRON_SECRET=                     # Segredo dos endpoints cron
 
 - Projeto usa **Next.js 16.2.9** — sem breaking changes documentadas localmente
 - shadcn/ui usa `@base-ui/react` (estilo "base-nova"), não `@radix-ui`
-- Tabela `sorteio_leads` precisa ser criada no Supabase SQL Editor (em `scripts/schema.sql`)
-- Grade real de palestras em `scripts/migrate-palestras.sql` (rodar no SQL Editor para substituir os seeds antigos)
-- Leads do sorteio também são copiados para `inscritos` com `origem='sorteio'` — aparecem na lista geral de leads
-- Sorteador interno em `/admin/sorteio` com botão "Sortear" que escolhe aleatoriamente um lead
-- `NEXT_PUBLIC_SITE_URL` precisa ser configurada no Vercel (Settings → Environment Variables) para os QR Codes funcionarem em produção
+- Função `is_admin()` com `SECURITY DEFINER` criada em todas as policies — bypasse recursão RLS
+- Seed do primeiro admin: `wellington@diagnosticmedical.com.br`
+- `NEXT_PUBLIC_SITE_URL` configurada no Vercel como `https://vet-congresso.vercel.app`
+- QR Code usa `qrcode` pkg com `toDataURL()` (server component) — PNG em vez de SVG
+- `scripts/fix-admin-rls.sql` contém o script completo pra rodar no Supabase SQL Editor
+
+## Próximos Passos
+
+| # | Tarefa | Prioridade | Arquivos/Notas |
+|---|--------|-----------|----------------|
+| 1 | Exportação PDF (html2canvas + jspdf) | ⏳ Média | `lib/export.ts` |
+| 2 | Envio real de email via Resend (SDK + templates + gatilhos) | ⏳ Média | `lib/email/send.ts`, templates HTML, triggers |
+| 3 | Dashboard mais detalhado (gráficos históricos) | ⏳ Baixa | — |
+| 4 | Deploy automático via CI/CD | ⏳ Baixa | — |
