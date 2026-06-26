@@ -96,6 +96,15 @@ CREATE TRIGGER before_insert_inscritos
     FOR EACH ROW
     EXECUTE FUNCTION check_vagas_disponiveis();
 
+CREATE OR REPLACE FUNCTION is_admin()
+RETURNS BOOLEAN
+LANGUAGE SQL
+STABLE
+SECURITY DEFINER
+AS $$
+  SELECT EXISTS (SELECT 1 FROM admins WHERE email = auth.email());
+$$;
+
 ALTER TABLE palestras ENABLE ROW LEVEL SECURITY;
 ALTER TABLE inscritos ENABLE ROW LEVEL SECURITY;
 ALTER TABLE admins ENABLE ROW LEVEL SECURITY;
@@ -114,11 +123,11 @@ CREATE POLICY "public_read_inscrito" ON inscritos
 
 DROP POLICY IF EXISTS "admin_all_palestras" ON palestras;
 CREATE POLICY "admin_all_palestras" ON palestras
-    FOR ALL USING (auth.email() IN (SELECT email FROM admins));
+    FOR ALL USING (is_admin());
 
 DROP POLICY IF EXISTS "admin_all_inscritos" ON inscritos;
 CREATE POLICY "admin_all_inscritos" ON inscritos
-    FOR ALL USING (auth.email() IN (SELECT email FROM admins));
+    FOR ALL USING (is_admin());
 `
 
 const seed = `
