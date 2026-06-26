@@ -13,7 +13,23 @@ export interface DashboardData {
   cancelamentos: number
   espera: number
   reservas_por_dia: { dia: number; reservas: number; checkins: number }[]
-  reservas_por_palestra: { palestra_id: string; tema: string; reservas: number; checkins: number; vagas: number }[]
+  reservas_por_palestra: {
+    palestra_id: string
+    tema: string
+    palestrante: string
+    vagas: number
+    reservas: number
+    checkins: number
+    cancelados: number
+    espera: number
+    taxa_ocupacao: number
+  }[]
+  ultimos_leads: {
+    nome: string
+    email: string
+    palestra: string
+    created_at: string
+  }[]
 }
 
 export async function getDashboardData(): Promise<DashboardData> {
@@ -46,7 +62,7 @@ export async function getDashboardData(): Promise<DashboardData> {
 
   const { data: palestras } = await supabase
     .from('palestras')
-    .select('id, tema, vagas_totais')
+    .select('id, tema, palestrante, vagas_totais')
     .eq('ativo', true)
 
   const { data: inscritos } = await supabase
@@ -71,15 +87,23 @@ export async function getDashboardData(): Promise<DashboardData> {
   reservas_por_dia.sort((a, b) => a.dia - b.dia)
 
   const palestraMap = new Map(
-    (palestras ?? []).map((p) => [p.id, { tema: p.tema, vagas: p.vagas_totais }])
+    (palestras ?? []).map((p) => [p.id, { tema: p.tema, palestrante: p.palestrante, vagas: p.vagas_totais }])
   )
 
-  const reservaCount = new Map<string, { reservas: number; checkins: number }>()
+  const reservaCount = new Map<string, { reservas: number; checkins: number; cancelados: number; espera: number }>()
 
   for (const i of inscritos ?? []) {
-    const entry = reservaCount.get(i.palestra_id) ?? { reservas: 0, checkins: 0 }
-    entry.reservas++
-    if (i.status === 'check-in') entry.checkins++
+    const entry = reservaCount.get(i.palestra_id) ?? { reservas: 0, checkins: 0, cancelados: 0, espera: 0 }
+    if (i.status === 'check-in') {
+      entry.checkins++
+      entry.reservas++
+    } else if (i.status === 'confirmado') {
+      entry.reservas++
+    } else if (i.status === 'cancelado_por_falta') {
+      entry.cancelados++
+    } else if (i.status === 'espera') {
+      entry.espera++
+    }
     reservaCount.set(i.palestra_id, entry)
   }
 
@@ -91,11 +115,29 @@ export async function getDashboardData(): Promise<DashboardData> {
       reservas_por_palestra.push({
         palestra_id: id,
         tema: info.tema,
+        palestrante: info.palestrante,
         vagas: info.vagas,
         ...counts,
+        taxa_ocupacao: info.vagas > 0 ? Math.round((counts.reservas / info.vagas) * 100) : 0,
       })
     }
   }
+
+  const { data: ultimos } = await supabase
+    .from('inscritos')
+    .select('nome, email, created_at, palestra:palestra_id(tema)')
+    .order('created_at', { ascending: false })
+    .limit(10)
+
+  const ultimos_leads: DashboardData['ultimos_leads'] = (ultimos ?? []).map((i) => {
+    const palestra = Array.isArray(i.palestra) ? i.palestra[0] : i.palestra
+    return {
+      nome: i.nome,
+      email: i.email,
+      palestra: (palestra as { tema: string } | null)?.tema ?? '—',
+      created_at: i.created_at,
+    }
+  })
 
   return {
     total_leads: total_leads ?? 0,
@@ -105,6 +147,7 @@ export async function getDashboardData(): Promise<DashboardData> {
     espera: espera ?? 0,
     reservas_por_dia,
     reservas_por_palestra,
+    ultimos_leads,
   }
 }
 

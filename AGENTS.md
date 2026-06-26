@@ -58,3 +58,25 @@ This version has breaking changes — APIs, conventions, and file structure may 
 
 **⚠️ Necessário:** Rodar `scripts/fix-admin-rls.sql` no Supabase SQL Editor (substitui versões anteriores).
 <!-- END:opencode-session -->
+
+<!-- BEGIN:opencode-session -->
+## Session — 26/06/2026
+
+### Dashboard — 3 🔴 Altas concluídos
+
+**O que foi feito:**
+
+1. **Tabela resumo por palestra** — `components/admin/dashboard-tabela-palestras.tsx` (novo). Exibe Tema, Palestrante, Vagas, Inscritos, Check-ins, % Ocupação com barra colorida.
+
+2. **Ocupação em tempo real** — Gráfico de barras horizontais no `dashboard-charts.tsx` com cor dinâmica: 🟢 verde (≥80%), 🟡 primary (50-79%), 🔴 danger (<50%).
+
+3. **Últimos leads** — `components/admin/dashboard-ultimos-leads.tsx` (novo). Tabela com os 10 leads mais recentes: Nome, Email, Palestra, Data/Hora.
+
+**Arquivos alterados/novos:**
+- `lib/actions/admin.ts` — `DashboardData.reservas_por_palestra` estendido com `palestrante`, `cancelados`, `espera`, `taxa_ocupacao`; adicionado `ultimos_leads`
+- `components/admin/dashboard-charts.tsx` — novo gráfico "Ocupação por Palestra" com Cell colors
+- `components/admin/dashboard-tabela-palestras.tsx` (novo)
+- `components/admin/dashboard-ultimos-leads.tsx` (novo)
+- `app/admin/page.tsx` — integrados os dois novos componentes
+- `PLANO.md` — altas movidas para concluído
+<!-- END:opencode-session -->

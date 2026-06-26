@@ -2,6 +2,8 @@ import { BarChart3, Clock, TicketCheck, Users, UserMinus } from 'lucide-react'
 import { AnimatedKpi } from '@/components/admin/animated-kpi'
 import { DashboardCharts } from '@/components/admin/dashboard-charts'
 import { DashboardActions } from '@/components/admin/dashboard-actions'
+import { DashboardTabelaPalestras } from '@/components/admin/dashboard-tabela-palestras'
+import { DashboardUltimosLeads } from '@/components/admin/dashboard-ultimos-leads'
 import { BackToTop } from '@/components/back-to-top'
 import { getDashboardData, listarPalestrasComVagas } from '@/lib/actions/admin'
 
@@ -28,6 +30,8 @@ export default async function AdminDashboard() {
         <DashboardActions palestras={palestras} />
       </div>
 
+      <DashboardTabelaPalestras data={data} />
+      <DashboardUltimosLeads data={data} />
       <BackToTop />
     </div>
   )

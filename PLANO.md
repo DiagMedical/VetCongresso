@@ -2,7 +2,7 @@
 
 **PRD referência:** Architect v5
 **Última atualização:** 26/06/2026
-**Status:** ✅ Fases P0, 1, 2, 3 concluídas. Fase 4 parcial (BI + Config Email + Sorteio + Grade Real + RLS fix + Admin management).
+**Status:** ✅ Fases P0, 1, 2, 3 concluídas. Fase 4 parcial (BI + Config Email + Sorteio + Grade Real + RLS fix + Admin management). 🔴 Altas do Dashboard concluídas (tabela resumo, ocupação com cores, últimos leads).
 
 ---
 
@@ -137,10 +137,10 @@ CRON_SECRET=                     # Segredo dos endpoints cron
 ## Próximos Passos
 
 | # | Tarefa | Prioridade | Arquivos/Notas |
-|---|--------|-----------|----------------|
-| 1 | **Tabela resumo por palestra** (nome, palestrante, vagas, inscritos, check-ins, % ocupação) | 🔴 Alta | `app/admin/page.tsx`, `lib/actions/admin.ts` |
-| 2 | **Ocupação em tempo real** (gráfico com cores verde/amarelo/vermelho) | 🔴 Alta | `components/admin/dashboard-charts.tsx` |
-| 3 | **Últimos leads** (tabela 10 mais recentes: nome, email, palestra, horário) | 🔴 Alta | `app/admin/page.tsx` |
+|--|---------|-----------|----------------|
+| 1 | **Tabela resumo por palestra** (nome, palestrante, vagas, inscritos, check-ins, % ocupação) |  | `app/admin/page.tsx`, `lib/actions/admin.ts` |
+| 2 | **Ocupação em tempo real** (gráfico com cores verde/amarelo/vermelho) |  | `components/admin/dashboard-charts.tsx` |
+| 3 | **Últimos leads** (tabela 10 mais recentes: nome, email, palestra, horário) |  | `app/admin/page.tsx` |
 | 4 | **Taxa de check-in por palestra** (% inscritos que compareceram) | 🟡 Média | `lib/actions/admin.ts` |
 | 5 | **Filtro por data** (selector pra ver dados de um dia específico) | 🟡 Média | `app/admin/page.tsx` |
 | 6 | **Leads por dia** (gráfico de linha, reservas ao longo do tempo) | 🟡 Média | `components/admin/dashboard-charts.tsx` |
