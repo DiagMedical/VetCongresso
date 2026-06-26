@@ -113,3 +113,18 @@ This version has breaking changes — APIs, conventions, and file structure may 
 - `components/admin/dashboard-charts.tsx` — import `LineChart`, `Line`, `TrendingUp`; novo card com dados de `reservas_por_dia`
 - `PLANO.md` — item 6 movido para concluído
 <!-- END:opencode-session -->
+
+<!-- BEGIN:opencode-session -->
+## Session — 26/06/2026 (4)
+
+### Ranking de Palestrantes
+
+**O que foi feito:**
+
+1. **Ranking de palestrantes** — Agrega `reservas_por_palestra` por palestrante, ordena por total de inscritos decrescente. Exibe tabela com #, Nome, Inscritos, Check-ins.
+
+**Arquivos alterados:**
+- `lib/actions/admin.ts` — `ranking_palestrantes` adicionado ao `DashboardData` (aggregation + sort)
+- `components/admin/dashboard-charts.tsx` — novo card "Ranking de Palestrantes" com tabela
+- `PLANO.md` — item 7 movido para concluído
+<!-- END:opencode-session -->

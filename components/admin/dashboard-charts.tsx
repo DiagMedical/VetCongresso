@@ -13,7 +13,7 @@ import {
   LineChart,
   Line,
 } from 'recharts'
-import { BarChart3, Activity, TrendingUp } from 'lucide-react'
+import { BarChart3, Activity, TrendingUp, Award } from 'lucide-react'
 import type { DashboardData } from '@/lib/actions/admin'
 
 interface DashboardChartsProps {
@@ -188,6 +188,40 @@ export function DashboardCharts({ data }: DashboardChartsProps) {
               </Bar>
             </BarChart>
           </ResponsiveContainer>
+        )}
+      </div>
+
+      <div className="rounded-lg border border-border bg-card p-4">
+        <h3 className="mb-4 text-sm font-semibold text-foreground">Ranking de Palestrantes</h3>
+        {data.ranking_palestrantes.length === 0 ? (
+          <div className="flex flex-col items-center justify-center py-8 text-center">
+            <Award className="mb-3 size-10 text-muted/40" />
+            <p className="text-sm text-muted">Nenhum dado disponível</p>
+          </div>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <caption className="sr-only">Ranking de palestrantes por número de inscritos</caption>
+              <thead className="bg-card">
+                <tr className="text-left text-muted">
+                  <th scope="col" className="px-4 py-2 font-medium">#</th>
+                  <th scope="col" className="px-4 py-2 font-medium">Palestrante</th>
+                  <th scope="col" className="px-4 py-2 font-medium">Inscritos</th>
+                  <th scope="col" className="px-4 py-2 font-medium">Check-ins</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-border">
+                {data.ranking_palestrantes.map((p, i) => (
+                  <tr key={p.palestrante} className="bg-background hover:bg-card/50 transition-colors">
+                    <td className="px-4 py-2 text-muted">{i + 1}</td>
+                    <td className="px-4 py-2 font-medium text-foreground">{p.palestrante}</td>
+                    <td className="px-4 py-2 text-foreground">{p.reservas}</td>
+                    <td className="px-4 py-2 text-foreground">{p.checkins}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         )}
       </div>
     </div>

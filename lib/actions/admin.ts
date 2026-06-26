@@ -31,6 +31,11 @@ export interface DashboardData {
     palestra: string
     created_at: string
   }[]
+  ranking_palestrantes: {
+    palestrante: string
+    reservas: number
+    checkins: number
+  }[]
 }
 
 export async function getDashboardData(diaFiltro?: number): Promise<DashboardData> {
@@ -151,6 +156,17 @@ export async function getDashboardData(diaFiltro?: number): Promise<DashboardDat
     }
   })
 
+  const rankingPalestrantesMap = new Map<string, { reservas: number; checkins: number }>()
+  for (const p of reservas_por_palestra) {
+    const entry = rankingPalestrantesMap.get(p.palestrante) ?? { reservas: 0, checkins: 0 }
+    entry.reservas += p.reservas
+    entry.checkins += p.checkins
+    rankingPalestrantesMap.set(p.palestrante, entry)
+  }
+  const ranking_palestrantes = [...rankingPalestrantesMap.entries()]
+    .map(([palestrante, counts]) => ({ palestrante, ...counts }))
+    .sort((a, b) => b.reservas - a.reservas)
+
   return {
     total_leads: total_leads ?? 0,
     checkins_hoje: checkins_hoje ?? 0,
@@ -160,6 +176,7 @@ export async function getDashboardData(diaFiltro?: number): Promise<DashboardDat
     reservas_por_dia,
     reservas_por_palestra,
     ultimos_leads,
+    ranking_palestrantes,
   }
 }
 
