@@ -1,7 +1,7 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import { QrCompartilhe } from '@/components/qr-compartilhe'
-import { ArrowRight, Gift, Lock } from 'lucide-react'
+import { BookOpen, Gift, Lock } from 'lucide-react'
 
 export default function LandingPage() {
   const palestrasUrl = process.env.NEXT_PUBLIC_SITE_URL
@@ -64,13 +64,17 @@ export default function LandingPage() {
           Reserve sua vaga nas palestras silenciosas e garanta seu lugar.
         </p>
 
-        <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
+        <div className="mt-10">
+          <QrCompartilhe url={palestrasUrl} />
+        </div>
+
+        <div className="mt-10 flex flex-wrap items-center justify-center gap-3">
           <Link
             href="/palestras"
-            className="inline-flex items-center gap-2 rounded-md bg-primary px-8 py-3 text-base font-medium text-primary-foreground hover:brightness-110 transition-all"
+            className="inline-flex items-center gap-2 rounded-md border-2 border-primary/30 bg-card px-6 py-3 text-base font-medium text-foreground hover:border-primary/60 hover:bg-primary/5 transition-all"
           >
-            Ver Programação
-            <ArrowRight className="size-5" />
+            <BookOpen className="size-5 text-primary" />
+            Palestras
           </Link>
           <Link
             href="/sorteio"
@@ -80,14 +84,10 @@ export default function LandingPage() {
             Sorteio
           </Link>
         </div>
-
-        <div className="mt-10">
-          <QrCompartilhe url={palestrasUrl} />
-        </div>
       </main>
 
       <footer className="mt-auto px-4 py-6 text-center text-xs text-muted">
-        <p>ABRAVEQ — Associação Brasileira dos Médicos Veterinários de Equídeos</p>
+        <p>ABRAVEQ — Associação Brasileira dos Médicos Veterinários de Equinos</p>
       </footer>
     </div>
   )

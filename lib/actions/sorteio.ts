@@ -13,15 +13,35 @@ export interface SorteioLead {
 export async function inscreverSorteio(data: { nome: string; whatsapp: string; email: string }) {
   const supabase = await createClient()
 
-  const { error } = await supabase.from('sorteio_leads').insert({
-    nome: data.nome.trim(),
-    whatsapp: data.whatsapp.trim(),
-    email: data.email.trim().toLowerCase(),
+  const nome = data.nome.trim()
+  const whatsapp = data.whatsapp.trim()
+  const email = data.email.trim().toLowerCase()
+
+  const { error: errLead } = await supabase.from('sorteio_leads').insert({
+    nome, whatsapp, email,
   })
 
-  if (error) {
-    if (error.code === '23505') throw new Error('Este email já está cadastrado no sorteio')
+  if (errLead) {
+    if (errLead.code === '23505') throw new Error('Este email já está cadastrado no sorteio')
     throw new Error('Erro ao cadastrar. Tente novamente.')
+  }
+
+  const { data: palestra } = await supabase
+    .from('palestras')
+    .select('id')
+    .eq('tema', 'Sorteio Powerbank')
+    .single()
+
+  if (palestra) {
+    const { error: _err } = await supabase.from('inscritos').insert({
+      palestra_id: palestra.id,
+      nome,
+      email,
+      telefone: whatsapp,
+      origem: 'sorteio',
+      aceite_lgpd: true,
+    })
+    if (_err) console.error('[Sorteio] erro ao copiar lead:', _err.message)
   }
 }
 

@@ -1,4 +1,6 @@
 import { Suspense } from 'react'
+import Link from 'next/link'
+import { Home, Lock } from 'lucide-react'
 import { PalestraCard } from '@/components/palestra-card'
 import { listarPalestras } from '@/lib/actions/reserva'
 import type { DiaEvento } from '@/types'
@@ -79,6 +81,16 @@ export default async function PalestrasPage(props: {
 
   return (
     <div className="flex flex-1 flex-col bg-background">
+      <header className="flex items-center justify-between px-4 py-3 mx-auto w-full max-w-5xl">
+        <Link href="/" className="flex items-center gap-1.5 text-xs text-muted hover:text-foreground transition-colors">
+          <Home className="size-3.5" />
+          Home
+        </Link>
+        <Link href="/admin/login" className="flex items-center gap-1.5 text-xs text-muted hover:text-foreground transition-colors">
+          <Lock className="size-3.5" />
+          Admin
+        </Link>
+      </header>
       <section className="border-b border-border bg-card">
         <div className="mx-auto max-w-5xl px-4 py-8 text-center">
           <h1 className="text-3xl font-bold text-foreground">Programação</h1>

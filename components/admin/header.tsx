@@ -1,7 +1,8 @@
 'use client'
 
-import { LogOut } from 'lucide-react'
+import { LogOut, ExternalLink } from 'lucide-react'
 import { useRouter } from 'next/navigation'
+import Link from 'next/link'
 import { ThemeToggle } from '@/components/theme-toggle'
 
 export function AdminHeader() {
@@ -17,7 +18,10 @@ export function AdminHeader() {
 
   return (
     <header className="flex items-center justify-between border-b border-border bg-card px-6 py-3" role="banner">
-      <h1 className="text-lg font-semibold text-foreground">VetCongresso</h1>
+      <Link href="/" className="flex items-center gap-1.5 rounded-md px-2 py-1 text-sm text-muted hover:text-foreground transition-colors">
+        <ExternalLink className="size-4" />
+        Site
+      </Link>
       <div className="flex items-center gap-2">
         <ThemeToggle />
         <button

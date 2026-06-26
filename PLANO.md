@@ -2,7 +2,7 @@
 
 **PRD referência:** Architect v5
 **Última atualização:** 25/06/2026
-**Status:** ✅ Fases P0, 1, 2, 3 concluídas. Fase 4 parcial (BI + Config Email + Sorteio).
+**Status:** ✅ Fases P0, 1, 2, 3 concluídas. Fase 4 parcial (BI + Config Email + Sorteio + Grade Real).
 
 ---
 
@@ -75,6 +75,9 @@ cp .env.example .env.local     # Configurar variáveis de ambiente
 | 4.5 | Disparo automático de email | ⏳ Pendente | — |
 | 4.6 | Config de email no admin | ✅ | `app/admin/config/` |
 | 4.7 | **Sorteio Powerbank** | ✅ | `lib/actions/sorteio.ts`, `/sorteio`, `/sorteio/cadastro`, `/admin/sorteio` |
+| 4.8 | Leads do sorteio integrados aos leads gerais | ✅ | `inscreverSorteio()` replica em `inscritos` com `origem='sorteio'` |
+| 4.9 | Grade real de palestras VetTalks | ✅ | `scripts/schema.sql`, `scripts/migrate-palestras.sql` |
+| 4.10 | Sorteador interno no admin | ✅ | `/admin/sorteio` — botão "Sortear" com modal + link externo |
 
 ---
 
@@ -117,4 +120,7 @@ CRON_SECRET=                     # Segredo dos endpoints cron
 - Projeto usa **Next.js 16.2.9** — sem breaking changes documentadas localmente
 - shadcn/ui usa `@base-ui/react` (estilo "base-nova"), não `@radix-ui`
 - Tabela `sorteio_leads` precisa ser criada no Supabase SQL Editor (em `scripts/schema.sql`)
+- Grade real de palestras em `scripts/migrate-palestras.sql` (rodar no SQL Editor para substituir os seeds antigos)
+- Leads do sorteio também são copiados para `inscritos` com `origem='sorteio'` — aparecem na lista geral de leads
+- Sorteador interno em `/admin/sorteio` com botão "Sortear" que escolhe aleatoriamente um lead
 - `NEXT_PUBLIC_SITE_URL` precisa ser configurada no Vercel (Settings → Environment Variables) para os QR Codes funcionarem em produção

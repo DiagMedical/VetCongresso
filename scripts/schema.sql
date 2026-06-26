@@ -177,19 +177,29 @@ CREATE POLICY "admin_all_sorteio" ON sorteio_leads
     FOR ALL USING (auth.uid() IN (SELECT id FROM admins));
 
 -- ============================================================
--- Seed Data — 11 palestras
+-- Seed Data — Palestras Reais VetTalks 2026
 -- ============================================================
 
 INSERT INTO palestras (dia_evento, tema, palestrante, descricao, horario_inicio, horario_fim, vagas_totais) VALUES
-(1, 'Anestesia em Pequenos Animais', 'Dr. Silva', 'Técnicas modernas de anestesia veterinária', '2026-07-01 09:00:00-03', '2026-07-01 10:00:00-03', 20),
-(1, 'Ortopedia Veterinária', 'Dr. Santos', 'Avanços em ortopedia para pequenos animais', '2026-07-01 10:30:00-03', '2026-07-01 11:30:00-03', 20),
-(1, 'Dermatologia Canina', 'Dra. Oliveira', 'Diagnóstico e tratamento de dermatopatias', '2026-07-01 14:00:00-03', '2026-07-01 15:00:00-03', 20),
-(2, 'Cardiologia Felina', 'Dr. Souza', 'Abordagem clínica das cardiopatias felinas', '2026-07-02 09:00:00-03', '2026-07-02 10:00:00-03', 20),
-(2, 'Oncologia Veterinária', 'Dr. Costa', 'Atualização em oncologia de pequenos animais', '2026-07-02 10:30:00-03', '2026-07-02 11:30:00-03', 20),
-(2, 'Medicina Felina', 'Dra. Pereira', 'Particularidades da clínica de felinos', '2026-07-02 13:00:00-03', '2026-07-02 14:00:00-03', 20),
-(2, 'Cirurgia de Tecidos Moles', 'Dr. Lima', 'Técnicas cirúrgicas em tecidos moles', '2026-07-02 14:30:00-03', '2026-07-02 15:30:00-03', 20),
-(2, 'Diagnóstico por Imagem', 'Dra. Almeida', 'Interpretação de exames de imagem', '2026-07-02 16:00:00-03', '2026-07-02 17:00:00-03', 20),
-(3, 'Neurologia Veterinária', 'Dr. Martins', 'Neurologia de pequenos animais', '2026-07-03 09:00:00-03', '2026-07-03 10:00:00-03', 20),
-(3, 'Endocrinologia', 'Dra. Barbosa', 'Distúrbios endócrinos em cães e gatos', '2026-07-03 10:30:00-03', '2026-07-03 11:30:00-03', 20),
-(3, 'Emergência e Cuidados Intensivos', 'Dr. Rocha', 'Manejo de emergências veterinárias', '2026-07-03 14:00:00-03', '2026-07-03 15:00:00-03', 20)
+-- Dia 1 — 02/06 (Quinta)
+(1, 'Inovação em Foco — O potencial das Ondas de Choque', 'Dra. Elisa Holthausen', 'SHOCKWAVE', '2026-06-02 11:20:00-03', '2026-06-02 11:40:00-03', 20),
+(1, 'Atuação do HI-PEMF na reabilitação: indicações e cuidados', 'Dr. Luiz Mattos', 'HI-PEMF', '2026-06-02 16:30:00-03', '2026-06-02 16:50:00-03', 20),
+(1, 'Laser Diodo nos tratamentos das Afecções Respiratórias Superiores', 'Dr. Felipe Siqueira', 'CIRURGIA', '2026-06-02 17:00:00-03', '2026-06-02 17:20:00-03', 20),
+
+-- Dia 2 — 03/06 (Sexta)
+(2, 'Atuação do HI-PEMF na reabilitação: indicações e cuidados', 'Dr. Luiz Mattos', 'HI-PEMF', '2026-06-03 10:00:00-03', '2026-06-03 10:20:00-03', 20),
+(2, 'Inovação em Foco — O potencial das Ondas de Choque', 'Dra. Elisa Holthausen', 'SHOCKWAVE', '2026-06-03 14:30:00-03', '2026-06-03 14:40:00-03', 20),
+(2, 'HI-PEMF na Prática Veterinária Equina: Modelos de Negócio e Precificação', 'Dr. Luiz Mattos', 'HI-PEMF', '2026-06-03 15:30:00-03', '2026-06-03 15:50:00-03', 20),
+(2, 'Shockwave como ferramenta do Clínico ao Fisiatra', 'Dra. Clarissa Tomazella', 'SHOCKWAVE', '2026-06-03 16:30:00-03', '2026-06-03 16:50:00-03', 20),
+(2, 'Do Haras ao Hipódromo: Endoscopia Portátil como Ferramenta de Diagnóstico', 'Dr. Felipe Siqueira', 'ENDOSCOPIA', '2026-06-03 17:00:00-03', '2026-06-03 17:20:00-03', 20),
+
+-- Dia 3 — 04/06 (Sábado)
+(3, 'Atuação do HI-PEMF na reabilitação: indicações e modelos de negócios', 'Dr. Luiz Mattos', 'HI-PEMF', '2026-06-04 10:40:00-03', '2026-06-04 11:00:00-03', 20),
+(3, 'Laser Diodo nos tratamentos das Afecções Respiratórias Superiores', 'Dr. Felipe Siqueira', 'CIRURGIA', '2026-06-04 14:00:00-03', '2026-06-04 14:20:00-03', 20),
+(3, 'Shockwave como ferramenta do Clínico ao Fisiatra', 'Dra. Clarissa Tomazella', 'SHOCKWAVE', '2026-06-04 15:40:00-03', '2026-06-04 16:00:00-03', 20)
 ON CONFLICT DO NOTHING;
+
+-- Palestra fantasma para leads do sorteio (não aparece na agenda)
+INSERT INTO palestras (dia_evento, tema, palestrante, descricao, horario_inicio, horario_fim, vagas_totais, ativo)
+SELECT 1, 'Sorteio Powerbank', 'Diagnostic Vet', 'Cadastro para sorteio de powerbank', '2026-07-01 00:00:00-03', '2026-07-01 00:00:00-03', 99999, FALSE
+WHERE NOT EXISTS (SELECT 1 FROM palestras WHERE tema = 'Sorteio Powerbank');

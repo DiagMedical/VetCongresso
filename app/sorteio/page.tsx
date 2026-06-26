@@ -1,7 +1,7 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import { QrCompartilhe } from '@/components/qr-compartilhe'
-import { Gift } from 'lucide-react'
+import { Gift, Home, Lock } from 'lucide-react'
 
 export default function SorteioPage() {
   const cadastroUrl = process.env.NEXT_PUBLIC_SITE_URL
@@ -10,15 +10,25 @@ export default function SorteioPage() {
 
   return (
     <div className="flex flex-1 flex-col bg-background">
-      <header className="flex items-center justify-between px-4 py-4 mx-auto w-full max-w-5xl">
-        <Image
-          src="/logo-diagnostic-vet.png"
-          alt="Diagnostic Vet"
-          width={140}
-          height={39}
-          className="h-9 w-auto"
-          priority
-        />
+      <header className="flex items-center justify-between px-4 py-3 mx-auto w-full max-w-5xl">
+        <Link href="/" className="flex items-center gap-1.5 text-xs text-muted hover:text-foreground transition-colors">
+          <Home className="size-3.5" />
+          Home
+        </Link>
+        <div className="flex items-center gap-3">
+          <Image
+            src="/logo-diagnostic-vet.png"
+            alt="Diagnostic Vet"
+            width={100}
+            height={28}
+            className="h-7 w-auto"
+            priority
+          />
+        </div>
+        <Link href="/admin/login" className="flex items-center gap-1.5 text-xs text-muted hover:text-foreground transition-colors">
+          <Lock className="size-3.5" />
+          Admin
+        </Link>
       </header>
 
       <main className="flex flex-1 flex-col items-center justify-center px-4 text-center">
