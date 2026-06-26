@@ -21,7 +21,7 @@ export default function SorteioPage() {
             alt="Diagnostic Vet"
             width={100}
             height={28}
-            className="h-7 w-auto"
+            className="h-10 w-auto"
             priority
           />
         </div>
@@ -38,7 +38,7 @@ export default function SorteioPage() {
             alt="ABRAVEQ"
             width={200}
             height={68}
-            className="h-20 w-auto"
+            className="h-16 w-auto"
             priority
           />
         </div>
@@ -54,7 +54,7 @@ export default function SorteioPage() {
             alt="Diagnostic Vet"
             width={100}
             height={28}
-            className="h-7 w-auto opacity-80"
+            className="h-10 w-auto opacity-90"
           />
         </div>
 

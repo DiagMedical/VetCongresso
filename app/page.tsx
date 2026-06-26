@@ -17,7 +17,7 @@ export default function LandingPage() {
             alt="Diagnostic Vet"
             width={140}
             height={39}
-            className="h-9 w-auto"
+            className="h-12 w-auto"
             priority
           />
         </div>
@@ -37,7 +37,7 @@ export default function LandingPage() {
             alt="ABRAVEQ"
             width={200}
             height={68}
-            className="h-20 w-auto"
+            className="h-16 w-auto"
             priority
           />
         </div>
@@ -56,7 +56,7 @@ export default function LandingPage() {
             alt="Diagnostic Vet"
             width={100}
             height={28}
-            className="h-7 w-auto opacity-80"
+            className="h-10 w-auto opacity-90"
           />
         </div>
 

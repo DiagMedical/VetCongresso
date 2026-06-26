@@ -1,7 +1,7 @@
 # Plano de Ação — VetCongresso Silent Booking
 
 **PRD referência:** Architect v5
-**Última atualização:** 25/06/2026
+**Última atualização:** 26/06/2026
 **Status:** ✅ Fases P0, 1, 2, 3 concluídas. Fase 4 parcial (BI + Config Email + Sorteio + Grade Real).
 
 ---
@@ -78,6 +78,9 @@ cp .env.example .env.local     # Configurar variáveis de ambiente
 | 4.8 | Leads do sorteio integrados aos leads gerais | ✅ | `inscreverSorteio()` replica em `inscritos` com `origem='sorteio'` |
 | 4.9 | Grade real de palestras VetTalks | ✅ | `scripts/schema.sql`, `scripts/migrate-palestras.sql` |
 | 4.10 | Sorteador interno no admin | ✅ | `/admin/sorteio` — botão "Sortear" com modal + link externo |
+| 4.11 | Logos: Diagnostic Vet maior, ABRAVEQ menor | ✅ | `app/page.tsx`, `app/sorteio/page.tsx` |
+| 4.12 | Navegação entre páginas | ✅ | Admin header → Site; Palestras/Sorteio header → Home + Admin |
+| 4.13 | Limpar duplicatas no admin | ✅ | `lib/actions/admin.ts:limparPalestrasDuplicadas()` |
 
 ---
 
