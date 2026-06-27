@@ -56,6 +56,34 @@ export function AdminNav({ className }: { className?: string }) {
   )
 }
 
+function MobileNavLinks() {
+  const pathname = usePathname()
+
+  return (
+    <>
+      {links.map(({ href, label, icon: Icon }) => (
+        <SheetClose
+          key={href}
+          render={
+            <Link
+              href={href}
+              aria-current={pathname === href ? 'page' : undefined}
+              className={`flex items-center gap-3 rounded-md min-h-[44px] px-3 py-2 text-sm transition-colors ${
+                pathname === href
+                  ? 'bg-primary text-primary-foreground'
+                  : 'text-muted hover:bg-white/5'
+              }`}
+            >
+              <Icon className="size-4" aria-hidden="true" />
+              {label}
+            </Link>
+          }
+        />
+      ))}
+    </>
+  )
+}
+
 export function AdminMobileNav() {
   return (
     <Sheet>
@@ -71,7 +99,7 @@ export function AdminMobileNav() {
           <span className="sr-only">Fechar</span>
         </SheetClose>
         <div className="flex flex-col gap-1 p-4 pt-14">
-          <NavLinks />
+          <MobileNavLinks />
         </div>
       </SheetContent>
     </Sheet>
