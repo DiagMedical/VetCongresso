@@ -116,7 +116,7 @@ export function PalestrasClient({ palestras }: PalestrasClientProps) {
         {cleanupMsg && <span className="text-xs text-success">{cleanupMsg}</span>}
       </div>
 
-      <div className="overflow-hidden rounded-lg border border-border">
+      <div className="overflow-x-auto rounded-lg border border-border">
         <table className="w-full text-sm">
           <thead className="bg-card">
             <tr className="text-left text-muted">

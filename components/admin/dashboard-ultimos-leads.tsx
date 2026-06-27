@@ -14,7 +14,7 @@ export function DashboardUltimosLeads({ data }: Props) {
         <h3 className="text-sm font-semibold text-foreground">Últimos Leads</h3>
       </div>
       {data.ultimos_leads.length === 0 ? (
-        <div className="flex flex-col items-center justify-center py-8 text-center">
+        <div className="flex flex-col items-center justify-center py-8 text-center" role="status" aria-live="polite">
           <Users className="mb-3 size-10 text-muted/40" />
           <p className="text-sm text-muted">Nenhum lead registrado</p>
         </div>

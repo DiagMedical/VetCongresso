@@ -66,6 +66,7 @@ export function SorteioAdmin({ leads }: Props) {
           <button
             onClick={handleSortear}
             disabled={sorting || leads.length === 0}
+            title={leads.length === 0 ? 'Nenhum lead cadastrado para sortear' : undefined}
             className="flex items-center gap-2 rounded-md border-2 border-primary/30 bg-card px-4 py-2 text-sm font-medium text-foreground hover:border-primary/60 hover:bg-primary/5 transition-all disabled:opacity-50"
           >
             <Shuffle className="size-4 text-primary" />
@@ -116,7 +117,7 @@ export function SorteioAdmin({ leads }: Props) {
       )}
 
       {leads.length === 0 ? (
-        <div className="flex flex-col items-center justify-center rounded-lg border border-border bg-card py-12 text-center">
+        <div className="flex flex-col items-center justify-center rounded-lg border border-border bg-card py-12 text-center" role="status" aria-live="polite">
           <Gift className="mb-3 size-10 text-muted/40" aria-hidden="true" />
           <p className="text-sm text-muted">Nenhum cadastro no sorteio ainda.</p>
         </div>

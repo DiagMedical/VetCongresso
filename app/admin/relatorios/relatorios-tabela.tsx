@@ -1,5 +1,6 @@
 'use client'
 
+import { BarChart3 } from 'lucide-react'
 import type { RelatoriosData } from '@/lib/actions/admin'
 
 interface Props {
@@ -12,6 +13,12 @@ export function RelatoriosTabela({ data }: Props) {
       <div className="border-b border-border bg-card px-4 py-3">
         <h3 className="text-sm font-semibold text-foreground">Detalhamento por Palestra</h3>
       </div>
+      {data.por_palestra.length === 0 ? (
+        <div className="flex flex-col items-center justify-center py-12 text-center" role="status" aria-live="polite">
+          <BarChart3 className="mx-auto mb-3 size-10 text-muted/40" />
+          <p className="text-sm font-medium text-foreground">Nenhuma palestra encontrada</p>
+        </div>
+      ) : (
       <div className="overflow-x-auto">
         <table className="w-full text-sm">
           <caption className="sr-only">Detalhamento por Palestra</caption>
@@ -61,6 +68,7 @@ export function RelatoriosTabela({ data }: Props) {
           </tbody>
         </table>
       </div>
+      )}
     </div>
   )
 }

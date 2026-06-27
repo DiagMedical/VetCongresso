@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useMemo } from 'react'
-import { ArrowUpDown, ArrowUp, ArrowDown } from 'lucide-react'
+import { ArrowUpDown, ArrowUp, ArrowDown, BookOpen } from 'lucide-react'
 import type { DashboardData } from '@/lib/actions/admin'
 
 interface Props {
@@ -45,95 +45,102 @@ export function DashboardTabelaPalestras({ data }: Props) {
       <div className="border-b border-border bg-card px-4 py-3">
         <h3 className="text-sm font-semibold text-foreground">Resumo por Palestra</h3>
       </div>
-      <div className="overflow-x-auto">
-        <table className="w-full text-sm">
-          <caption className="sr-only">Resumo por Palestra</caption>
-          <thead className="bg-card">
-            <tr className="text-left text-muted">
-              <th scope="col" className="px-4 py-3 font-medium">
-                <button onClick={() => toggleOrdem('tema')} className="flex items-center gap-1 hover:text-foreground transition-colors">
-                  Palestra <SetaIcon col="tema" />
-                </button>
-              </th>
-              <th scope="col" className="px-4 py-3 font-medium">
-                <button onClick={() => toggleOrdem('palestrante')} className="flex items-center gap-1 hover:text-foreground transition-colors">
-                  Palestrante <SetaIcon col="palestrante" />
-                </button>
-              </th>
-              <th scope="col" className="px-4 py-3 font-medium">
-                <button onClick={() => toggleOrdem('vagas')} className="flex items-center gap-1 hover:text-foreground transition-colors">
-                  Vagas <SetaIcon col="vagas" />
-                </button>
-              </th>
-              <th scope="col" className="px-4 py-3 font-medium">
-                <button onClick={() => toggleOrdem('reservas')} className="flex items-center gap-1 hover:text-foreground transition-colors">
-                  Inscritos <SetaIcon col="reservas" />
-                </button>
-              </th>
-              <th scope="col" className="px-4 py-3 font-medium">
-                <button onClick={() => toggleOrdem('checkins')} className="flex items-center gap-1 hover:text-foreground transition-colors">
-                  Check-ins <SetaIcon col="checkins" />
-                </button>
-              </th>
-              <th scope="col" className="px-4 py-3 font-medium">
-                <button onClick={() => toggleOrdem('taxa_checkin')} className="flex items-center gap-1 hover:text-foreground transition-colors">
-                  % Check-in <SetaIcon col="taxa_checkin" />
-                </button>
-              </th>
-              <th scope="col" className="px-4 py-3 font-medium">
-                <button onClick={() => toggleOrdem('taxa_ocupacao')} className="flex items-center gap-1 hover:text-foreground transition-colors">
-                  % Ocupação <SetaIcon col="taxa_ocupacao" />
-                </button>
-              </th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-border">
-            {ordenados.map((p) => (
-              <tr key={p.palestra_id} className="bg-background hover:bg-card/50 hover:ring-1 hover:ring-accent/10 transition-all duration-200">
-                <td className="px-4 py-3 font-medium text-foreground">{p.tema}</td>
-                <td className="px-4 py-3 text-muted">{p.palestrante}</td>
-                <td className="px-4 py-3 text-foreground">{p.vagas}</td>
-                <td className="px-4 py-3 text-foreground">{p.reservas}</td>
-                <td className="px-4 py-3 text-foreground">{p.checkins}</td>
-                <td className="px-4 py-3">
-                  <div className="flex items-center gap-2">
-                    <div className="h-2 w-16 overflow-hidden rounded-full bg-muted/30">
-                      <div
-                        className={`h-full rounded-full ${
-                          p.taxa_checkin >= 70
-                            ? 'bg-success'
-                            : p.taxa_checkin >= 40
-                            ? 'bg-primary'
-                            : 'bg-danger'
-                        }`}
-                        style={{ width: `${p.taxa_checkin}%` }}
-                      />
-                    </div>
-                    <span className="text-xs text-muted">{p.taxa_checkin}%</span>
-                  </div>
-                </td>
-                <td className="px-4 py-3">
-                  <div className="flex items-center gap-2">
-                    <div className="h-2 w-16 overflow-hidden rounded-full bg-muted/30">
-                      <div
-                        className={`h-full rounded-full ${
-                          p.taxa_ocupacao >= 80
-                            ? 'bg-success'
-                            : p.taxa_ocupacao >= 50
-                            ? 'bg-primary'
-                            : 'bg-danger'
-                        }`}
-                        style={{ width: `${p.taxa_ocupacao}%` }}
-                      />
-                    </div>
-                    <span className="text-xs text-muted">{p.taxa_ocupacao}%</span>
-                  </div>
-                </td>
+      {ordenados.length === 0 ? (
+        <div className="flex flex-col items-center justify-center py-12 text-center" role="status" aria-live="polite">
+          <BookOpen className="mx-auto mb-3 size-10 text-muted/40" />
+          <p className="text-sm font-medium text-foreground">Nenhuma palestra encontrada</p>
+        </div>
+      ) : (
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm">
+            <caption className="sr-only">Resumo por Palestra</caption>
+            <thead className="bg-card">
+              <tr className="text-left text-muted">
+                <th scope="col" className="px-4 py-3 font-medium">
+                  <button onClick={() => toggleOrdem('tema')} className="flex items-center gap-1 hover:text-foreground transition-colors">
+                    Palestra <SetaIcon col="tema" />
+                  </button>
+                </th>
+                <th scope="col" className="px-4 py-3 font-medium">
+                  <button onClick={() => toggleOrdem('palestrante')} className="flex items-center gap-1 hover:text-foreground transition-colors">
+                    Palestrante <SetaIcon col="palestrante" />
+                  </button>
+                </th>
+                <th scope="col" className="px-4 py-3 font-medium">
+                  <button onClick={() => toggleOrdem('vagas')} className="flex items-center gap-1 hover:text-foreground transition-colors">
+                    Vagas <SetaIcon col="vagas" />
+                  </button>
+                </th>
+                <th scope="col" className="px-4 py-3 font-medium">
+                  <button onClick={() => toggleOrdem('reservas')} className="flex items-center gap-1 hover:text-foreground transition-colors">
+                    Inscritos <SetaIcon col="reservas" />
+                  </button>
+                </th>
+                <th scope="col" className="px-4 py-3 font-medium">
+                  <button onClick={() => toggleOrdem('checkins')} className="flex items-center gap-1 hover:text-foreground transition-colors">
+                    Check-ins <SetaIcon col="checkins" />
+                  </button>
+                </th>
+                <th scope="col" className="px-4 py-3 font-medium">
+                  <button onClick={() => toggleOrdem('taxa_checkin')} className="flex items-center gap-1 hover:text-foreground transition-colors">
+                    % Check-in <SetaIcon col="taxa_checkin" />
+                  </button>
+                </th>
+                <th scope="col" className="px-4 py-3 font-medium">
+                  <button onClick={() => toggleOrdem('taxa_ocupacao')} className="flex items-center gap-1 hover:text-foreground transition-colors">
+                    % Ocupação <SetaIcon col="taxa_ocupacao" />
+                  </button>
+                </th>
               </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+            </thead>
+            <tbody className="divide-y divide-border">
+              {ordenados.map((p) => (
+                <tr key={p.palestra_id} className="bg-background hover:bg-card/50 hover:ring-1 hover:ring-accent/10 transition-all duration-200">
+                  <td className="px-4 py-3 font-medium text-foreground">{p.tema}</td>
+                  <td className="px-4 py-3 text-muted">{p.palestrante}</td>
+                  <td className="px-4 py-3 text-foreground">{p.vagas}</td>
+                  <td className="px-4 py-3 text-foreground">{p.reservas}</td>
+                  <td className="px-4 py-3 text-foreground">{p.checkins}</td>
+                  <td className="px-4 py-3">
+                    <div className="flex items-center gap-2">
+                      <div className="h-2 w-16 overflow-hidden rounded-full bg-muted/30">
+                        <div
+                          className={`h-full rounded-full ${
+                            p.taxa_checkin >= 70
+                              ? 'bg-success'
+                              : p.taxa_checkin >= 40
+                              ? 'bg-primary'
+                              : 'bg-danger'
+                          }`}
+                          style={{ width: `${p.taxa_checkin}%` }}
+                        />
+                      </div>
+                      <span className="text-xs text-muted">{p.taxa_checkin}%</span>
+                    </div>
+                  </td>
+                  <td className="px-4 py-3">
+                    <div className="flex items-center gap-2">
+                      <div className="h-2 w-16 overflow-hidden rounded-full bg-muted/30">
+                        <div
+                          className={`h-full rounded-full ${
+                            p.taxa_ocupacao >= 80
+                              ? 'bg-success'
+                              : p.taxa_ocupacao >= 50
+                              ? 'bg-primary'
+                              : 'bg-danger'
+                          }`}
+                          style={{ width: `${p.taxa_ocupacao}%` }}
+                        />
+                      </div>
+                      <span className="text-xs text-muted">{p.taxa_ocupacao}%</span>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
     </div>
   )
 }
