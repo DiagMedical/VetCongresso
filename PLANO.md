@@ -145,13 +145,12 @@ Tudo pronto pro evento! Último deploy consolidado no Vercel.
 | # | Tarefa | Arquivos |
 |---|--------|----------|
 | 1 | Admin mobile responsivo (Sheet drawer, hamburger) | `components/admin/nav.tsx`, `components/admin/header.tsx`, `app/admin/layout.tsx` |
-| 2 | PWA (manifest.json, theme-color, apple-mobile-web-app) | `public/manifest.json`, `public/icon.svg`, `app/layout.tsx` |
+| 2 | PWA (manifest.json, theme-color, apple-mobile-web-app, ícone cavalo Diagnostic) | `public/manifest.json`, `public/icon.svg`, `app/layout.tsx` |
 
 ## ⏳ Pós-evento
 
 | # | Tarefa | Notas |
 |---|--------|-------|
 | 1 | Email (Resend) — ativar | Precisa de acesso DNS para verificar domínio |
-| 2 | PWA icons PNG (192x512) | Fornecer imagens para substituir o SVG atual |
 
 > 🔴 Alta = essencial pro evento, 🟡 Média = bom ter, 🟢 Baixa = legal, ⏳ Pendente = depois
