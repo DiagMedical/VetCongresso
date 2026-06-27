@@ -115,6 +115,20 @@ This version has breaking changes — APIs, conventions, and file structure may 
 <!-- END:opencode-session -->
 
 <!-- BEGIN:opencode-session -->
+## Session — 27/06/2026 (3)
+
+### Checklist Pré-Congresso
+
+**O que foi feito:**
+- Varredura completa de readiness no app (15 áreas auditadas)
+- Identificados 4 🔴 críticos, 4 🟡 importantes, 1 🟢 bônus
+- `CHECKLIST-PRE-CONGRESSO.md` criado com plano de ação detalhado
+
+**Arquivos:**
+- `CHECKLIST-PRE-CONGRESSO.md` (novo)
+<!-- END:opencode-session -->
+
+<!-- BEGIN:opencode-session -->
 ## Session — 27/06/2026 (2)
 
 ### Exportação PDF nos Relatórios
