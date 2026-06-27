@@ -326,3 +326,37 @@ This version has breaking changes — APIs, conventions, and file structure may 
 - `b119572` — "UI: glow hover nos cards, nav ativo com brilho, CTA com shadow, tabelas com ring, KPI pulsante"
 - `eb4eac9` — "Skeleton loading real + tabelas ordenáveis (leads e dashboard)"
 <!-- END:opencode-session -->
+
+<!-- BEGIN:opencode-session -->
+## Session — 27/06/2026 (7)
+
+### Loading Skeletons + Empty States + Overflow Fix + Tooltip
+
+**O que foi feito:**
+
+1. **Loading skeletons para 8 rotas** — `loading.tsx` adicionado em leads, palestras, sorteio, relatorios, analytics, admins, whatsapp, config. Cada um com layout skeleton específico (não genérico).
+
+2. **Empty states** — `RelatoriosTabela` e `DashboardTabelaPalestras` agora exibem ícone + mensagem quando não há dados, em vez de tabela vazia.
+
+3. **Overflow fix** — `palestras-client.tsx` trocado de `overflow-hidden` para `overflow-x-auto`, permitindo scroll horizontal em mobile.
+
+4. **Tooltip no Sortear** — Botão "Sortear" exibe `title` explicativo quando desabilitado por falta de leads.
+
+**Arquivos alterados/novos:**
+- `app/admin/leads/loading.tsx` (novo)
+- `app/admin/palestras/loading.tsx` (novo)
+- `app/admin/palestras/palestras-client.tsx` — overflow-x-auto
+- `app/admin/sorteio/loading.tsx` (novo)
+- `app/admin/sorteio/sorteio-admin.tsx` — title no botão + role="status"
+- `app/admin/relatorios/loading.tsx` (novo)
+- `app/admin/relatorios/relatorios-tabela.tsx` — empty state
+- `app/admin/analytics/loading.tsx` (novo)
+- `app/admin/admins/loading.tsx` (novo)
+- `app/admin/whatsapp/loading.tsx` (novo)
+- `app/admin/config/loading.tsx` (novo)
+- `components/admin/dashboard-tabela-palestras.tsx` — empty state
+- `components/admin/dashboard-ultimos-leads.tsx` — role="status"
+
+**Commits:**
+- `1187702` — "Loading skeletons para 8 rotas + empty states + overflow-x-auto + tooltip sorteio"
+<!-- END:opencode-session -->

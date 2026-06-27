@@ -152,6 +152,9 @@ Tudo pronto pro evento! Último deploy consolidado no Vercel.
 | 6 | UI glow hover (cards, nav, CTA, tabelas, KPI pulsante) | `components/ui/card.tsx`, `components/admin/nav.tsx`, `app/page.tsx`, `app/admin/page.tsx` |
 | 7 | Skeleton loading real (dashboard) | `app/admin/loading.tsx` |
 | 8 | Tabelas ordenáveis (leads + dashboard) | `components/admin/leads-table.tsx`, `components/admin/dashboard-tabela-palestras.tsx` |
+| 9 | Loading skeletons para 8 rotas admin | `app/admin/*/loading.tsx` |
+| 10 | Empty states (relatórios + dashboard) | `app/admin/relatorios/relatorios-tabela.tsx`, `components/admin/dashboard-tabela-palestras.tsx` |
+| 11 | Overflow fix mobile (palestras) + tooltip sorteio | `app/admin/palestras/palestras-client.tsx`, `app/admin/sorteio/sorteio-admin.tsx` |
 
 ## ⏳ Pós-evento
 
