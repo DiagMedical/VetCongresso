@@ -58,6 +58,35 @@ CREATE TABLE IF NOT EXISTS admins (
     created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
+-- Índice RN04: impedir reserva duplicada por email+palestra
+CREATE UNIQUE INDEX IF NOT EXISTS idx_unique_active_reservation
+ON inscritos (email, palestra_id)
+WHERE status IN ('confirmado', 'check-in', 'espera');
+
+-- Coluna lembrete_enviado
+ALTER TABLE inscritos ADD COLUMN IF NOT EXISTS lembrete_enviado BOOLEAN DEFAULT FALSE;
+
+-- Tabela: mensagens_enviadas (auditoria WhatsApp)
+CREATE TABLE IF NOT EXISTS mensagens_enviadas (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    inscrito_id UUID REFERENCES inscritos(id) ON DELETE SET NULL,
+    telefone TEXT NOT NULL,
+    tipo TEXT NOT NULL CHECK (tipo IN ('confirmacao', 'espera', 'checkin', 'promovido', 'lembrete', 'cancelamento', 'manual')),
+    mensagem TEXT NOT NULL,
+    sucesso BOOLEAN DEFAULT FALSE,
+    zaap_id TEXT,
+    erro TEXT,
+    created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Tabela: configuracoes (admin UI)
+CREATE TABLE IF NOT EXISTS configuracoes (
+    chave TEXT PRIMARY KEY,
+    valor TEXT NOT NULL,
+    descricao TEXT,
+    updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
 CREATE OR REPLACE VIEW vagas_disponiveis AS
 SELECT
     p.id,
@@ -128,9 +157,56 @@ CREATE POLICY "admin_all_palestras" ON palestras
 DROP POLICY IF EXISTS "admin_all_inscritos" ON inscritos;
 CREATE POLICY "admin_all_inscritos" ON inscritos
     FOR ALL USING (is_admin());
+
+-- RLS for mensagens_enviadas
+ALTER TABLE mensagens_enviadas ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS "admin_all_mensagens" ON mensagens_enviadas;
+CREATE POLICY "admin_all_mensagens" ON mensagens_enviadas
+    FOR ALL USING (is_admin());
+
+DROP POLICY IF EXISTS "service_insert_mensagens" ON mensagens_enviadas;
+CREATE POLICY "service_insert_mensagens" ON mensagens_enviadas
+    FOR INSERT WITH CHECK (TRUE);
+
+-- RLS for configuracoes
+ALTER TABLE configuracoes ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS "admin_all_configuracoes" ON configuracoes;
+CREATE POLICY "admin_all_configuracoes" ON configuracoes
+    FOR ALL USING (is_admin());
+
+-- RLS for admins (admins gerenciam admins)
+DROP POLICY IF EXISTS "admin_all_admins" ON admins;
+CREATE POLICY "admin_all_admins" ON admins
+    FOR ALL USING (is_admin());
+
+-- Sorteio: tabela de leads independente
+CREATE TABLE IF NOT EXISTS sorteio_leads (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    nome TEXT NOT NULL,
+    whatsapp TEXT NOT NULL,
+    email TEXT NOT NULL UNIQUE,
+    created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+ALTER TABLE sorteio_leads ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS "public_insert_sorteio" ON sorteio_leads;
+CREATE POLICY "public_insert_sorteio" ON sorteio_leads
+    FOR INSERT WITH CHECK (TRUE);
+
+DROP POLICY IF EXISTS "admin_all_sorteio" ON sorteio_leads;
+CREATE POLICY "admin_all_sorteio" ON sorteio_leads
+    FOR ALL USING (is_admin());
 `
 
 const seed = `
+-- Seed do primeiro admin
+INSERT INTO admins (nome, email)
+SELECT 'Wellington', 'wellington@diagnosticmedical.com.br'
+WHERE NOT EXISTS (SELECT 1 FROM admins WHERE email = 'wellington@diagnosticmedical.com.br');
+
 INSERT INTO palestras (dia_evento, tema, palestrante, descricao, horario_inicio, horario_fim, vagas_totais) VALUES
 -- Dia 1 — 02/06 (Quinta)
 (1, 'Inovação em Foco — O potencial das Ondas de Choque', 'Dra. Elisa Holthausen', 'SHOCKWAVE', '2026-06-02 11:20:00-03', '2026-06-02 11:40:00-03', 20),
@@ -163,7 +239,7 @@ try {
 
   console.log('Inserindo seed data...')
   await client.query(seed)
-  console.log('Seed data inserido com sucesso (12 palestras + Sorteio Powerbank)')
+  console.log('Seed data inserido com sucesso (admin + 12 palestras + Sorteio Powerbank)')
 
   await client.end()
   console.log('Concluído!')
