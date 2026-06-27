@@ -115,6 +115,29 @@ This version has breaking changes — APIs, conventions, and file structure may 
 <!-- END:opencode-session -->
 
 <!-- BEGIN:opencode-session -->
+## Session — 27/06/2026
+
+### Tema Indigo Neon + Plus Jakarta Sans
+
+**O que foi feito:**
+
+1. **Paleta de cores** — Indigo-roxo (`hsl(255, 90%, 60%)`) + Cyan elétrico como `--accent` (`hsl(180, 100%, 50%`). Background dark: `hsl(255, 25%, 7%)`, cards: `hsl(255, 18%, 12%)`.
+
+2. **Fonte** — Geist trocado por **Plus Jakarta Sans** (`next/font/google`). Variável `--font-jakarta`.
+
+3. **Dark mode padrão** — `defaultTheme="dark"`, `enableSystem={false}` no provider.
+
+4. **Animações** — `glow-pulse` (classe `animate-glow`), `fade-in-up` com scale, focus-visible com glow cyan, scrollbar customizada no dark.
+
+**Arquivos alterados:**
+- `app/globals.css` — tokens HSL (indigo + cyan), novo `--accent`, keyframes, scrollbar
+- `app/layout.tsx` — `Plus_Jakarta_Sans` no lugar de `Geist`
+- `app/providers.tsx` — `defaultTheme="dark"`
+
+**Commits pendentes:** `git add . && git commit -m "Tema indigo neon + Plus Jakarta Sans + dark mode"`
+<!-- END:opencode-session -->
+
+<!-- BEGIN:opencode-session -->
 ## Session — 26/06/2026 (4)
 
 ### Ranking de Palestrantes

@@ -4,36 +4,40 @@
 
 :root {
   --background: 0 0% 100%;
-  --foreground: 0 0% 0%;
-  --card: 210 40% 96%;
-  --card-foreground: 0 0% 0%;
-  --primary: 213 100% 36%;
+  --foreground: 255 35% 10%;
+  --card: 255 30% 96%;
+  --card-foreground: 255 35% 10%;
+  --primary: 255 80% 45%;
   --primary-foreground: 0 0% 100%;
-  --success: 160 100% 33%;
+  --accent: 180 100% 40%;
+  --accent-foreground: 0 0% 100%;
+  --success: 160 100% 30%;
   --success-foreground: 0 0% 100%;
-  --danger: 0 84% 60%;
+  --danger: 0 84% 55%;
   --danger-foreground: 0 0% 100%;
-  --muted: 0 0% 38%;
-  --muted-foreground: 0 0% 45%;
-  --border: 0 0% 80%;
-  --ring: 213 100% 36%;
+  --muted: 255 10% 45%;
+  --muted-foreground: 255 10% 35%;
+  --border: 255 15% 85%;
+  --ring: 255 80% 45%;
 }
 
 .dark {
-  --background: 222 47% 11%;
+  --background: 255 25% 7%;
   --foreground: 210 40% 96%;
-  --card: 215 28% 17%;
+  --card: 255 18% 12%;
   --card-foreground: 210 40% 96%;
-  --primary: 217 91% 60%;
+  --primary: 255 90% 60%;
   --primary-foreground: 0 0% 100%;
-  --success: 160 100% 33%;
+  --accent: 180 100% 50%;
+  --accent-foreground: 0 0% 0%;
+  --success: 160 100% 40%;
   --success-foreground: 0 0% 100%;
   --danger: 0 84% 60%;
   --danger-foreground: 0 0% 100%;
-  --muted: 215 20% 65%;
-  --muted-foreground: 0 0% 100%;
-  --border: 215 28% 25%;
-  --ring: 217 91% 60%;
+  --muted: 255 8% 55%;
+  --muted-foreground: 255 8% 75%;
+  --border: 255 15% 18%;
+  --ring: 255 90% 60%;
 }
 
 @theme inline {
@@ -43,6 +47,8 @@
   --color-card-foreground: hsl(var(--card-foreground));
   --color-primary: hsl(var(--primary));
   --color-primary-foreground: hsl(var(--primary-foreground));
+  --color-accent: hsl(var(--accent));
+  --color-accent-foreground: hsl(var(--accent-foreground));
   --color-success: hsl(var(--success));
   --color-success-foreground: hsl(var(--success-foreground));
   --color-danger: hsl(var(--danger));
@@ -51,7 +57,7 @@
   --color-muted-foreground: hsl(var(--muted-foreground));
   --color-border: hsl(var(--border));
   --color-ring: hsl(var(--ring));
-  --font-sans: var(--font-geist-sans, Inter, system-ui, sans-serif);
+  --font-sans: var(--font-jakarta, 'Plus Jakarta Sans', system-ui, sans-serif);
   --font-mono: var(--font-geist-mono, ui-monospace, SFMono-Regular, monospace);
 }
 
@@ -68,6 +74,7 @@
   *:focus-visible {
     outline: 2px solid hsl(var(--ring));
     outline-offset: 2px;
+    box-shadow: 0 0 12px hsl(var(--ring) / 0.4);
   }
 }
 
@@ -97,9 +104,9 @@
   }
 }
 
-@keyframes fade-in {
-  from { opacity: 0; transform: translateY(4px); }
-  to { opacity: 1; transform: translateY(0); }
+@keyframes fade-in-up {
+  from { opacity: 0; transform: translateY(8px) scale(0.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
 }
 
 @keyframes count-up {
@@ -107,13 +114,45 @@
   to { opacity: 1; }
 }
 
+@keyframes glow-pulse {
+  0%, 100% {
+    box-shadow: 0 0 8px hsl(var(--accent) / 0.15), 0 0 16px hsl(var(--accent) / 0.05);
+  }
+  50% {
+    box-shadow: 0 0 16px hsl(var(--accent) / 0.3), 0 0 32px hsl(var(--accent) / 0.1);
+  }
+}
+
+@keyframes neon-shimmer {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
 @media (prefers-reduced-motion: no-preference) {
   .animate-fade-in {
-    animation: fade-in 0.3s ease-out;
+    animation: fade-in-up 0.35s ease-out;
   }
   .animate-count-up {
     animation: count-up 0.6s ease-out;
   }
+  .animate-glow {
+    animation: glow-pulse 3s ease-in-out infinite;
+  }
+}
+
+.dark ::-webkit-scrollbar {
+  width: 8px;
+}
+.dark ::-webkit-scrollbar-track {
+  background: transparent;
+}
+.dark ::-webkit-scrollbar-thumb {
+  background: hsl(var(--border));
+  border-radius: 4px;
+}
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--muted));
 }
 
 .skip-link {
