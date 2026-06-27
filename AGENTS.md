@@ -242,3 +242,49 @@ This version has breaking changes — APIs, conventions, and file structure may 
 **Commits:**
 - `4f4bb8a` — "Admin mobile responsivo + PWA (Sheet drawer, hamburger, manifest, theme-color)"
 <!-- END:opencode-session -->
+
+<!-- BEGIN:opencode-session -->
+## Session — 27/06/2026 (5)
+
+### Revisão Final + Ajustes Pós-evento
+
+**O que foi feito:**
+
+1. **Sheet fecha ao clicar no link** — `MobileNavLinks` com `SheetClose` wrapping cada link. Menu mobile fecha automático na navegação.
+
+2. **Ícone PWA PNG** — Gerados `icon-192.png` e `icon-512.png` via sharp do SVG do cavalo. Adicionado `apple-touch-icon` e `favicon.png`. Manifest com PNG + SVG + `purpose: maskable`.
+
+3. **Backup do banco** — `scripts/backup.mjs` exporta 6 tabelas para JSON via Supabase service_role key. Salvo em `backups/` (gitignorado).
+
+4. **Testes** — `formatPhone()` (whatsapp/client.ts, 6 casos) + `getEmailConfig()` (email/config.ts, 3 casos). Script `test:watch`. Total: 29 testes passando.
+
+5. **Seed data alinhado** — `apply-schema.mjs` atualizado com tabelas faltantes (`mensagens_enviadas`, `configuracoes`, `sorteio_leads`), índices, RLS, admin seed. 100% alinhado com `schema.sql`.
+
+**Arquivos alterados/novos:**
+- `components/admin/nav.tsx` — MobileNavLinks com SheetClose
+- `package.json` — script test:watch
+- `lib/whatsapp/client.ts` — export formatPhone
+- `public/icon-192.png` (novo)
+- `public/icon-512.png` (novo)
+- `public/favicon.png` (novo)
+- `public/manifest.json` — PNG + maskable
+- `app/layout.tsx` — icons (apple-touch-icon, favicon)
+- `scripts/backup.mjs` (novo)
+- `scripts/apply-schema.mjs` — alinhado com schema.sql
+- `.gitignore` — +/backups/
+- `.env.example` — +SUPABASE_SERVICE_ROLE_KEY
+- `.env.local` — +SUPABASE_SERVICE_ROLE_KEY
+- `lib/__tests__/whatsapp-client.test.ts` (novo)
+- `lib/__tests__/email-config.test.ts` (novo)
+- `PLANO.md` — sprint final consolidado
+
+**Commits:**
+- `1ff3054` — "Sheet fecha ao clicar em link no mobile nav"
+- `af1a735` — "Ícone PWA: cavalo + Diagnostic Vet (SVG)"
+- `799db6d` — "PWA: PNG icons (192+512), apple-touch-icon, favicon, manifest completo"
+- `e45b922` — "Backup script: scripts/backup.mjs + SUPABASE_SERVICE_ROLE_KEY"
+- `ce6767e` — "Fix backup: order por coluna correta"
+- `c5fb852` — "Testes: formatPhone() + getEmailConfig() + test:watch"
+- `8a929a7` — "Atualiza PLANO.md com backup e testes concluídos"
+- `d152280` — "Alinha apply-schema.mjs com schema.sql"
+<!-- END:opencode-session -->

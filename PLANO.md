@@ -148,6 +148,7 @@ Tudo pronto pro evento! Último deploy consolidado no Vercel.
 | 2 | PWA (manifest.json, theme-color, apple-mobile-web-app, ícone cavalo Diagnostic, PNGs 192+512, apple-touch-icon, favicon) | `public/manifest.json`, `public/icon.svg`, `public/icon-192.png`, `public/icon-512.png`, `public/favicon.png`, `app/layout.tsx` |
 | 3 | Backup do banco (scripts/backup.mjs) | `scripts/backup.mjs`, `.env.example`, `.gitignore` |
 | 4 | Testes automatizados (formatPhone, getEmailConfig, test:watch) | `lib/__tests__/whatsapp-client.test.ts`, `lib/__tests__/email-config.test.ts`, `package.json` |
+| 5 | Seed data alinhado (apply-schema.mjs 100% = schema.sql) | `scripts/apply-schema.mjs` |
 
 ## ⏳ Pós-evento
 
