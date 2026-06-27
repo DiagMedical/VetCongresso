@@ -288,3 +288,41 @@ This version has breaking changes — APIs, conventions, and file structure may 
 - `8a929a7` — "Atualiza PLANO.md com backup e testes concluídos"
 - `d152280` — "Alinha apply-schema.mjs com schema.sql"
 <!-- END:opencode-session -->
+
+<!-- BEGIN:opencode-session -->
+## Session — 27/06/2026 (6)
+
+### UI Glow + Skeleton + Tabelas Ordenáveis
+
+**O que foi feito:**
+
+1. **Hover glow nos cards** — `components/ui/card.tsx` ganhou `hover:ring-accent/30` + `shadow-[0_0_10px_hsl(var(--accent)/0.08)]`. Todos os cards do sistema brilham em cyan ao passar o mouse.
+
+2. **KPI pulsante** — "Total de Leads" no dashboard ganhou `animate-glow` (pulso 3s infinito). Demais KPIs com hover glow sutil.
+
+3. **Nav admin com brilho** — Link ativo tem `shadow-[0_0_6px_hsl(var(--primary)/0.4)]`. Link inativo ganhou `hover:ring-1 hover:ring-foreground/5`.
+
+4. **Botões CTA na landing** — "Palestras" e "Sorteio" com `hover:shadow-[0_0_10px_hsl(var(--primary)/0.25)]`.
+
+5. **Linhas de tabela com ring** — `hover:ring-1 hover:ring-accent/10` nas tabelas do dashboard e leads.
+
+6. **Skeleton loading** — `app/admin/loading.tsx` reescrito com layout real (KPIs, gráficos, tabela) em vez de spinner simples.
+
+7. **Tabelas ordenáveis** — Leads (Nome, Email, Status, Origem, Data) e Dashboard (Palestra, Palestrante, Vagas, Inscritos, Check-ins, %). Clique no header alterna asc/desc com ícone de seta.
+
+**Arquivos alterados/novos:**
+- `components/ui/card.tsx` — hover ring-accent + shadow glow
+- `components/admin/animated-kpi.tsx` — className prop, hover glow
+- `components/admin/nav.tsx` — glow no link ativo, ring no hover
+- `app/admin/page.tsx` — animate-glow no primeiro KPI
+- `app/page.tsx` — hover shadow nos CTA buttons
+- `components/admin/dashboard-tabela-palestras.tsx` — ordenável + hover ring
+- `components/admin/dashboard-ultimos-leads.tsx` — hover ring
+- `app/admin/loading.tsx` — skeleton com layout real
+- `components/admin/leads-table.tsx` — ordenável (Nome, Email, Status, Origem, Data)
+- `PLANO.md` — atualizado
+
+**Commits:**
+- `b119572` — "UI: glow hover nos cards, nav ativo com brilho, CTA com shadow, tabelas com ring, KPI pulsante"
+- `eb4eac9` — "Skeleton loading real + tabelas ordenáveis (leads e dashboard)"
+<!-- END:opencode-session -->

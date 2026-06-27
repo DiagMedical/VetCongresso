@@ -149,6 +149,9 @@ Tudo pronto pro evento! Último deploy consolidado no Vercel.
 | 3 | Backup do banco (scripts/backup.mjs) | `scripts/backup.mjs`, `.env.example`, `.gitignore` |
 | 4 | Testes automatizados (formatPhone, getEmailConfig, test:watch) | `lib/__tests__/whatsapp-client.test.ts`, `lib/__tests__/email-config.test.ts`, `package.json` |
 | 5 | Seed data alinhado (apply-schema.mjs 100% = schema.sql) | `scripts/apply-schema.mjs` |
+| 6 | UI glow hover (cards, nav, CTA, tabelas, KPI pulsante) | `components/ui/card.tsx`, `components/admin/nav.tsx`, `app/page.tsx`, `app/admin/page.tsx` |
+| 7 | Skeleton loading real (dashboard) | `app/admin/loading.tsx` |
+| 8 | Tabelas ordenáveis (leads + dashboard) | `components/admin/leads-table.tsx`, `components/admin/dashboard-tabela-palestras.tsx` |
 
 ## ⏳ Pós-evento
 
