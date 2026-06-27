@@ -17,6 +17,15 @@ export const metadata: Metadata = {
   title: 'ABRAVEQ 2026 — Silent Booking | Diagnostic Vet',
   description: 'Reserve sua vaga nas palestras silenciosas da XXVI Conferência Anual ABRAVEQ 2026. Patrocínio Diagnostic Vet.',
   manifest: '/manifest.json',
+  icons: {
+    icon: [
+      { url: '/favicon.png', sizes: '32x32', type: 'image/png' },
+      { url: '/icon.svg', type: 'image/svg+xml' },
+    ],
+    apple: [
+      { url: '/icon-192.png', sizes: '192x192', type: 'image/png' },
+    ],
+  },
   other: {
     'theme-color': '#0d0a1a',
     'apple-mobile-web-app-capable': 'yes',
