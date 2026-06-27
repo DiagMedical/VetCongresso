@@ -1,7 +1,7 @@
 'use client'
 
-import { useState } from 'react'
-import { Download, Inbox, Search } from 'lucide-react'
+import { useState, useMemo } from 'react'
+import { Download, Inbox, Search, ArrowUpDown, ArrowUp, ArrowDown } from 'lucide-react'
 import type { Inscrito, StatusInscricao } from '@/types'
 import { formatDate } from '@/lib/utils'
 
@@ -16,6 +16,18 @@ export function LeadsTable({ inscritos, palestras, totalCount, limiteAtingido }:
   const [busca, setBusca] = useState('')
   const [filtroStatus, setFiltroStatus] = useState<StatusInscricao | ''>('')
   const [filtroPalestra, setFiltroPalestra] = useState('')
+  const [ordem, setOrdem] = useState<{ col: string; dir: 'asc' | 'desc' }>({ col: 'created_at', dir: 'desc' })
+
+  function toggleOrdem(col: string) {
+    setOrdem((prev) => prev.col === col ? { col, dir: prev.dir === 'asc' ? 'desc' : 'asc' } : { col, dir: 'asc' })
+  }
+
+  function SetaIcon({ col }: { col: string }) {
+    if (ordem.col !== col) return <ArrowUpDown className="ml-1 inline size-3 text-muted/40" />
+    return ordem.dir === 'asc'
+      ? <ArrowUp className="ml-1 inline size-3 text-primary" />
+      : <ArrowDown className="ml-1 inline size-3 text-primary" />
+  }
 
   const statusLabels: Record<StatusInscricao, string> = {
     confirmado: 'Confirmado',
@@ -31,15 +43,31 @@ export function LeadsTable({ inscritos, palestras, totalCount, limiteAtingido }:
     espera: 'bg-muted/30 text-muted',
   }
 
-  const filtrados = inscritos.filter((i) => {
-    if (busca) {
-      const q = busca.toLowerCase()
-      if (!i.nome.toLowerCase().includes(q) && !i.email.toLowerCase().includes(q) && !i.telefone.includes(q)) return false
-    }
-    if (filtroStatus && i.status !== filtroStatus) return false
-    if (filtroPalestra && i.palestra_id !== filtroPalestra) return false
-    return true
-  })
+  const filtrados = useMemo(() => {
+    const filtrados = inscritos.filter((i) => {
+      if (busca) {
+        const q = busca.toLowerCase()
+        if (!i.nome.toLowerCase().includes(q) && !i.email.toLowerCase().includes(q) && !i.telefone.includes(q)) return false
+      }
+      if (filtroStatus && i.status !== filtroStatus) return false
+      if (filtroPalestra && i.palestra_id !== filtroPalestra) return false
+      return true
+    })
+
+    filtrados.sort((a, b) => {
+      let cmp = 0
+      switch (ordem.col) {
+        case 'nome': cmp = a.nome.localeCompare(b.nome); break
+        case 'email': cmp = a.email.localeCompare(b.email); break
+        case 'status': cmp = a.status.localeCompare(b.status); break
+        case 'origem': cmp = (a.origem ?? '').localeCompare(b.origem ?? ''); break
+        case 'created_at': cmp = new Date(a.created_at).getTime() - new Date(b.created_at).getTime(); break
+      }
+      return ordem.dir === 'asc' ? cmp : -cmp
+    })
+
+    return filtrados
+  }, [inscritos, busca, filtroStatus, filtroPalestra, ordem])
 
   async function handleExport(formato: 'xlsx' | 'csv') {
     const { exportarLeads } = await import('@/lib/actions/admin')
@@ -118,13 +146,33 @@ export function LeadsTable({ inscritos, palestras, totalCount, limiteAtingido }:
           <caption className="sr-only">Lista de leads cadastrados</caption>
           <thead className="bg-card">
             <tr className="text-left text-muted">
-              <th scope="col" className="px-4 py-3 font-medium">Nome</th>
-              <th scope="col" className="px-4 py-3 font-medium">Email</th>
+              <th scope="col" className="px-4 py-3 font-medium">
+                <button onClick={() => toggleOrdem('nome')} className="flex items-center gap-1 hover:text-foreground transition-colors">
+                  Nome <SetaIcon col="nome" />
+                </button>
+              </th>
+              <th scope="col" className="px-4 py-3 font-medium">
+                <button onClick={() => toggleOrdem('email')} className="flex items-center gap-1 hover:text-foreground transition-colors">
+                  Email <SetaIcon col="email" />
+                </button>
+              </th>
               <th scope="col" className="px-4 py-3 font-medium">Telefone</th>
               <th scope="col" className="px-4 py-3 font-medium">Palestra</th>
-              <th scope="col" className="px-4 py-3 font-medium">Status</th>
-              <th scope="col" className="px-4 py-3 font-medium">Origem</th>
-              <th scope="col" className="px-4 py-3 font-medium">Data</th>
+              <th scope="col" className="px-4 py-3 font-medium">
+                <button onClick={() => toggleOrdem('status')} className="flex items-center gap-1 hover:text-foreground transition-colors">
+                  Status <SetaIcon col="status" />
+                </button>
+              </th>
+              <th scope="col" className="px-4 py-3 font-medium">
+                <button onClick={() => toggleOrdem('origem')} className="flex items-center gap-1 hover:text-foreground transition-colors">
+                  Origem <SetaIcon col="origem" />
+                </button>
+              </th>
+              <th scope="col" className="px-4 py-3 font-medium">
+                <button onClick={() => toggleOrdem('created_at')} className="flex items-center gap-1 hover:text-foreground transition-colors">
+                  Data <SetaIcon col="created_at" />
+                </button>
+              </th>
             </tr>
           </thead>
           <tbody className="divide-y divide-border">
