@@ -1,8 +1,12 @@
 'use client'
 
-import { BarChart3, LayoutDashboard, QrCode, Users, BookOpen, MessageSquare, Settings, TrendingUp, Gift, Shield } from 'lucide-react'
-import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import Link from 'next/link'
+import {
+  BarChart3, LayoutDashboard, QrCode, Users, BookOpen,
+  MessageSquare, Settings, TrendingUp, Gift, Shield, Menu, X,
+} from 'lucide-react'
+import { Sheet, SheetTrigger, SheetContent, SheetClose } from '@/components/ui/sheet'
 
 const links = [
   { href: '/admin', label: 'Dashboard', icon: LayoutDashboard },
@@ -17,11 +21,11 @@ const links = [
   { href: '/admin/config', label: 'Configurações', icon: Settings },
 ]
 
-export function AdminNav() {
+function NavLinks() {
   const pathname = usePathname()
 
   return (
-    <nav aria-label="Navegação principal" className="flex flex-col gap-1 bg-card p-4 border-r border-border min-w-56">
+    <>
       {links.map(({ href, label, icon: Icon }) => (
         <Link
           key={href}
@@ -37,6 +41,39 @@ export function AdminNav() {
           {label}
         </Link>
       ))}
+    </>
+  )
+}
+
+export function AdminNav({ className }: { className?: string }) {
+  return (
+    <nav
+      aria-label="Navegação principal"
+      className={`flex-col gap-1 bg-card p-4 border-r border-border min-w-56 ${className ?? ''}`}
+    >
+      <NavLinks />
     </nav>
+  )
+}
+
+export function AdminMobileNav() {
+  return (
+    <Sheet>
+      <SheetTrigger
+        className="flex items-center justify-center rounded-md size-9 text-muted hover:bg-white/5 transition-colors lg:hidden"
+        aria-label="Abrir menu de navegação"
+      >
+        <Menu className="size-5" />
+      </SheetTrigger>
+      <SheetContent side="left" className="w-64 bg-card p-0 border-r border-border">
+        <SheetClose className="absolute top-3 right-3 flex items-center justify-center size-8 text-muted hover:text-foreground transition-colors">
+          <X className="size-4" />
+          <span className="sr-only">Fechar</span>
+        </SheetClose>
+        <div className="flex flex-col gap-1 p-4 pt-14">
+          <NavLinks />
+        </div>
+      </SheetContent>
+    </Sheet>
   )
 }

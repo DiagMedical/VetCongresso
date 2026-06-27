@@ -16,6 +16,12 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: 'ABRAVEQ 2026 — Silent Booking | Diagnostic Vet',
   description: 'Reserve sua vaga nas palestras silenciosas da XXVI Conferência Anual ABRAVEQ 2026. Patrocínio Diagnostic Vet.',
+  manifest: '/manifest.json',
+  other: {
+    'theme-color': '#0d0a1a',
+    'apple-mobile-web-app-capable': 'yes',
+    'apple-mobile-web-app-status-bar-style': 'black-translucent',
+  },
 }
 
 export default function RootLayout({
