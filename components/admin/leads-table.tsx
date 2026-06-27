@@ -8,9 +8,11 @@ import { formatDate } from '@/lib/utils'
 interface LeadsTableProps {
   inscritos: Inscrito[]
   palestras: { id: string; tema: string }[]
+  totalCount: number
+  limiteAtingido: boolean
 }
 
-export function LeadsTable({ inscritos, palestras }: LeadsTableProps) {
+export function LeadsTable({ inscritos, palestras, totalCount, limiteAtingido }: LeadsTableProps) {
   const [busca, setBusca] = useState('')
   const [filtroStatus, setFiltroStatus] = useState<StatusInscricao | ''>('')
   const [filtroPalestra, setFiltroPalestra] = useState('')
@@ -166,7 +168,8 @@ export function LeadsTable({ inscritos, palestras }: LeadsTableProps) {
       </div>
 
       <p className="text-xs text-muted" role="status">
-        Mostrando {filtrados.length} de {inscritos.length} leads
+        Mostrando {filtrados.length} de {totalCount} leads
+        {limiteAtingido && ' (exibindo apenas os 1000 mais recentes)'}
       </p>
     </div>
   )

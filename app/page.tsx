@@ -48,6 +48,9 @@ export default function LandingPage() {
         <p className="mt-2 text-lg text-muted">
           XXVI Conferência Anual
         </p>
+        <p className="mt-1 text-sm text-accent font-semibold">
+          2 a 4 de Junho de 2026 — Estande Diagnostic Vet
+        </p>
 
         <div className="mt-2 flex items-center gap-2">
           <span className="text-sm text-muted">Patrocinador oficial</span>

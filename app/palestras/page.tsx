@@ -33,7 +33,7 @@ function DiaTab({ dia, atual }: { dia: DiaEvento | null; atual: DiaEvento | null
   const active = atual === dia
 
   return (
-    <a
+    <Link
       href={href}
       className={`rounded-md px-4 py-1.5 text-sm font-medium transition-colors ${
         active
@@ -42,7 +42,7 @@ function DiaTab({ dia, atual }: { dia: DiaEvento | null; atual: DiaEvento | null
       }`}
     >
       {label}
-    </a>
+    </Link>
   )
 }
 

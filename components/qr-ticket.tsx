@@ -1,6 +1,4 @@
-'use client'
-
-import { QRCodeSVG } from 'qrcode.react'
+import QRCode from 'qrcode'
 import type { Inscrito } from '@/types'
 import { formatDate, formatTime } from '@/lib/utils'
 import { Calendar, CalendarCheck } from 'lucide-react'
@@ -60,11 +58,20 @@ function buildQrPayload(i: Inscrito): string {
   return JSON.stringify(payload)
 }
 
-export function QrTicket({ inscrito }: QrTicketProps) {
+export async function QrTicket({ inscrito }: QrTicketProps) {
   if (!inscrito.palestra) return null
 
   const p = inscrito.palestra
   const isEspera = inscrito.status === 'espera'
+
+  let qrDataUrl: string | null = null
+  if (!isEspera) {
+    qrDataUrl = await QRCode.toDataURL(buildQrPayload(inscrito), {
+      width: 360,
+      margin: 2,
+      color: { dark: '#000000', light: '#ffffff' },
+    })
+  }
 
   return (
     <div className="flex flex-col items-center gap-6 rounded-lg border border-border bg-card p-6 text-center">
@@ -72,9 +79,12 @@ export function QrTicket({ inscrito }: QrTicketProps) {
         <div className="flex size-40 items-center justify-center rounded-full bg-muted/30">
           <span className="text-4xl text-muted">⏳</span>
         </div>
-      ) : (
-        <QRCodeSVG value={buildQrPayload(inscrito)} size={180} level="M" />
-      )}
+      ) : qrDataUrl ? (
+        <div className="rounded-lg border border-border bg-white p-2">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={qrDataUrl} alt="QR Code de check-in" className="size-[180px]" />
+        </div>
+      ) : null}
 
       <div>
         <h2 className="text-lg font-bold text-foreground">{p.tema}</h2>

@@ -197,10 +197,10 @@ export async function realizarCheckIn(inscritoId: string) {
   if (palestra) {
     const inicio = new Date(palestra.horario_inicio).getTime()
     const agora = Date.now()
-    const dezMinEmMs = 10 * 60 * 1000
+    const meiaHoraEmMs = 30 * 60 * 1000
 
-    if (agora < inicio - dezMinEmMs) {
-      throw new Error('Check-in liberado apenas 10 minutos antes do início')
+    if (agora < inicio - meiaHoraEmMs) {
+      throw new Error('Check-in liberado apenas 30 minutos antes do início')
     }
 
     if (agora > inicio) {

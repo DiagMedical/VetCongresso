@@ -30,7 +30,7 @@ export async function inscreverSorteio(data: { nome: string; whatsapp: string; e
     .from('palestras')
     .select('id')
     .eq('tema', 'Sorteio Powerbank')
-    .single()
+    .maybeSingle()
 
   if (palestra) {
     const { error: _err } = await supabase.from('inscritos').insert({
@@ -42,6 +42,8 @@ export async function inscreverSorteio(data: { nome: string; whatsapp: string; e
       aceite_lgpd: true,
     })
     if (_err) console.error('[Sorteio] erro ao copiar lead:', _err.message)
+  } else {
+    console.warn('[Sorteio] Palestra "Sorteio Powerbank" não encontrada — lead não copiado para inscritos')
   }
 }
 

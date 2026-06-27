@@ -117,15 +117,37 @@ This version has breaking changes — APIs, conventions, and file structure may 
 <!-- BEGIN:opencode-session -->
 ## Session — 27/06/2026 (3)
 
-### Checklist Pré-Congresso
+### Checklist Pré-Congresso — Implementação
 
 **O que foi feito:**
-- Varredura completa de readiness no app (15 áreas auditadas)
-- Identificados 4 🔴 críticos, 4 🟡 importantes, 1 🟢 bônus
-- `CHECKLIST-PRE-CONGRESSO.md` criado com plano de ação detalhado
 
-**Arquivos:**
-- `CHECKLIST-PRE-CONGRESSO.md` (novo)
+1. **Middleware de autenticação** — `proxy.ts` já estava no formato correto (convenção Next.js 16). Confirmado funcionando via build (`ƒ Proxy (Middleware)`).
+
+2. **QRCode do ticket** — `qr-ticket.tsx` reescrito como server component. `QRCodeSVG` (qrcode.react) substituído por `QRCode.toDataURL()` (qrcode pkg) — gera PNG no servidor, sem risco de SSR issue no Vercel.
+
+3. **Leads com paginação** — Adicionado `.range(0, 999)` + `{ count: 'exact' }` na query. Componente exibe aviso "exibindo apenas os 1000 mais recentes".
+
+4. **Janela check-in ampliada** — 10 min → 30 min antes do início.
+
+5. **Data do evento na landing** — "2 a 4 de Junho de 2026 — Estande Diagnostic Vet" em accent no hero.
+
+6. **Palestras: `<a>` → `<Link>`** — `DiaTab` agora usa `Link` (navegação client-side, sem reload).
+
+7. **Sorteio fallback** — `.single()` → `.maybeSingle()` com `console.warn` se palestra "Sorteio Powerbank" não existir.
+
+8. **Email** — Decidido não implementar agora (risco para T-3 dias). Ticket na tela + WhatsApp cobre.
+
+**Arquivos alterados/novos:**
+- `proxy.ts` — mantido (já estava no formato correto)
+- `components/qr-ticket.tsx` — reescrito (server component, qrcode pkg)
+- `app/admin/leads/page.tsx` — range + count
+- `components/admin/leads-table.tsx` — totalCount + aviso limite
+- `lib/actions/admin.ts` — check-in 30min
+- `app/page.tsx` — data do evento
+- `app/palestras/page.tsx` — `<a>` → `<Link>`
+- `lib/actions/sorteio.ts` — `.maybeSingle()` + warn
+- `CHECKLIST-PRE-CONGRESSO.md` — atualizado com status
+- `PLANO.md` — itens marcados como concluídos
 <!-- END:opencode-session -->
 
 <!-- BEGIN:opencode-session -->

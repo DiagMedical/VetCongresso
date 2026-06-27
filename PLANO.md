@@ -148,5 +148,13 @@ CRON_SECRET=                     # Segredo dos endpoints cron
 | 8 | Exportação PDF (html2canvas + jspdf) | ✅ | `lib/export.ts`, `components/admin/botao-exportar-pdf.tsx`, `app/admin/relatorios/page.tsx` |
 | 9 | Envio real de email via Resend (SDK + templates + gatilhos) | ⏳ Pendente | `lib/email/send.ts`, templates HTML, triggers |
 | 10 | Deploy automático via CI/CD | ⏳ Pendente | — |
+| — | **Pré-Congresso** (itens resolvidos) | | |
+| 11 | Middleware de autenticação (proxy.ts) | ✅ | `proxy.ts` |
+| 12 | QRCode do ticket (server component) | ✅ | `components/qr-ticket.tsx` |
+| 13 | Leads com paginação (range 1000) | ✅ | `app/admin/leads/page.tsx`, `components/admin/leads-table.tsx` |
+| 14 | Janela check-in 30min | ✅ | `lib/actions/admin.ts` |
+| 15 | Data do evento na landing | ✅ | `app/page.tsx` |
+| 16 | Palestras `<a>` → `<Link>` | ✅ | `app/palestras/page.tsx` |
+| 17 | Sorteio fallback (maybeSingle) | ✅ | `lib/actions/sorteio.ts` |
 
 > 🔴 Alta = essencial pro evento, 🟡 Média = bom ter, 🟢 Baixa = legal, ⏳ Pendente = depois
