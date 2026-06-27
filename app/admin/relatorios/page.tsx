@@ -1,6 +1,7 @@
 import { Users, TicketCheck, UserMinus, TrendingUp, BarChart3, Calendar, Clock } from 'lucide-react'
 import { getRelatorios } from '@/lib/actions/admin'
 import { KpiCard } from '@/components/admin/kpi-card'
+import { BotaoExportarPDF } from '@/components/admin/botao-exportar-pdf'
 import { RelatoriosCharts } from './relatorios-charts'
 import { RelatoriosTabela } from './relatorios-tabela'
 import { BackToTop } from '@/components/back-to-top'
@@ -10,7 +11,12 @@ export default async function RelatoriosPage() {
 
   return (
     <div className="space-y-6">
-      <h2 className="text-2xl font-bold text-foreground">Relatórios</h2>
+      <div className="flex items-center justify-between">
+        <h2 className="text-2xl font-bold text-foreground">Relatórios</h2>
+        <BotaoExportarPDF containerId="relatorio-conteudo" filename="relatorio-vetcongresso" />
+      </div>
+
+      <div id="relatorio-conteudo" className="space-y-6">
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
         <KpiCard title="Total de Leads" value={data.total_leads} icon={<Users className="size-5" />} />
@@ -46,6 +52,8 @@ export default async function RelatoriosPage() {
 
       <RelatoriosCharts data={data} />
       <RelatoriosTabela data={data} />
+      </div>
+
       <BackToTop />
     </div>
   )

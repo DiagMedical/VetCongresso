@@ -115,6 +115,27 @@ This version has breaking changes — APIs, conventions, and file structure may 
 <!-- END:opencode-session -->
 
 <!-- BEGIN:opencode-session -->
+## Session — 27/06/2026 (2)
+
+### Exportação PDF nos Relatórios
+
+**O que foi feito:**
+
+1. **`lib/export.ts`** — Nova função `exportarRelatorioPDF(containerId, filename)` que captura o container HTML com html2canvas (scale 2x, JPEG 95%) e gera PDF A4 com jsPDF. Suporte a múltiplas páginas se o conteúdo exceder uma folha.
+
+2. **`components/admin/botao-exportar-pdf.tsx`** — Botão client component com ícone FileDown, estado de loading (Loader2 + "Exportando…"), toast de sucesso/erro. Estilo accent (cyan neon) pra destacar.
+
+3. **`app/admin/relatorios/page.tsx`** — Botão "Exportar PDF" ao lado do título; conteúdo encapsulado em `<div id="relatorio-conteudo">` para captura.
+
+**Arquivos alterados/novos:**
+- `lib/export.ts` — adicionado `exportarRelatorioPDF()`
+- `components/admin/botao-exportar-pdf.tsx` (novo)
+- `app/admin/relatorios/page.tsx` — botão + wrapper id
+- `package.json` — adicionado jspdf + html2canvas
+- `PLANO.md` — item 8 concluído
+<!-- END:opencode-session -->
+
+<!-- BEGIN:opencode-session -->
 ## Session — 27/06/2026
 
 ### Tema Indigo Neon + Plus Jakarta Sans

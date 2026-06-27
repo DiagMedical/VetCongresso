@@ -145,7 +145,7 @@ CRON_SECRET=                     # Segredo dos endpoints cron
 | 5 | **Filtro por data** (seletor Dia 1/2/3 ou Todos no dashboard) | ✅ | `app/admin/page.tsx`, `components/admin/dashboard-filtro-data.tsx` |
 | 6 | **Leads por dia** (gráfico de linha, reservas ao longo do tempo) | ✅ | `components/admin/dashboard-charts.tsx` |
 | 7 | **Ranking de palestrantes** (ordenado por inscritos) | ✅ | `components/admin/dashboard-charts.tsx`, `lib/actions/admin.ts` |
-| 8 | Exportação PDF (html2canvas + jspdf) | ⏳ Pendente | `lib/export.ts` |
+| 8 | Exportação PDF (html2canvas + jspdf) | ✅ | `lib/export.ts`, `components/admin/botao-exportar-pdf.tsx`, `app/admin/relatorios/page.tsx` |
 | 9 | Envio real de email via Resend (SDK + templates + gatilhos) | ⏳ Pendente | `lib/email/send.ts`, templates HTML, triggers |
 | 10 | Deploy automático via CI/CD | ⏳ Pendente | — |
 
