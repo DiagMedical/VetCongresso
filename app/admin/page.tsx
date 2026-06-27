@@ -24,7 +24,7 @@ export default async function AdminDashboard(props: { searchParams?: Promise<{ d
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
-        <AnimatedKpi title="Total de Leads" value={data.total_leads} icon={<Users className="size-5" />} />
+        <AnimatedKpi title="Total de Leads" value={data.total_leads} icon={<Users className="size-5" />} className="animate-glow" />
         <AnimatedKpi title="Check-ins Hoje" value={data.checkins_hoje} icon={<TicketCheck className="size-5" />} />
         <AnimatedKpi title="Palestras Ativas" value={data.palestras_ativas} icon={<BarChart3 className="size-5" />} />
         <AnimatedKpi title="Cancelamentos" value={data.cancelamentos} icon={<UserMinus className="size-5" />} />

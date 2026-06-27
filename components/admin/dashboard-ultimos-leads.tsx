@@ -32,7 +32,7 @@ export function DashboardUltimosLeads({ data }: Props) {
             </thead>
             <tbody className="divide-y divide-border">
               {data.ultimos_leads.map((lead, i) => (
-                <tr key={i} className="bg-background hover:bg-card/50 transition-colors">
+                <tr key={i} className="bg-background hover:bg-card/50 hover:ring-1 hover:ring-accent/10 transition-all duration-200">
                   <td className="px-4 py-3 font-medium text-foreground">{lead.nome}</td>
                   <td className="px-4 py-3 text-muted">{lead.email}</td>
                   <td className="px-4 py-3 text-foreground">{lead.palestra}</td>

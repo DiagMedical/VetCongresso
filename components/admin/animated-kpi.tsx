@@ -8,9 +8,10 @@ interface AnimatedKpiProps {
   value: number
   icon: ReactNode
   suffix?: string
+  className?: string
 }
 
-export function AnimatedKpi({ title, value, icon, suffix }: AnimatedKpiProps) {
+export function AnimatedKpi({ title, value, icon, suffix, className }: AnimatedKpiProps) {
   const [display, setDisplay] = useState(0)
   const ref = useRef<HTMLDivElement>(null)
   const counted = useRef(false)
@@ -46,7 +47,7 @@ export function AnimatedKpi({ title, value, icon, suffix }: AnimatedKpiProps) {
   }, [value])
 
   return (
-    <div ref={ref} className="flex items-center gap-4 rounded-lg border border-border bg-card p-4 animate-fade-in">
+    <div ref={ref} className={`flex items-center gap-4 rounded-lg border border-border bg-card p-4 animate-fade-in hover:ring-accent/20 hover:shadow-[0_0_8px_hsl(var(--accent)/0.1)] transition-all duration-300 ${className ?? ''}`}>
       <div className="rounded-md bg-primary/10 p-2 text-primary">{icon}</div>
       <div>
         <p className="text-sm text-muted">{title}</p>

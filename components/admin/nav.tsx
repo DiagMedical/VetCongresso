@@ -31,10 +31,10 @@ function NavLinks() {
           key={href}
           href={href}
           aria-current={pathname === href ? 'page' : undefined}
-          className={`flex items-center gap-3 rounded-md min-h-[44px] px-3 py-2 text-sm transition-colors ${
+          className={`flex items-center gap-3 rounded-md min-h-[44px] px-3 py-2 text-sm transition-all duration-200 ${
             pathname === href
-              ? 'bg-primary text-primary-foreground'
-              : 'text-muted hover:bg-white/5'
+              ? 'bg-primary text-primary-foreground shadow-[0_0_6px_hsl(var(--primary)/0.4)]'
+              : 'text-muted hover:bg-white/5 hover:ring-1 hover:ring-foreground/5'
           }`}
         >
           <Icon className="size-4" aria-hidden="true" />
@@ -68,10 +68,10 @@ function MobileNavLinks() {
             <Link
               href={href}
               aria-current={pathname === href ? 'page' : undefined}
-              className={`flex items-center gap-3 rounded-md min-h-[44px] px-3 py-2 text-sm transition-colors ${
+              className={`flex items-center gap-3 rounded-md min-h-[44px] px-3 py-2 text-sm transition-all duration-200 ${
                 pathname === href
-                  ? 'bg-primary text-primary-foreground'
-                  : 'text-muted hover:bg-white/5'
+                  ? 'bg-primary text-primary-foreground shadow-[0_0_6px_hsl(var(--primary)/0.4)]'
+                  : 'text-muted hover:bg-white/5 hover:ring-1 hover:ring-foreground/5'
               }`}
             >
               <Icon className="size-4" aria-hidden="true" />

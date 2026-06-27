@@ -74,14 +74,14 @@ export default function LandingPage() {
         <div className="mt-10 flex flex-wrap items-center justify-center gap-3">
           <Link
             href="/palestras"
-            className="inline-flex items-center gap-2 rounded-md border-2 border-primary/30 bg-card px-6 py-3 text-base font-medium text-foreground hover:border-primary/60 hover:bg-primary/5 transition-all"
+            className="inline-flex items-center gap-2 rounded-md border-2 border-primary/30 bg-card px-6 py-3 text-base font-medium text-foreground hover:border-primary/60 hover:bg-primary/5 hover:shadow-[0_0_10px_hsl(var(--primary)/0.25)] transition-all duration-300"
           >
             <BookOpen className="size-5 text-primary" />
             Palestras
           </Link>
           <Link
             href="/sorteio"
-            className="inline-flex items-center gap-2 rounded-md border-2 border-primary/30 bg-card px-6 py-3 text-base font-medium text-foreground hover:border-primary/60 hover:bg-primary/5 transition-all"
+            className="inline-flex items-center gap-2 rounded-md border-2 border-primary/30 bg-card px-6 py-3 text-base font-medium text-foreground hover:border-primary/60 hover:bg-primary/5 hover:shadow-[0_0_10px_hsl(var(--primary)/0.25)] transition-all duration-300"
           >
             <Gift className="size-5 text-primary" />
             Sorteio

@@ -28,7 +28,7 @@ export function DashboardTabelaPalestras({ data }: Props) {
           </thead>
           <tbody className="divide-y divide-border">
             {data.reservas_por_palestra.map((p) => (
-              <tr key={p.palestra_id} className="bg-background hover:bg-card/50 transition-colors">
+              <tr key={p.palestra_id} className="bg-background hover:bg-card/50 hover:ring-1 hover:ring-accent/10 transition-all duration-200">
                 <td className="px-4 py-3 font-medium text-foreground">{p.tema}</td>
                 <td className="px-4 py-3 text-muted">{p.palestrante}</td>
                 <td className="px-4 py-3 text-foreground">{p.vagas}</td>
