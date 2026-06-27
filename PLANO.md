@@ -146,6 +146,8 @@ Tudo pronto pro evento! Último deploy consolidado no Vercel.
 |---|--------|----------|
 | 1 | Admin mobile responsivo (Sheet drawer, hamburger) | `components/admin/nav.tsx`, `components/admin/header.tsx`, `app/admin/layout.tsx` |
 | 2 | PWA (manifest.json, theme-color, apple-mobile-web-app, ícone cavalo Diagnostic, PNGs 192+512, apple-touch-icon, favicon) | `public/manifest.json`, `public/icon.svg`, `public/icon-192.png`, `public/icon-512.png`, `public/favicon.png`, `app/layout.tsx` |
+| 3 | Backup do banco (scripts/backup.mjs) | `scripts/backup.mjs`, `.env.example`, `.gitignore` |
+| 4 | Testes automatizados (formatPhone, getEmailConfig, test:watch) | `lib/__tests__/whatsapp-client.test.ts`, `lib/__tests__/email-config.test.ts`, `package.json` |
 
 ## ⏳ Pós-evento
 
