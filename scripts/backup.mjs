@@ -6,18 +6,18 @@ const required = ['NEXT_PUBLIC_SUPABASE_URL', 'SUPABASE_SERVICE_ROLE_KEY']
 const missing = required.filter((key) => !process.env[key])
 if (missing.length > 0) {
   console.error(`Variáveis obrigatórias faltando: ${missing.join(', ')}`)
-  console.error('Adicione ao .env.local:')
-  console.error(`  SUPABASE_SERVICE_ROLE_KEY=eyJhbGciOiJIUzI1NiIs... (Service Role Key do Supabase Dashboard)`)
+  console.error('Adicione SUPABASE_SERVICE_ROLE_KEY ao .env.local e rode:')
+  console.error('  node --env-file .env.local scripts/backup.mjs')
   process.exit(1)
 }
 
 const TABLES = [
-  'palestras',
-  'inscritos',
-  'admins',
-  'configuracoes',
-  'sorteio_leads',
-  'mensagens_enviadas',
+  { name: 'palestras', order: 'id' },
+  { name: 'inscritos', order: 'id' },
+  { name: 'admins', order: 'id' },
+  { name: 'configuracoes', order: 'chave' },
+  { name: 'sorteio_leads', order: 'id' },
+  { name: 'mensagens_enviadas', order: 'id' },
 ]
 
 async function main() {
@@ -38,21 +38,21 @@ async function main() {
     tables: {},
   }
 
-  for (const table of TABLES) {
+  for (const { name, order } of TABLES) {
     const { data, error } = await supabase
-      .from(table)
+      .from(name)
       .select('*')
-      .order('id', { ascending: true })
+      .order(order, { ascending: true })
 
     if (error) {
-      console.error(`  Erro ao buscar ${table}: ${error.message}`)
+      console.error(`  Erro ao buscar ${name}: ${error.message}`)
       continue
     }
 
-    const filePath = path.join(dir, `${table}.json`)
+    const filePath = path.join(dir, `${name}.json`)
     fs.writeFileSync(filePath, JSON.stringify(data ?? [], null, 2), 'utf-8')
-    metadata.tables[table] = { rows: data?.length ?? 0 }
-    console.log(`  ${table}: ${data?.length ?? 0} linhas → ${filePath}`)
+    metadata.tables[name] = { rows: data?.length ?? 0 }
+    console.log(`  ${name}: ${data?.length ?? 0} linhas → ${filePath}`)
   }
 
   const metaPath = path.join(dir, '_metadata.json')
