@@ -12,7 +12,7 @@ function getConfig() {
   }
 }
 
-function formatPhone(telefone: string): string {
+export function formatPhone(telefone: string): string {
   const digits = telefone.replace(/\D/g, '')
   if (digits.length === 11 && digits.startsWith('55')) return digits
   if (digits.length === 10) return `55${digits}`
