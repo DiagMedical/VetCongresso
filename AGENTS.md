@@ -208,3 +208,37 @@ This version has breaking changes — APIs, conventions, and file structure may 
 - `components/admin/dashboard-charts.tsx` — novo card "Ranking de Palestrantes" com tabela
 - `PLANO.md` — item 7 movido para concluído
 <!-- END:opencode-session -->
+
+<!-- BEGIN:opencode-session -->
+## Session — 27/06/2026 (4)
+
+### Admin Mobile Responsivo + PWA
+
+**Problemas resolvidos:**
+
+1. **Admin sem responsividade mobile** — Sidebar fixa de 224px ocupava espaço horizontal, impossível de usar em celular. Header sem hamburger para abrir navegação.
+
+2. **Sem PWA** — `manifest.json` ausente, sem `theme-color`, sem suporte a "Add to Home Screen".
+
+**Soluções:**
+
+1. **Mobile Nav via Sheet** — `AdminMobileNav` com Sheet (base-ui drawer lateral esquerda) + hamburger visível apenas em `lg:hidden`. `NavLinks` extraído para componente reutilizável dentro do mesmo arquivo.
+
+2. **Layout responsivo** — `AdminNav` recebe `className="hidden lg:flex"` no layout. Padding do main-content ajustado para `p-4 md:p-6`.
+
+3. **Header com hamburger** — `AdminMobileNav` posicionado à esquerda antes do link "Site".
+
+4. **PWA** — `manifest.json` com nome "ABRAVEQ 2026 — VetCongresso", `theme-color` #0d0a1a, ícone SVG inline (círculo indigo + rosto cyan). Meta tags `apple-mobile-web-app-capable` e `apple-mobile-web-app-status-bar-style` adicionadas.
+
+**Arquivos alterados/novos:**
+- `components/admin/nav.tsx` — AdminNav aceita className, NavLinks reutilizável, AdminMobileNav com Sheet
+- `components/admin/header.tsx` — AdminMobileNav + hamburger
+- `app/admin/layout.tsx` — sidebar `hidden lg:flex`, padding responsivo
+- `public/manifest.json` (novo)
+- `public/icon.svg` (novo)
+- `app/layout.tsx` — manifest + theme-color + apple meta tags
+- `PLANO.md` — último deploy consolidado
+
+**Commits:**
+- `4f4bb8a` — "Admin mobile responsivo + PWA (Sheet drawer, hamburger, manifest, theme-color)"
+<!-- END:opencode-session -->

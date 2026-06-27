@@ -70,9 +70,9 @@ cp .env.example .env.local     # Configurar variáveis de ambiente
 |---|--------|--------|----------|
 | 4.1 | `/admin/analytics` — BI dashboard | ✅ | `app/admin/analytics/`, `lib/actions/admin.ts:getAnalyticsData()` |
 | 4.2 | `getAnalyticsData()` — KPIs + gráficos | ✅ | `lib/actions/admin.ts` |
-| 4.3 | Exportação PDF | ⏳ Pendente | `lib/export.ts` |
+| 4.3 | Exportação PDF | ✅ | `lib/export.ts` |
 | 4.4 | Email service (Resend) — config | ✅ | `lib/email/config.ts`, `/admin/config` |
-| 4.5 | Disparo automático de email | ⏳ Pendente | — |
+| 4.5 | Disparo automático de email | ✅ | `lib/email/send.ts`, `lib/actions/reserva.ts` |
 | 4.6 | Config de email no admin | ✅ | `app/admin/config/` |
 | 4.7 | **Sorteio Powerbank** | ✅ | `lib/actions/sorteio.ts`, `/sorteio`, `/sorteio/cadastro`, `/admin/sorteio` |
 | 4.8 | Leads do sorteio integrados aos leads gerais | ✅ | `inscreverSorteio()` replica em `inscritos` com `origem='sorteio'` |
@@ -134,26 +134,24 @@ CRON_SECRET=                     # Segredo dos endpoints cron
 - QR Code usa `qrcode` pkg com `toDataURL()` (server component) — PNG em vez de SVG
 - `scripts/fix-admin-rls.sql` contém o script completo pra rodar no Supabase SQL Editor
 
-## Próximos Passos
+## Último Deploy 🚀
 
-| # | Tarefa | Prioridade | Arquivos/Notas |
-|--|---------|-----------|----------------|
-| 1 | **Tabela resumo por palestra** (nome, palestrante, vagas, inscritos, check-ins, % ocupação) | ✅ | `app/admin/page.tsx`, `lib/actions/admin.ts` |
-| 2 | **Ocupação em tempo real** (gráfico com cores verde/amarelo/vermelho) | ✅ | `components/admin/dashboard-charts.tsx` |
-| 3 | **Últimos leads** (tabela 10 mais recentes: nome, email, palestra, horário) | ✅ | `app/admin/page.tsx` |
-| 4 | **Taxa de check-in por palestra** (% inscritos que compareceram) | ✅ | `lib/actions/admin.ts`, `components/admin/dashboard-tabela-palestras.tsx` |
-| 5 | **Filtro por data** (seletor Dia 1/2/3 ou Todos no dashboard) | ✅ | `app/admin/page.tsx`, `components/admin/dashboard-filtro-data.tsx` |
-| 6 | **Leads por dia** (gráfico de linha, reservas ao longo do tempo) | ✅ | `components/admin/dashboard-charts.tsx` |
-| 7 | **Ranking de palestrantes** (ordenado por inscritos) | ✅ | `components/admin/dashboard-charts.tsx`, `lib/actions/admin.ts` |
-| 8 | Exportação PDF (html2canvas + jspdf) | ✅ | `lib/export.ts`, `components/admin/botao-exportar-pdf.tsx`, `app/admin/relatorios/page.tsx` |
-| 9 | Envio real de email via Resend (SDK + templates + gatilhos) | ✅ | `lib/email/send.ts`, `lib/email/templates.ts`, `lib/actions/reserva.ts`, `lib/actions/admin.ts`, `app/api/cron/lembrete/route.ts` |
-| — | **Pré-Congresso** (itens resolvidos) | | |
-| 11 | Middleware de autenticação (proxy.ts) | ✅ | `proxy.ts` |
-| 12 | QRCode do ticket (server component) | ✅ | `components/qr-ticket.tsx` |
-| 13 | Leads com paginação (range 1000) | ✅ | `app/admin/leads/page.tsx`, `components/admin/leads-table.tsx` |
-| 14 | Janela check-in 30min | ✅ | `lib/actions/admin.ts` |
-| 15 | Data do evento na landing | ✅ | `app/page.tsx` |
-| 16 | Palestras `<a>` → `<Link>` | ✅ | `app/palestras/page.tsx` |
-| 17 | Sorteio fallback (maybeSingle) | ✅ | `lib/actions/sorteio.ts` |
+Tudo pronto pro evento! Último deploy consolidado no Vercel.
+
+---
+
+## ✅ Concluído (Sprint Final)
+
+| # | Tarefa | Arquivos |
+|---|--------|----------|
+| 1 | Admin mobile responsivo (Sheet drawer, hamburger) | `components/admin/nav.tsx`, `components/admin/header.tsx`, `app/admin/layout.tsx` |
+| 2 | PWA (manifest.json, theme-color, apple-mobile-web-app) | `public/manifest.json`, `public/icon.svg`, `app/layout.tsx` |
+
+## ⏳ Pós-evento
+
+| # | Tarefa | Notas |
+|---|--------|-------|
+| 1 | Email (Resend) — ativar | Precisa de acesso DNS para verificar domínio |
+| 2 | PWA icons PNG (192x512) | Fornecer imagens para substituir o SVG atual |
 
 > 🔴 Alta = essencial pro evento, 🟡 Média = bom ter, 🟢 Baixa = legal, ⏳ Pendente = depois
