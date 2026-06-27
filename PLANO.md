@@ -146,8 +146,7 @@ CRON_SECRET=                     # Segredo dos endpoints cron
 | 6 | **Leads por dia** (gráfico de linha, reservas ao longo do tempo) | ✅ | `components/admin/dashboard-charts.tsx` |
 | 7 | **Ranking de palestrantes** (ordenado por inscritos) | ✅ | `components/admin/dashboard-charts.tsx`, `lib/actions/admin.ts` |
 | 8 | Exportação PDF (html2canvas + jspdf) | ✅ | `lib/export.ts`, `components/admin/botao-exportar-pdf.tsx`, `app/admin/relatorios/page.tsx` |
-| 9 | Envio real de email via Resend (SDK + templates + gatilhos) | ⏳ Pendente | `lib/email/send.ts`, templates HTML, triggers |
-| 10 | Deploy automático via CI/CD | ⏳ Pendente | — |
+| 9 | Envio real de email via Resend (SDK + templates + gatilhos) | ✅ | `lib/email/send.ts`, `lib/email/templates.ts`, `lib/actions/reserva.ts`, `lib/actions/admin.ts`, `app/api/cron/lembrete/route.ts` |
 | — | **Pré-Congresso** (itens resolvidos) | | |
 | 11 | Middleware de autenticação (proxy.ts) | ✅ | `proxy.ts` |
 | 12 | QRCode do ticket (server component) | ✅ | `components/qr-ticket.tsx` |

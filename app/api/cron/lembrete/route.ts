@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { sendText } from '@/lib/whatsapp/client'
 import { lembreteMsg } from '@/lib/whatsapp/messages'
+import { sendEmail } from '@/lib/email/send'
 
 export const dynamic = 'force-dynamic'
 export const maxDuration = 120
@@ -64,6 +65,10 @@ export async function GET(request: Request) {
       .from('inscritos')
       .update({ lembrete_enviado: true })
       .eq('id', i.id)
+
+    sendEmail(i.id, 'lembrete').catch((err) =>
+      console.error('[Email] erro ao enviar lembrete:', err)
+    )
 
     if (result.sucesso) enviados++
     else falhas++

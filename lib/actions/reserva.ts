@@ -4,6 +4,7 @@ import type { Palestra, Inscrito, ReservaFormData } from '@/types'
 import { createClient } from '@/lib/supabase/server'
 import { reservaSchema } from '@/lib/schemas'
 import { sendWhatsApp } from '@/lib/whatsapp/send'
+import { sendEmail } from '@/lib/email/send'
 
 export async function listarPalestras() {
   const supabase = await createClient()
@@ -80,6 +81,9 @@ export async function criarReserva(data: ReservaFormData) {
     const tipo = inscrito.status === 'espera' ? 'espera' : 'confirmacao'
     sendWhatsApp(inscrito.id, tipo).catch((err) =>
       console.error('[WhatsApp] erro ao enviar:', err)
+    )
+    sendEmail(inscrito.id, tipo).catch((err) =>
+      console.error('[Email] erro ao enviar:', err)
     )
   }
 

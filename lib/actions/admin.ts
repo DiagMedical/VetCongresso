@@ -4,6 +4,7 @@ import { createClient } from '@/lib/supabase/server'
 import type { Inscrito } from '@/types'
 import { adicionarParticipanteSchema } from '@/lib/schemas'
 import { sendWhatsApp } from '@/lib/whatsapp/send'
+import { sendEmail } from '@/lib/email/send'
 import { listarPalestras } from '@/lib/actions/reserva'
 
 export interface DashboardData {
@@ -218,6 +219,9 @@ export async function realizarCheckIn(inscritoId: string) {
   sendWhatsApp(inscritoId, 'checkin').catch((err) =>
     console.error('[WhatsApp] erro ao enviar:', err)
   )
+  sendEmail(inscritoId, 'checkin').catch((err) =>
+    console.error('[Email] erro ao enviar:', err)
+  )
 }
 
 export async function cancelarPorFalta(inscritoId: string) {
@@ -241,6 +245,9 @@ export async function cancelarPorFalta(inscritoId: string) {
   sendWhatsApp(inscritoId, 'cancelamento').catch((err) =>
     console.error('[WhatsApp] erro ao enviar:', err)
   )
+  sendEmail(inscritoId, 'cancelamento').catch((err) =>
+    console.error('[Email] erro ao enviar:', err)
+  )
 
   // Promote next person on waiting list
   const { data: espera } = await supabase
@@ -260,6 +267,9 @@ export async function cancelarPorFalta(inscritoId: string) {
 
     sendWhatsApp(espera.id, 'promovido').catch((err) =>
       console.error('[WhatsApp] erro ao enviar:', err)
+    )
+    sendEmail(espera.id, 'promovido').catch((err) =>
+      console.error('[Email] erro ao enviar:', err)
     )
   }
 }
