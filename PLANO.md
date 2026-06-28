@@ -191,6 +191,7 @@ Tudo pronto pro evento! Último deploy consolidado no Vercel.
 | 35 | Rota /login removida | `app/login/page.tsx` |
 | 36 | Loading states públicos (4 rotas) | `app/palestras/loading.tsx`, `app/sorteio/loading.tsx`, `app/sorteio/cadastro/loading.tsx`, `app/reserva/[id]/loading.tsx` |
 | 37 | SVGs padrão removidos | `public/next.svg`, `vercel.svg`, `globe.svg`, `file.svg`, `window.svg` |
+| 38 | vercel.json — maxDuration cron | `vercel.json` |
 
 ## ⏳ Pós-evento
 

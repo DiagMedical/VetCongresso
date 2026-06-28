@@ -591,5 +591,22 @@ This version has breaking changes — APIs, conventions, and file structure may 
 - `public/next.svg`, `vercel.svg`, `globe.svg`, `file.svg`, `window.svg` — removidos
 
 **Commits:**
+- `672a91c` — "Melhorias IA: chips de perguntas no chatbot + resumo IA do dashboard"
+- `c70e480` — "Segurança + polimento: rate limit, robots.txt, Zod sorteio, CSP, projeção 4 dias, loading públicos, /login removido, SVGs limpos"
+<!-- END:opencode-session -->
+
+<!-- BEGIN:opencode-session -->
+## Session — 28/06/2026 (5)
+
+### Ajustes Finais — vercel.json maxDuration
+
+**O que foi feito:**
+
+1. **`vercel.json`** — Adicionado `functions.maxDuration: 120` para o cron job `/api/cron/lembrete`, evitando timeout nas execuções.
+
+**Arquivos alterados:**
+- `vercel.json` — +functions.maxDuration
+
+**Commits:**
 - Pendente
 <!-- END:opencode-session -->
