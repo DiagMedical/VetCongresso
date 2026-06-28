@@ -13,7 +13,7 @@ export async function POST(req: Request) {
       messages,
     })
 
-    return result.toTextStreamResponse()
+    return result.toUIMessageStreamResponse()
   } catch (error) {
     console.error('Chat API error:', error)
     return new Response(JSON.stringify({ error: 'Erro ao processar mensagem' }), {

@@ -386,6 +386,8 @@ This version has breaking changes — APIs, conventions, and file structure may 
 
 **⚠️ Necessário:** Criar chave em https://console.groq.com, colar no `.env.local` e adicionar `GROQ_API_KEY` no Vercel.
 
+**Fix:** `toTextStreamResponse()` → `toUIMessageStreamResponse()`. O `useChat` do SDK v7 espera o formato data stream, não texto puro. Botão não aparecia antes desse fix.
+
 ---
 
 ### Export XLSX + Adicionar ao Calendário
