@@ -417,3 +417,24 @@ This version has breaking changes — APIs, conventions, and file structure may 
 - `app/admin/palestras/palestras-client.tsx` — botões Google + Apple na tabela
 - `app/admin/relatorios/page.tsx` — botão XLSX + dados mapeados
 <!-- END:opencode-session -->
+
+<!-- BEGIN:opencode-session -->
+## Session — 28/06/2026
+
+### Scanner com Beep + Check-in Manual
+
+**O que foi feito:**
+
+1. **Beep no scanner** — `AudioContext` + `OscillatorNode` (tom 1200Hz, 150ms) tocado após check-in bem-sucedido. Sem dependências externas.
+
+2. **`realizarCheckInAdmin()`** — Nova server action em `lib/actions/admin.ts` sem validação de horário (admin é confiável, check-in manual é fallback).
+
+3. **Página `/admin/scanner/manual`** — Dropdown de palestra + busca por nome/email + tabela com check-in individual e em lote (selecionar múltiplos com checkbox). Reutiliza `listarInscritos()` e `realizarCheckInAdmin()`.
+
+**Arquivos alterados/novos:**
+- `app/admin/scanner/page.tsx` — beep() + chamada no doCheckin
+- `lib/actions/admin.ts` — nova função realizarCheckInAdmin
+- `app/admin/scanner/manual/page.tsx` (novo)
+- `app/admin/scanner/manual/manual-client.tsx` (novo)
+- `components/admin/nav.tsx` — link "Check-in Manual" com ícone UserCheck
+<!-- END:opencode-session -->

@@ -156,13 +156,14 @@ Tudo pronto pro evento! Último deploy consolidado no Vercel.
 | 10 | Empty states (relatórios + dashboard) | `app/admin/relatorios/relatorios-tabela.tsx`, `components/admin/dashboard-tabela-palestras.tsx` |
 | 11 | Overflow fix mobile (palestras) + tooltip sorteio | `app/admin/palestras/palestras-client.tsx`, `app/admin/sorteio/sorteio-admin.tsx` |
 
-## ✅ Concluído (Sprint Chatbot + Export + Calendário)
+## ✅ Concluído (Sprint Chatbot + Export + Calendário + Scanner)
 
 | # | Tarefa | Arquivos |
 |---|--------|----------|
 | 12 | Chatbot FAQ com IA (Groq + Llama 3.3 70B) | `lib/ai/context.ts`, `app/api/chat/route.ts`, `components/chat-fab.tsx` |
 | 13 | Export XLSX nos relatórios | `components/admin/botao-exportar-xlsx.tsx`, `app/admin/relatorios/page.tsx` |
 | 14 | Adicionar ao calendário (Google + Apple) | `lib/calendar.ts`, `components/palestra-card.tsx`, `app/admin/palestras/palestras-client.tsx` |
+| 15 | Beep no scanner + Check-in manual | `app/admin/scanner/page.tsx`, `lib/actions/admin.ts`, `app/admin/scanner/manual/` |
 
 ## ⏳ Pós-evento
 

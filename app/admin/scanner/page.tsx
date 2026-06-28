@@ -51,11 +51,27 @@ export default function ScannerPage() {
     await doCheckin(data)
   }
 
+  function beep() {
+    try {
+      const ctx = new AudioContext()
+      const osc = ctx.createOscillator()
+      const gain = ctx.createGain()
+      osc.type = 'sine'
+      osc.frequency.value = 1200
+      gain.gain.value = 0.3
+      osc.connect(gain)
+      gain.connect(ctx.destination)
+      osc.start()
+      osc.stop(ctx.currentTime + 0.15)
+    } catch {} // fallback silencioso se AudioContext não disponível
+  }
+
   async function doCheckin(inscritoId: string) {
     setConfirmando(true)
     try {
       const { realizarCheckIn } = await import('@/lib/actions/admin')
       await realizarCheckIn(inscritoId)
+      beep()
       setResultado({ tipo: 'sucesso', mensagem: 'Check-in realizado com sucesso!' })
       toast.success('Check-in realizado!')
       setQrData(null)

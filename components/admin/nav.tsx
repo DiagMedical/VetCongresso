@@ -4,7 +4,7 @@ import { usePathname } from 'next/navigation'
 import Link from 'next/link'
 import {
   BarChart3, LayoutDashboard, QrCode, Users, BookOpen,
-  MessageSquare, Settings, TrendingUp, Gift, Shield, Menu, X,
+  MessageSquare, Settings, TrendingUp, Gift, Shield, Menu, X, UserCheck,
 } from 'lucide-react'
 import { Sheet, SheetTrigger, SheetContent, SheetClose } from '@/components/ui/sheet'
 
@@ -13,6 +13,7 @@ const links = [
   { href: '/admin/palestras', label: 'Palestras', icon: BookOpen },
   { href: '/admin/leads', label: 'Leads', icon: Users },
   { href: '/admin/scanner', label: 'Scanner', icon: QrCode },
+  { href: '/admin/scanner/manual', label: 'Check-in Manual', icon: UserCheck },
   { href: '/admin/whatsapp', label: 'WhatsApp', icon: MessageSquare },
   { href: '/admin/relatorios', label: 'Relatórios', icon: BarChart3 },
   { href: '/admin/analytics', label: 'Analytics', icon: TrendingUp },

@@ -224,6 +224,33 @@ export async function realizarCheckIn(inscritoId: string) {
   )
 }
 
+export async function realizarCheckInAdmin(inscritoId: string) {
+  const supabase = await createClient()
+
+  const { data: inscrito } = await supabase
+    .from('inscritos')
+    .select('id, status')
+    .eq('id', inscritoId)
+    .single()
+
+  if (!inscrito) throw new Error('Inscrito não encontrado')
+  if (inscrito.status !== 'confirmado') throw new Error('Check-in já realizado ou inscrição cancelada')
+
+  const { error } = await supabase
+    .from('inscritos')
+    .update({ status: 'check-in', checkin_at: new Date().toISOString() })
+    .eq('id', inscritoId)
+
+  if (error) throw new Error(error.message)
+
+  sendWhatsApp(inscritoId, 'checkin').catch((err) =>
+    console.error('[WhatsApp] erro ao enviar:', err)
+  )
+  sendEmail(inscritoId, 'checkin').catch((err) =>
+    console.error('[Email] erro ao enviar:', err)
+  )
+}
+
 export async function cancelarPorFalta(inscritoId: string) {
   const supabase = await createClient()
 
