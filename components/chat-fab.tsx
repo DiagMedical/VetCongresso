@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect, type FormEvent } from 'react'
 import { useChat } from '@ai-sdk/react'
+import { DefaultChatTransport } from 'ai'
 import { MessageCircle, Send, Bot, X } from 'lucide-react'
 import {
   Sheet,
@@ -14,7 +15,9 @@ import { Input } from '@/components/ui/input'
 import { cn } from '@/lib/utils'
 
 export function ChatFab() {
-  const { messages, sendMessage, status } = useChat()
+  const { messages, sendMessage, status, error } = useChat({
+    transport: new DefaultChatTransport({ api: '/api/chat' }),
+  })
   const [input, setInput] = useState('')
   const scrollRef = useRef<HTMLDivElement>(null)
   const isLoading = status === 'submitted' || status === 'streaming'
@@ -109,6 +112,13 @@ export function ChatFab() {
                   </div>
                 </div>
               )}
+            {status === 'error' && error && (
+              <div className="flex justify-center">
+                <div className="rounded-lg bg-danger/10 px-3 py-2 text-sm text-danger">
+                  Erro ao conectar com o assistente. Verifique a chave GROQ_API_KEY.
+                </div>
+              </div>
+            )}
           </div>
         </div>
 

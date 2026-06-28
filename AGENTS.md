@@ -388,6 +388,8 @@ This version has breaking changes — APIs, conventions, and file structure may 
 
 **Fix:** `toTextStreamResponse()` → `toUIMessageStreamResponse()`. O `useChat` do SDK v7 espera o formato data stream, não texto puro. Botão não aparecia antes desse fix.
 
+**Fix 2 (chat não respondia):** v7 mudou `system` → `instructions` e exige `convertToModelMessages()`. Adicionado `DefaultChatTransport` no `useChat` do cliente. Mensagem de erro visível na UI quando falha.
+
 ---
 
 ### Export XLSX + Adicionar ao Calendário
