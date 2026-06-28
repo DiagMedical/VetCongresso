@@ -2,47 +2,10 @@ import QRCode from 'qrcode'
 import type { Inscrito } from '@/types'
 import { formatDate, formatTime } from '@/lib/utils'
 import { Calendar, CalendarCheck } from 'lucide-react'
+import { buildGoogleCalendarUrl, buildAppleCalendarUrl } from '@/lib/calendar'
 
 interface QrTicketProps {
   inscrito: Inscrito
-}
-
-function buildGoogleCalendarUrl(p: NonNullable<Inscrito['palestra']>) {
-  const inicio = new Date(p.horario_inicio)
-  const fim = new Date(p.horario_fim)
-  const fmt = (d: Date) => d.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z'
-
-  const params = new URLSearchParams({
-    action: 'TEMPLATE',
-    text: p.tema,
-    dates: `${fmt(inicio)}/${fmt(fim)}`,
-    details: `Palestra: ${p.tema}\nPalestrante: ${p.palestrante}`,
-    location: 'ABRAVEQ - Estande Diagnostic Vet',
-  })
-
-  return `https://calendar.google.com/calendar/render?${params}`
-}
-
-function buildAppleCalendarUrl(p: NonNullable<Inscrito['palestra']>) {
-  const inicio = new Date(p.horario_inicio)
-  const fim = new Date(p.horario_fim)
-  const fmt = (d: Date) =>
-    d.toISOString().replace(/[-:]/g, '').replace(/\.\d{3}/, '')
-
-  const ics = [
-    'BEGIN:VCALENDAR',
-    'VERSION:2.0',
-    'BEGIN:VEVENT',
-    `DTSTART:${fmt(inicio)}`,
-    `DTEND:${fmt(fim)}`,
-    `SUMMARY:${p.tema}`,
-    `DESCRIPTION:Palestra: ${p.tema}\\nPalestrante: ${p.palestrante}`,
-    `LOCATION:ABRAVEQ - Estande Diagnostic Vet`,
-    'END:VEVENT',
-    'END:VCALENDAR',
-  ].join('\n')
-
-  return `data:text/calendar;charset=utf-8,${encodeURIComponent(ics)}`
 }
 
 function buildQrPayload(i: Inscrito): string {

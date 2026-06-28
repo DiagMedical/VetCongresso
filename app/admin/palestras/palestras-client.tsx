@@ -3,10 +3,11 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
-import { BookOpen, Copy, Edit, Plus, Power, PowerOff, Trash2 } from 'lucide-react'
+import { BookOpen, Copy, Edit, Plus, Power, PowerOff, Trash2, Calendar } from 'lucide-react'
 import type { Palestra } from '@/types'
 import { PalestraDialog } from '@/components/admin/palestra-dialog'
 import type { PalestraFormData } from '@/types'
+import { buildGoogleCalendarUrl, buildAppleCalendarUrl } from '@/lib/calendar'
 
 interface PalestrasClientProps {
   palestras: Palestra[]
@@ -167,6 +168,25 @@ export function PalestrasClient({ palestras }: PalestrasClientProps) {
                       >
                         <Copy className="size-4" />
                       </button>
+                      <div className="flex items-center gap-0.5">
+                        <a
+                          href={buildGoogleCalendarUrl(p)}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="rounded-md p-1.5 text-muted hover:bg-primary/10 hover:text-primary transition-colors"
+                          title="Google Calendar"
+                        >
+                          <Calendar className="size-4" />
+                        </a>
+                        <a
+                          href={buildAppleCalendarUrl(p)}
+                          download="palestra.ics"
+                          className="rounded-md p-1.5 text-muted hover:bg-primary/10 hover:text-primary transition-colors"
+                          title="Baixar .ics"
+                        >
+                          <Calendar className="size-4" />
+                        </a>
+                      </div>
                       <button
                         onClick={() => handleToggleStatus(p.id)}
                         className={`rounded-md p-1.5 transition-colors ${

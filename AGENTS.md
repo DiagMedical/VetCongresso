@@ -385,4 +385,31 @@ This version has breaking changes — APIs, conventions, and file structure may 
 - `.env.local` — `GROQ_API_KEY=`
 
 **⚠️ Necessário:** Criar chave em https://console.groq.com, colar no `.env.local` e adicionar `GROQ_API_KEY` no Vercel.
+
+---
+
+### Export XLSX + Adicionar ao Calendário
+
+**O que foi feito:**
+
+1. **`lib/calendar.ts`** — Funções `buildGoogleCalendarUrl()` e `buildAppleCalendarUrl()` extraídas do `qr-ticket.tsx` para lib compartilhada.
+
+2. **Botões de calendário em 3 lugares:**
+   - `/palestras` — cada card de palestra tem ícone Google + Apple
+   - `/admin/palestras` — cada linha da tabela tem ícone Google + Apple
+   - `/ticket/[id]` — já existia, agora importa da lib
+
+3. **`BotaoExportarXLSX`** — Componente reutilizável (mesmo padrão do `BotaoExportarPDF`), com loading + toast.
+
+4. **XLSX nos relatórios** — Botão ao lado do PDF, exporta dados de `por_palestra` (tema, palestrante, vagas, reservas, check-ins, %).
+
+5. **Leads** — Já tinha export XLSX + CSV na tabela, nada a fazer.
+
+**Arquivos alterados/novos:**
+- `lib/calendar.ts` (novo)
+- `components/admin/botao-exportar-xlsx.tsx` (novo)
+- `components/qr-ticket.tsx` — importa da lib em vez de funções inline
+- `components/palestra-card.tsx` — botões Google + Apple
+- `app/admin/palestras/palestras-client.tsx` — botões Google + Apple na tabela
+- `app/admin/relatorios/page.tsx` — botão XLSX + dados mapeados
 <!-- END:opencode-session -->

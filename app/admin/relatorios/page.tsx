@@ -2,6 +2,7 @@ import { Users, TicketCheck, UserMinus, TrendingUp, BarChart3, Calendar, Clock }
 import { getRelatorios } from '@/lib/actions/admin'
 import { KpiCard } from '@/components/admin/kpi-card'
 import { BotaoExportarPDF } from '@/components/admin/botao-exportar-pdf'
+import { BotaoExportarXLSX } from '@/components/admin/botao-exportar-xlsx'
 import { RelatoriosCharts } from './relatorios-charts'
 import { RelatoriosTabela } from './relatorios-tabela'
 import { BackToTop } from '@/components/back-to-top'
@@ -9,11 +10,27 @@ import { BackToTop } from '@/components/back-to-top'
 export default async function RelatoriosPage() {
   const data = await getRelatorios()
 
+  const dadosXLSX = data.por_palestra.map((p) => ({
+    Palestra: p.tema,
+    Palestrante: p.palestrante,
+    Dia: p.dia,
+    Vagas: p.vagas,
+    Reservas: p.reservas,
+    'Check-ins': p.checkins,
+    Cancelados: p.cancelados,
+    Espera: p.espera,
+    'Ocupação (%)': p.taxa_ocupacao,
+    'Check-in (%)': p.taxa_checkin,
+  }))
+
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between gap-4">
         <h2 className="text-2xl font-bold text-foreground">Relatórios</h2>
-        <BotaoExportarPDF containerId="relatorio-conteudo" filename="relatorio-vetcongresso" />
+        <div className="flex items-center gap-2">
+          <BotaoExportarXLSX data={dadosXLSX} filename="relatorio-vetcongresso" />
+          <BotaoExportarPDF containerId="relatorio-conteudo" filename="relatorio-vetcongresso" />
+        </div>
       </div>
 
       <div id="relatorio-conteudo" className="space-y-6">
