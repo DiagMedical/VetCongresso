@@ -6,6 +6,8 @@ import { adicionarParticipanteSchema } from '@/lib/schemas'
 import { sendWhatsApp } from '@/lib/whatsapp/send'
 import { sendEmail } from '@/lib/email/send'
 import { listarPalestras } from '@/lib/actions/reserva'
+import { groq } from '@ai-sdk/groq'
+import { generateText } from 'ai'
 
 export interface DashboardData {
   total_leads: number
@@ -828,4 +830,37 @@ export async function listarCertificados(): Promise<CertificadoData[]> {
     horario_fim: i.palestra?.horario_fim ?? '',
     checkin_at: i.checkin_at ?? '',
   }))
+}
+
+export async function gerarResumoDashboard(data: DashboardData): Promise<string> {
+  const palestrasTop = data.reservas_por_palestra
+    .sort((a, b) => b.taxa_ocupacao - a.taxa_ocupacao)
+    .slice(0, 3)
+
+  const prompt = `Você é um assistente de dashboard do ABRAVEQ 2026. Gere UM resumo curto (2-3 frases) em português do Brasil com base nos seguintes números do evento:
+
+- Total de leads: ${data.total_leads}
+- Check-ins hoje: ${data.checkins_hoje}
+- Palestras ativas: ${data.palestras_ativas}
+- Cancelamentos: ${data.cancelamentos}
+- Lista de espera: ${data.espera}
+- Top 3 palestras por ocupação: ${palestrasTop.map((p) => `${p.tema} (${p.palestrante}) — ${p.taxa_ocupacao}% ocupação, ${p.checkins} check-ins`).join('; ')}
+
+Regras:
+- Seja breve, direto.
+- Destaque o que está funcionando bem e o que precisa atenção.
+- Use tom profissional mas amigável.
+- Não invente números.
+- Máximo 3 frases.`
+
+  try {
+    const { text } = await generateText({
+      model: groq('llama-3.3-70b-versatile'),
+      prompt,
+      maxOutputTokens: 200,
+    })
+    return text
+  } catch {
+    return 'Resumo temporariamente indisponível.'
+  }
 }

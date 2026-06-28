@@ -181,6 +181,8 @@ Tudo pronto pro evento! Último deploy consolidado no Vercel.
 | 25 | limparPalestrasDuplicadas mais segura | `lib/actions/admin.ts` |
 | 26 | global-error.tsx (root layout fallback) | `app/global-error.tsx` |
 | 27 | Chatbot: X no render prop + msg genérica | `components/chat-fab.tsx` |
+| 28 | Chips de perguntas no chatbot | `components/chat-fab.tsx` |
+| 29 | Resumo IA do Dashboard | `lib/actions/admin.ts`, `components/admin/dashboard-resumo-ia.tsx`, `app/admin/page.tsx` |
 
 ## ⏳ Pós-evento
 

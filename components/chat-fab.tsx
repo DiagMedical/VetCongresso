@@ -1,9 +1,9 @@
 'use client'
 
-import { useState, useRef, useEffect, type FormEvent } from 'react'
+import { useState, useRef, useEffect, useCallback, type FormEvent } from 'react'
 import { useChat } from '@ai-sdk/react'
 import { DefaultChatTransport } from 'ai'
-import { MessageCircle, Send, Bot, X } from 'lucide-react'
+import { MessageCircle, Send, Bot, X, Sparkles } from 'lucide-react'
 import {
   Sheet,
   SheetTrigger,
@@ -13,6 +13,13 @@ import {
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { cn } from '@/lib/utils'
+
+const PERGUNTAS_SUGERIDAS = [
+  'Quais os horários das palestras?',
+  'Como faço para reservar?',
+  'Onde é o estande da Diagnostic Vet?',
+  'Tem sorteio?',
+]
 
 export function ChatFab() {
   const { messages, sendMessage, status, error } = useChat({
@@ -34,6 +41,10 @@ export function ChatFab() {
     sendMessage({ text: input })
     setInput('')
   }
+
+  const handleSuggestion = useCallback((text: string) => {
+    sendMessage({ text })
+  }, [sendMessage])
 
   return (
     <Sheet>
@@ -74,11 +85,26 @@ export function ChatFab() {
           aria-live="polite"
         >
           {messages.length === 0 && (
-            <div className="flex h-full flex-col items-center justify-center text-center text-muted-foreground">
-              <Bot className="mb-3 size-12 text-primary/40" />
-              <p className="text-sm">
-                Pergunte sobre as palestras, horários, ou como se inscrever!
-              </p>
+            <div className="flex h-full flex-col items-center justify-center text-center text-muted-foreground gap-4">
+              <div>
+                <Bot className="mb-3 size-12 text-primary/40" />
+                <p className="text-sm">
+                  Pergunte sobre as palestras, horários, ou como se inscrever!
+                </p>
+              </div>
+              <div className="flex flex-wrap justify-center gap-2">
+                {PERGUNTAS_SUGERIDAS.map((q) => (
+                  <button
+                    key={q}
+                    onClick={() => handleSuggestion(q)}
+                    disabled={isLoading}
+                    className="inline-flex items-center gap-1.5 rounded-full border border-border bg-card px-3 py-1.5 text-xs text-muted hover:border-primary/30 hover:text-foreground transition-all disabled:opacity-50"
+                  >
+                    <Sparkles className="size-3 text-primary/60" />
+                    {q}
+                  </button>
+                ))}
+              </div>
             </div>
           )}
           <div className="space-y-3">

@@ -5,6 +5,7 @@ import { DashboardActions } from '@/components/admin/dashboard-actions'
 import { DashboardTabelaPalestras } from '@/components/admin/dashboard-tabela-palestras'
 import { DashboardUltimosLeads } from '@/components/admin/dashboard-ultimos-leads'
 import { DashboardFiltroData } from '@/components/admin/dashboard-filtro-data'
+import { DashboardResumoIA } from '@/components/admin/dashboard-resumo-ia'
 import { BackToTop } from '@/components/back-to-top'
 import { getDashboardData, listarPalestrasComVagas } from '@/lib/actions/admin'
 import type { DashboardData } from '@/lib/actions/admin'
@@ -39,6 +40,8 @@ export default async function AdminDashboard(props: { searchParams?: Promise<{ d
         <AnimatedKpi title="Cancelamentos" value={data.cancelamentos} icon={<UserMinus className="size-5" />} />
         <AnimatedKpi title="Lista de Espera" value={data.espera} icon={<Clock className="size-5" />} />
       </div>
+
+      <DashboardResumoIA data={data} />
 
       <div className="grid gap-6 lg:grid-cols-2">
         <DashboardCharts data={data} />

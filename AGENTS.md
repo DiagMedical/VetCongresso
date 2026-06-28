@@ -540,4 +540,18 @@ This version has breaking changes — APIs, conventions, and file structure may 
 
 **Commits:**
 - `4414383` — "global-error.tsx + chatbot fix (render prop X + mensagem de erro)"
+
+### Melhorias IA — Chips de Perguntas + Resumo do Dia
+
+**O que foi feito:**
+
+1. **Chips de perguntas no chatbot** — Quando o chat está vazio, exibe 4 botões com perguntas frequentes ("Quais os horários?", "Como faço para reservar?", etc.). Ao clicar, envia a pergunta automaticamente.
+
+2. **Resumo IA do Dashboard** — Card "Resumo do Dia" com texto gerado por Groq (Llama 3.3 70B) analisando KPIs reais: total de leads, check-ins, palestras mais concorridas, etc. Botão de atualizar com loading state.
+
+**Arquivos alterados/novos:**
+- `components/chat-fab.tsx` — array `PERGUNTAS_SUGERIDAS`, chips com `handleSuggestion`
+- `lib/actions/admin.ts` — nova função `gerarResumoDashboard()` com `generateText` + Groq
+- `components/admin/dashboard-resumo-ia.tsx` (novo) — card client component
+- `app/admin/page.tsx` — import + `<DashboardResumoIA>`
 <!-- END:opencode-session -->
