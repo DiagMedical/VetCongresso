@@ -438,3 +438,31 @@ This version has breaking changes — APIs, conventions, and file structure may 
 - `app/admin/scanner/manual/manual-client.tsx` (novo)
 - `components/admin/nav.tsx` — link "Check-in Manual" com ícone UserCheck
 <!-- END:opencode-session -->
+
+<!-- BEGIN:opencode-session -->
+## Session — 28/06/2026 (2)
+
+### Certificado Digital — Admin
+
+**O que foi feito:**
+
+1. **`listarCertificados()`** — Nova server action em `lib/actions/admin.ts` que busca todos inscritos com status `check-in`, com join da palestra. Retorna `CertificadoData[]` com nome, email, palestra, palestrante, dia, horários, checkin_at.
+
+2. **`lib/utils.ts`** — Adicionado `formatDuracao(inicio, fim)` (ex: "1h30min") e `formatDateShort(date)` (ex: "2 de junho de 2026").
+
+3. **Página `/admin/certificados`** — Server component que chama `listarCertificados()` e renderiza o client component.
+
+4. **`certificados-client.tsx`** — Tabela com busca (nome/email/palestra), Dialog com preview visual do certificado (logos ABRAVEQ + Diagnostic Vet, texto formal com nome, palestra, palestrante, data, carga horária) e botão "Download PDF" que gera via html2canvas (scale 3x) + jsPDF (A4 paisagem). Loading state no botão.
+
+5. **`loading.tsx`** — Skeleton com layout de tabela real.
+
+6. **Nav** — Link "Certificados" com ícone `Award` entre "Check-in Manual" e "Admins".
+
+**Arquivos alterados/novos:**
+- `lib/actions/admin.ts` — `listarCertificados()`, tipo `CertificadoData`
+- `lib/utils.ts` — `formatDuracao()`, `formatDateShort()`
+- `app/admin/certificados/page.tsx` (novo)
+- `app/admin/certificados/certificados-client.tsx` (novo)
+- `app/admin/certificados/loading.tsx` (novo)
+- `components/admin/nav.tsx` — link Certificados
+<!-- END:opencode-session -->

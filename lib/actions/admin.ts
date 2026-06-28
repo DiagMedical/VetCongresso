@@ -786,3 +786,39 @@ export async function removerAdmin(id: string) {
     .eq('id', id)
   if (error) throw new Error(error.message)
 }
+
+export interface CertificadoData {
+  id: string
+  nome: string
+  email: string
+  palestra_nome: string
+  palestrante: string
+  dia_evento: number
+  horario_inicio: string
+  horario_fim: string
+  checkin_at: string
+}
+
+export async function listarCertificados(): Promise<CertificadoData[]> {
+  const supabase = await createClient()
+
+  const { data, error } = await supabase
+    .from('inscritos')
+    .select('*, palestra:palestra_id(*)')
+    .eq('status', 'check-in')
+    .order('checkin_at', { ascending: false })
+
+  if (error) throw new Error(error.message)
+
+  return ((data ?? []) as Inscrito[]).map((i) => ({
+    id: i.id,
+    nome: i.nome,
+    email: i.email,
+    palestra_nome: i.palestra?.tema ?? '',
+    palestrante: i.palestra?.palestrante ?? '',
+    dia_evento: i.palestra?.dia_evento ?? 0,
+    horario_inicio: i.palestra?.horario_inicio ?? '',
+    horario_fim: i.palestra?.horario_fim ?? '',
+    checkin_at: i.checkin_at ?? '',
+  }))
+}
