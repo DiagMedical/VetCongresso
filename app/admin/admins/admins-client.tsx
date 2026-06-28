@@ -100,7 +100,7 @@ export function AdminsClient({ admins }: AdminsClientProps) {
                 <td className="px-4 py-3 text-foreground">{a.nome}</td>
                 <td className="px-4 py-3 text-muted">{a.email}</td>
                 <td className="px-4 py-3 text-muted">
-                  {new Date(a.created_at).toLocaleDateString('pt-BR')}
+                  {a.created_at ? new Date(a.created_at).toLocaleDateString('pt-BR') : '—'}
                 </td>
                 <td className="px-4 py-3">
                   <button

@@ -5,16 +5,20 @@ import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { ThemeToggle } from '@/components/theme-toggle'
 import { AdminMobileNav } from '@/components/admin/nav'
+import { toast } from 'sonner'
 
 export function AdminHeader() {
   const router = useRouter()
 
   async function handleLogout() {
-    const { createClient } = await import('@/lib/supabase/client')
-    const supabase = createClient()
-    await supabase.auth.signOut()
-    router.push('/admin/login')
-    router.refresh()
+    try {
+      const { createClient } = await import('@/lib/supabase/client')
+      const supabase = createClient()
+      await supabase.auth.signOut()
+      router.push('/admin/login')
+    } catch {
+      toast.error('Erro ao sair. Tente novamente.')
+    }
   }
 
   return (

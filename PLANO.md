@@ -1,8 +1,8 @@
 # Plano de Ação — VetCongresso Silent Booking
 
 **PRD referência:** Architect v5
-**Última atualização:** 26/06/2026
-**Status:** ✅ Fases P0, 1, 2, 3 concluídas. Fase 4 parcial. 🔴 Dashboard concluído (tabela, ocupação, leads, taxa check-in, filtro data).
+**Última atualização:** 28/06/2026
+**Status:** ✅ Todas as fases concluídas. Revisão pré-evento finalizada.
 
 ---
 
@@ -164,6 +164,21 @@ Tudo pronto pro evento! Último deploy consolidado no Vercel.
 | 13 | Export XLSX nos relatórios | `components/admin/botao-exportar-xlsx.tsx`, `app/admin/relatorios/page.tsx` |
 | 14 | Adicionar ao calendário (Google + Apple) | `lib/calendar.ts`, `components/palestra-card.tsx`, `app/admin/palestras/palestras-client.tsx` |
 | 15 | Beep no scanner + Check-in manual | `app/admin/scanner/page.tsx`, `lib/actions/admin.ts`, `app/admin/scanner/manual/` |
+
+## ✅ Concluído (Revisão Pré-Evento)
+
+| # | Tarefa | Arquivos |
+|---|--------|----------|
+| 16 | try/catch em todos os server components (11 páginas) | `app/admin/*/page.tsx`, `app/palestras/page.tsx`, `app/reserva/[id]/page.tsx` |
+| 17 | try/catch QRCode.toDataURL() (3 componentes) | `components/qr-ticket.tsx`, `components/qr-compartilhe.tsx` |
+| 18 | Logout com try/catch + toast | `components/admin/header.tsx` |
+| 19 | AudioContext fechado no scanner | `app/admin/scanner/page.tsx` |
+| 20 | Filtro do sorteio corrigido | `app/admin/sorteio/sorteio-admin.tsx` |
+| 21 | Error boundary admin | `app/admin/error.tsx` |
+| 22 | aria-label nos links de calendário | `components/qr-ticket.tsx`, `components/palestra-card.tsx` |
+| 23 | null check created_at | `app/admin/admins/admins-client.tsx` |
+| 24 | console.log(email) removido | `app/admin/login/page.tsx` |
+| 25 | limparPalestrasDuplicadas mais segura | `lib/actions/admin.ts` |
 
 ## ⏳ Pós-evento
 

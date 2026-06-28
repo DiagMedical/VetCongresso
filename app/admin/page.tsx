@@ -7,14 +7,23 @@ import { DashboardUltimosLeads } from '@/components/admin/dashboard-ultimos-lead
 import { DashboardFiltroData } from '@/components/admin/dashboard-filtro-data'
 import { BackToTop } from '@/components/back-to-top'
 import { getDashboardData, listarPalestrasComVagas } from '@/lib/actions/admin'
+import type { DashboardData } from '@/lib/actions/admin'
+import type { Palestra } from '@/types'
 
 export default async function AdminDashboard(props: { searchParams?: Promise<{ dia?: string }> }) {
   const searchParams = await props.searchParams
   const diaFiltro = searchParams?.dia ? Number(searchParams.dia) : undefined
-  const [data, palestras] = await Promise.all([
-    getDashboardData(diaFiltro),
-    listarPalestrasComVagas(),
-  ])
+  let data: DashboardData
+  let palestras: Palestra[]
+  try {
+    ;[data, palestras] = await Promise.all([
+      getDashboardData(diaFiltro),
+      listarPalestrasComVagas(),
+    ])
+  } catch {
+    data = { total_leads: 0, checkins_hoje: 0, palestras_ativas: 0, cancelamentos: 0, espera: 0, reservas_por_palestra: [], reservas_por_dia: [], ranking_palestrantes: [], ultimos_leads: [] }
+    palestras = []
+  }
 
   return (
     <div className="space-y-6">

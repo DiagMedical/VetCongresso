@@ -11,19 +11,30 @@ export default async function ReservaPage(props: {
   const { id } = await props.params
   const supabase = await createClient()
 
-  const { data: palestra } = await supabase
-    .from('palestras')
-    .select('*')
-    .eq('id', id)
-    .single()
+  let palestra, vagas
+  try {
+    const { data: palestraData } = await supabase
+      .from('palestras')
+      .select('*')
+      .eq('id', id)
+      .single()
+
+    palestra = palestraData
+
+    if (palestra) {
+      const { data: vagasData } = await supabase
+        .from('vagas_disponiveis')
+        .select('vagas_restantes')
+        .eq('id', id)
+        .single()
+
+      vagas = vagasData
+    }
+  } catch {
+    return <div className="flex flex-1 flex-col bg-background items-center justify-center p-8 text-center"><p className="text-muted">Erro ao carregar palestra. Tente novamente.</p></div>
+  }
 
   if (!palestra) notFound()
-
-  const { data: vagas } = await supabase
-    .from('vagas_disponiveis')
-    .select('vagas_restantes')
-    .eq('id', id)
-    .single()
 
   const palestraComVagas = {
     ...palestra,

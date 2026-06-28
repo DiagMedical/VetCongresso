@@ -730,23 +730,30 @@ export async function exportarLeads(): Promise<LeadExport[]> {
   })
 }
 
-export async function limparPalestrasDuplicadas() {
+export async function limparPalestrasDuplicadas(confirmacao?: string) {
+  if (!confirmacao || confirmacao !== 'CONFIRMAR') {
+    return { removidas: 0, erro: 'Confirmação necessária. Passe confirmacao="CONFIRMAR".' }
+  }
+
   const supabase = await createClient()
 
   const { data: palestras } = await supabase
     .from('palestras')
-    .select('id, horario_inicio')
+    .select('id, tema, ativo')
     .eq('ativo', true)
 
   if (!palestras) return { removidas: 0 }
 
+  const temasVistos = new Map<string, string>()
   let removidas = 0
   for (const p of palestras) {
-    const mes = new Date(p.horario_inicio).getMonth()
-    if (mes === 6) {
+    const key = p.tema.toLowerCase().trim()
+    if (temasVistos.has(key)) {
       await supabase.from('inscritos').delete().eq('palestra_id', p.id)
       await supabase.from('palestras').delete().eq('id', p.id)
       removidas++
+    } else {
+      temasVistos.set(key, p.id)
     }
   }
 

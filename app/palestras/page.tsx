@@ -47,7 +47,12 @@ function DiaTab({ dia, atual }: { dia: DiaEvento | null; atual: DiaEvento | null
 }
 
 async function PalestrasList({ dia }: { dia: DiaEvento | null }) {
-  const palestras = await listarPalestras()
+  let palestras
+  try {
+    palestras = await listarPalestras()
+  } catch {
+    return <p className="text-center text-muted py-12">Erro ao carregar palestras. Tente novamente.</p>
+  }
 
   const filtradas = dia
     ? palestras.filter((p) => p.dia_evento === dia)

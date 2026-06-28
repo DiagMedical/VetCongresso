@@ -3,7 +3,12 @@ import { AnalyticsCharts } from './analytics-charts'
 import { AnalyticsKpis } from './analytics-kpis'
 
 export default async function AnalyticsPage() {
-  const data = await getAnalyticsData()
+  let data
+  try {
+    data = await getAnalyticsData()
+  } catch {
+    return <div className="space-y-6"><p className="text-muted">Erro ao carregar analytics. Tente novamente.</p></div>
+  }
 
   return (
     <div className="space-y-6">

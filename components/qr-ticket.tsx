@@ -29,11 +29,15 @@ export async function QrTicket({ inscrito }: QrTicketProps) {
 
   let qrDataUrl: string | null = null
   if (!isEspera) {
-    qrDataUrl = await QRCode.toDataURL(buildQrPayload(inscrito), {
-      width: 360,
-      margin: 2,
-      color: { dark: '#000000', light: '#ffffff' },
-    })
+    try {
+      qrDataUrl = await QRCode.toDataURL(buildQrPayload(inscrito), {
+        width: 360,
+        margin: 2,
+        color: { dark: '#000000', light: '#ffffff' },
+      })
+    } catch {
+      qrDataUrl = null
+    }
   }
 
   return (
@@ -65,6 +69,7 @@ export async function QrTicket({ inscrito }: QrTicketProps) {
           target="_blank"
           rel="noopener noreferrer"
           className="flex flex-1 items-center justify-center gap-2 rounded-md border border-border px-3 py-2 text-sm text-foreground hover:bg-card transition-colors"
+          aria-label="Adicionar ao Google Calendar"
         >
           <Calendar className="size-4" />
           Google
@@ -73,6 +78,7 @@ export async function QrTicket({ inscrito }: QrTicketProps) {
           href={buildAppleCalendarUrl(p)}
           download="palestra.ics"
           className="flex flex-1 items-center justify-center gap-2 rounded-md border border-border px-3 py-2 text-sm text-foreground hover:bg-card transition-colors"
+          aria-label="Baixar arquivo .ics para Apple ou Outlook"
         >
           <CalendarCheck className="size-4" />
           Apple

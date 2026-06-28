@@ -2,7 +2,12 @@ import { listarSorteioLeads } from '@/lib/actions/sorteio'
 import { SorteioAdmin } from './sorteio-admin'
 
 export default async function AdminSorteioPage() {
-  const leads = await listarSorteioLeads()
+  let leads
+  try {
+    leads = await listarSorteioLeads()
+  } catch {
+    return <div className="space-y-6"><p className="text-muted">Erro ao carregar leads do sorteio. Tente novamente.</p></div>
+  }
 
   return (
     <div className="space-y-6">

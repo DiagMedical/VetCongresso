@@ -58,6 +58,7 @@ export function PalestraCard({ palestra }: PalestraCardProps) {
               rel="noopener noreferrer"
               className="flex size-[44px] items-center justify-center rounded-md border border-border text-muted hover:bg-card hover:text-primary transition-colors"
               title="Adicionar ao Google Calendar"
+              aria-label="Adicionar ao Google Calendar"
             >
               <Calendar className="size-4" />
             </a>
@@ -66,6 +67,7 @@ export function PalestraCard({ palestra }: PalestraCardProps) {
               download="palestra.ics"
               className="flex size-[44px] items-center justify-center rounded-md border border-border text-muted hover:bg-card hover:text-primary transition-colors"
               title="Baixar arquivo .ics (Apple/Outlook)"
+              aria-label="Baixar arquivo .ics para Apple ou Outlook"
             >
               <Calendar className="size-4" />
             </a>

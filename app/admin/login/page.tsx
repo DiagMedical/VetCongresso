@@ -14,7 +14,6 @@ export default function LoginPage() {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
-    console.log('Form submit triggered', { email, senha: '***' })
     setErro('')
     setCarregando(true)
 
@@ -35,7 +34,6 @@ export default function LoginPage() {
       }
 
       const { data: { user } } = await supabase.auth.getUser()
-      console.log('User logged in:', user?.email)
       toast.success('Login realizado!')
       router.replace('/admin')
     } catch (err) {

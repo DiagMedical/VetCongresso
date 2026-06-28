@@ -25,7 +25,7 @@ export function SorteioAdmin({ leads }: Props) {
   function handleSortear() {
     setSorting(true)
     setTimeout(() => {
-      const eligible = leads.filter((l) => !l.nome.includes('@') || l.nome.trim().length > 0)
+      const eligible = leads.filter((l) => l.nome.trim().length > 0 && !l.email.includes('@teste'))
       const drawn = eligible[Math.floor(Math.random() * eligible.length)]
       setWinner(drawn)
       setSorting(false)
@@ -36,7 +36,7 @@ export function SorteioAdmin({ leads }: Props) {
     setExporting(true)
     try {
       const data = await exportarSorteioLeads()
-      const csv = ['nome,whatsapp,email,data', ...data.map((l) => `"${l.nome}","${l.whatsapp}","${l.email}","${l.data}"`)].join('\n')
+      const csv = ['nome,whatsapp,email,data', ...data.map((l) => `"${l.nome.replace(/"/g, '""')}","${l.whatsapp}","${l.email}","${l.data}"`)].join('\n')
       const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' })
       const url = URL.createObjectURL(blob)
       const a = document.createElement('a')
@@ -44,6 +44,8 @@ export function SorteioAdmin({ leads }: Props) {
       a.download = `sorteio-leads-${new Date().toISOString().split('T')[0]}.csv`
       a.click()
       URL.revokeObjectURL(url)
+    } catch {
+      // erro silencioso — botão volta ao normal
     } finally {
       setExporting(false)
     }

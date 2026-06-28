@@ -8,7 +8,12 @@ import { RelatoriosTabela } from './relatorios-tabela'
 import { BackToTop } from '@/components/back-to-top'
 
 export default async function RelatoriosPage() {
-  const data = await getRelatorios()
+  let data
+  try {
+    data = await getRelatorios()
+  } catch {
+    return <div className="space-y-6"><p className="text-muted">Erro ao carregar relatórios. Tente novamente.</p></div>
+  }
 
   const dadosXLSX = data.por_palestra.map((p) => ({
     Palestra: p.tema,

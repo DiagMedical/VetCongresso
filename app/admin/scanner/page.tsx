@@ -63,6 +63,7 @@ export default function ScannerPage() {
       gain.connect(ctx.destination)
       osc.start()
       osc.stop(ctx.currentTime + 0.15)
+      osc.onended = () => ctx.close()
     } catch {} // fallback silencioso se AudioContext não disponível
   }
 

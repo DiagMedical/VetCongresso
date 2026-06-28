@@ -466,3 +466,57 @@ This version has breaking changes — APIs, conventions, and file structure may 
 - `app/admin/certificados/loading.tsx` (novo)
 - `components/admin/nav.tsx` — link Certificados
 <!-- END:opencode-session -->
+
+<!-- BEGIN:opencode-session -->
+## Session — 28/06/2026 (3)
+
+### Revisão Pré-Evento — Correções de Estabilidade
+
+**Problemas resolvidos:**
+
+1. **Server components sem try/catch** — Dashboard, Palestras, Reserva, Leads, Admins, Certificados, Sorteio, Relatórios, Analytics e Check-in manual engoliam erro e davam 500. Agora tratam com fallback amigável.
+
+2. **QRCode.toDataURL() sem catch** — `qr-ticket.tsx` e `qr-compartilhe.tsx` podiam quebrar a página se a geração do QR falhasse. Agora com try/catch e fallback null.
+
+3. **Logout sem catch** — `handleLogout` no `header.tsx` sem try/catch. Adicionado com toast de erro.
+
+4. **AudioContext vazando memória** — `beep()` no scanner criava AudioContext sem fechar. Adicionado `osc.onended = () => ctx.close()`.
+
+5. **Filtro do sorteio era no-op** — `!l.nome.includes('@') || l.nome.trim().length > 0` sempre true. Substituído por filtro real que exclui emails de teste.
+
+6. **Error boundaries** — Criado `app/admin/error.tsx` com mensagem amigável sem expor detalhes técnicos.
+
+7. **Acessibilidade** — `aria-label` adicionado nos links de calendário (Google + Apple) em `qr-ticket.tsx` e `palestra-card.tsx`.
+
+8. **`new Date(null)` crash** — Verificação adicionada em `admins-client.tsx` antes de formatar data.
+
+9. **`console.log(email)` no login** — Removido (vazava email do admin no console).
+
+10. **`limparPalestrasDuplicadas` frágil** — Agora requer confirmação explícita (`'CONFIRMAR'`) e usa lógica baseada em tema duplicado em vez de mês.
+
+**Arquivos alterados:**
+- `app/admin/page.tsx` — try/catch + tipos explícitos
+- `app/palestras/page.tsx` — try/catch
+- `app/reserva/[id]/page.tsx` — try/catch
+- `app/admin/scanner/manual/page.tsx` — try/catch
+- `app/admin/palestras/page.tsx` — try/catch
+- `app/admin/leads/page.tsx` — try/catch
+- `app/admin/admins/page.tsx` — try/catch
+- `app/admin/certificados/page.tsx` — try/catch
+- `app/admin/sorteio/page.tsx` — try/catch
+- `app/admin/relatorios/page.tsx` — try/catch
+- `app/admin/analytics/page.tsx` — try/catch
+- `components/qr-ticket.tsx` — try/catch QR + aria-label
+- `components/qr-compartilhe.tsx` — try/catch QR + alt fixo
+- `components/admin/header.tsx` — try/catch logout + toast
+- `app/admin/scanner/page.tsx` — AudioContext close
+- `app/admin/sorteio/sorteio-admin.tsx` — filtro corrigido + catch export
+- `app/admin/admins/admins-client.tsx` — null check created_at
+- `app/admin/login/page.tsx` — remove console.log
+- `lib/actions/admin.ts` — `limparPalestrasDuplicadas` com confirmação + lógica por tema
+- `app/admin/error.tsx` (novo) — error boundary admin
+- `components/palestra-card.tsx` — aria-label calendário
+
+**Commits:**
+- Pendente
+<!-- END:opencode-session -->
