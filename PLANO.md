@@ -179,6 +179,8 @@ Tudo pronto pro evento! Último deploy consolidado no Vercel.
 | 23 | null check created_at | `app/admin/admins/admins-client.tsx` |
 | 24 | console.log(email) removido | `app/admin/login/page.tsx` |
 | 25 | limparPalestrasDuplicadas mais segura | `lib/actions/admin.ts` |
+| 26 | global-error.tsx (root layout fallback) | `app/global-error.tsx` |
+| 27 | Chatbot: X no render prop + msg genérica | `components/chat-fab.tsx` |
 
 ## ⏳ Pós-evento
 

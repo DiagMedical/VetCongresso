@@ -518,5 +518,26 @@ This version has breaking changes — APIs, conventions, and file structure may 
 - `components/palestra-card.tsx` — aria-label calendário
 
 **Commits:**
-- Pendente
+- `3cd76e7` — "Revisão pré-evento: try/catch em server components, QR, logout, AudioContext, filtro sorteio, error boundaries, aria-label, null checks, console.log removido"
+<!-- END:opencode-session -->
+
+<!-- BEGIN:opencode-session -->
+## Session — 28/06/2026 (4)
+
+### Últimos Ajustes — global-error + Chatbot
+
+**Problemas resolvidos:**
+
+1. **`global-error.tsx`** — Criado fallback para erro no root layout. Se o layout inteiro quebrar, exibe mensagem amigável com botão "Tentar novamente" em vez de tela branca.
+
+2. **Chatbot: close button sem ícone** — `<X>` estava como child do `SheetClose`, mas o `render` prop substitui o elemento. Movido o ícone para dentro do `render` prop.
+
+3. **Chatbot vazava "GROQ_API_KEY"** — Mensagem de erro alterada para "Assistente temporariamente indisponível. Tente novamente mais tarde."
+
+**Arquivos alterados/novos:**
+- `app/global-error.tsx` (novo)
+- `components/chat-fab.tsx` — X dentro do render prop + mensagem genérica
+
+**Commits:**
+- `4414383` — "global-error.tsx + chatbot fix (render prop X + mensagem de erro)"
 <!-- END:opencode-session -->
