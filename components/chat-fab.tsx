@@ -59,11 +59,11 @@ export function ChatFab() {
           </div>
           <SheetClose
             render={
-              <Button variant="ghost" size="icon-sm" aria-label="Fechar chat" />
+              <Button variant="ghost" size="icon-sm" aria-label="Fechar chat">
+                <X className="size-4" />
+              </Button>
             }
-          >
-            <X className="size-4" />
-          </SheetClose>
+          />
         </div>
 
         <div
@@ -115,7 +115,7 @@ export function ChatFab() {
             {status === 'error' && error && (
               <div className="flex justify-center">
                 <div className="rounded-lg bg-danger/10 px-3 py-2 text-sm text-danger">
-                  Erro ao conectar com o assistente. Verifique a chave GROQ_API_KEY.
+                  Assistente temporariamente indisponível. Tente novamente mais tarde.
                 </div>
               </div>
             )}
