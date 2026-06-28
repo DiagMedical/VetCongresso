@@ -5,6 +5,7 @@ import { createClient } from '@/lib/supabase/server'
 import { reservaSchema } from '@/lib/schemas'
 import { sendWhatsApp } from '@/lib/whatsapp/send'
 import { sendEmail } from '@/lib/email/send'
+import { checkRateLimit } from '@/lib/rate-limit'
 
 export async function listarPalestras() {
   const supabase = await createClient()
@@ -38,6 +39,10 @@ export async function criarReserva(data: ReservaFormData) {
     const msgs = parsed.error.issues.map((i) => i.message).join('; ')
     throw new Error(msgs)
   }
+
+  const ip = 'reserva'
+  const { allowed, retryAfter } = checkRateLimit(ip)
+  if (!allowed) throw new Error(`Muitas tentativas. Tente novamente em ${retryAfter} segundos.`)
 
   const supabase = await createClient()
 

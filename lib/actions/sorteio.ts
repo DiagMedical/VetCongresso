@@ -1,6 +1,8 @@
 'use server'
 
 import { createClient } from '@/lib/supabase/server'
+import { sorteioSchema } from '@/lib/schemas'
+import { checkRateLimit } from '@/lib/rate-limit'
 
 export interface SorteioLead {
   id: string
@@ -11,11 +13,21 @@ export interface SorteioLead {
 }
 
 export async function inscreverSorteio(data: { nome: string; whatsapp: string; email: string }) {
+  const parsed = sorteioSchema.safeParse(data)
+  if (!parsed.success) {
+    const msgs = parsed.error.issues.map((i) => i.message).join('; ')
+    throw new Error(msgs)
+  }
+
+  const ip = 'sorteio'
+  const { allowed, retryAfter } = checkRateLimit(ip)
+  if (!allowed) throw new Error(`Muitas tentativas. Tente novamente em ${retryAfter} segundos.`)
+
   const supabase = await createClient()
 
-  const nome = data.nome.trim()
-  const whatsapp = data.whatsapp.trim()
-  const email = data.email.trim().toLowerCase()
+  const nome = parsed.data.nome.trim()
+  const whatsapp = parsed.data.whatsapp.trim()
+  const email = parsed.data.email.trim().toLowerCase()
 
   const { error: errLead } = await supabase.from('sorteio_leads').insert({
     nome, whatsapp, email,

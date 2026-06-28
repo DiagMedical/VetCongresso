@@ -183,6 +183,14 @@ Tudo pronto pro evento! Último deploy consolidado no Vercel.
 | 27 | Chatbot: X no render prop + msg genérica | `components/chat-fab.tsx` |
 | 28 | Chips de perguntas no chatbot | `components/chat-fab.tsx` |
 | 29 | Resumo IA do Dashboard | `lib/actions/admin.ts`, `components/admin/dashboard-resumo-ia.tsx`, `app/admin/page.tsx` |
+| 30 | Rate limiting (reserva + sorteio) | `lib/rate-limit.ts`, `lib/actions/reserva.ts`, `lib/actions/sorteio.ts` |
+| 31 | robots.txt | `public/robots.txt` |
+| 32 | Zod validation sorteio | `lib/schemas.ts`, `lib/actions/sorteio.ts` |
+| 33 | CSP header | `next.config.ts` |
+| 34 | Analytics: projeção 60→4 dias | `lib/actions/admin.ts` |
+| 35 | Rota /login removida | `app/login/page.tsx` |
+| 36 | Loading states públicos (4 rotas) | `app/palestras/loading.tsx`, `app/sorteio/loading.tsx`, `app/sorteio/cadastro/loading.tsx`, `app/reserva/[id]/loading.tsx` |
+| 37 | SVGs padrão removidos | `public/next.svg`, `vercel.svg`, `globe.svg`, `file.svg`, `window.svg` |
 
 ## ⏳ Pós-evento
 

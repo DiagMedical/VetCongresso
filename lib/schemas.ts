@@ -37,5 +37,20 @@ export const adicionarParticipanteSchema = z.object({
     .regex(/^[\d\s()+-]+$/, 'Telefone inválido'),
 })
 
+export const sorteioSchema = z.object({
+  nome: z
+    .string()
+    .min(3, 'Nome deve ter no mínimo 3 caracteres')
+    .max(120, 'Nome muito longo'),
+  whatsapp: z
+    .string()
+    .min(10, 'WhatsApp deve ter no mínimo 10 dígitos')
+    .max(20, 'WhatsApp muito longo'),
+  email: z
+    .string()
+    .email('E-mail inválido')
+    .max(255, 'E-mail muito longo'),
+})
+
 export type ReservaFormDataValidated = z.infer<typeof reservaSchema>
 export type AdicionarParticipanteDataValidated = z.infer<typeof adicionarParticipanteSchema>

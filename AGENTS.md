@@ -554,4 +554,42 @@ This version has breaking changes — APIs, conventions, and file structure may 
 - `lib/actions/admin.ts` — nova função `gerarResumoDashboard()` com `generateText` + Groq
 - `components/admin/dashboard-resumo-ia.tsx` (novo) — card client component
 - `app/admin/page.tsx` — import + `<DashboardResumoIA>`
+
+### Segurança + Polimento — Rate Limit, robots.txt, Zod, CSP, Loading
+
+**O que foi feito:**
+
+1. **Rate limiting** — `lib/rate-limit.ts` com janela de 60s, max 10 requests. Aplicado em `criarReserva()` e `inscreverSorteio()`.
+
+2. **`robots.txt`** — Bloqueia `/admin/` dos buscadores.
+
+3. **Zod validation no sorteio** — `sorteioSchema` adicionado a `lib/schemas.ts`, validado no servidor em `inscreverSorteio()`.
+
+4. **CSP header** — `frame-ancestors 'none'` + `form-action 'self'` no `next.config.ts`.
+
+5. **Analytics: projeção corrigida** — de 60 dias para 4 dias (duração do evento).
+
+6. **Rota `/login` removida** — duplicada de `/admin/login`. Eliminada.
+
+7. **Loading states públicos** — `loading.tsx` para `/palestras`, `/sorteio`, `/sorteio/cadastro`, `/reserva/[id]`.
+
+8. **SVGs padrão do Next removidos** — `next.svg`, `vercel.svg`, `globe.svg`, `file.svg`, `window.svg`.
+
+**Arquivos alterados/novos:**
+- `lib/rate-limit.ts` (novo)
+- `lib/schemas.ts` — +sorteioSchema
+- `lib/actions/sorteio.ts` — Zod + rate limit
+- `lib/actions/reserva.ts` — rate limit
+- `lib/actions/admin.ts` — projeção 60→4 dias
+- `public/robots.txt` (novo)
+- `next.config.ts` — +CSP header
+- `app/palestras/loading.tsx` (novo)
+- `app/sorteio/loading.tsx` (novo)
+- `app/sorteio/cadastro/loading.tsx` (novo)
+- `app/reserva/[id]/loading.tsx` (novo)
+- `app/login/page.tsx` — removido
+- `public/next.svg`, `vercel.svg`, `globe.svg`, `file.svg`, `window.svg` — removidos
+
+**Commits:**
+- Pendente
 <!-- END:opencode-session -->

@@ -614,7 +614,7 @@ export async function getAnalyticsData(): Promise<AnalyticsData> {
     : 1
   const totalVagas = (palestras ?? []).reduce((acc, p) => acc + p.vagas_totais, 0)
   const ritmoDiario = total_reservas / diasDesdePrimeiraReserva
-  const totalPrevisto = Math.round(ritmoDiario * 60) // projeta 60 dias
+  const totalPrevisto = Math.round(ritmoDiario * 4) // projeta para os 4 dias do evento
   const previsao_ocupacao_final = totalVagas > 0 ? Math.min(100, Math.round((totalPrevisto / totalVagas) * 100)) : 0
 
   // Per-lecture stats (reuse from getRelatorios logic)
