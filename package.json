@@ -11,9 +11,12 @@
     "test:watch": "vitest"
   },
   "dependencies": {
+    "@ai-sdk/groq": "^4.0.1",
+    "@ai-sdk/react": "^4.0.5",
     "@base-ui/react": "^1.6.0",
     "@supabase/ssr": "^0.12.0",
     "@supabase/supabase-js": "^2.108.2",
+    "ai": "^7.0.4",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "date-fns": "^4.4.0",

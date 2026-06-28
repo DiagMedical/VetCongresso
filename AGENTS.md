@@ -360,3 +360,29 @@ This version has breaking changes — APIs, conventions, and file structure may 
 **Commits:**
 - `1187702` — "Loading skeletons para 8 rotas + empty states + overflow-x-auto + tooltip sorteio"
 <!-- END:opencode-session -->
+
+<!-- BEGIN:opencode-session -->
+## Session — 27/06/2026 (8)
+
+### Chatbot FAQ — Groq + Vercel AI SDK v7
+
+**O que foi feito:**
+
+1. **Chatbot com IA** — FAB flutuante (canto inferior direito) com glow pulsante cyan. Abre Sheet lateral com chat. Usa Groq (Llama 3.3 70B) gratuito com streaming via Vercel AI SDK v7.
+
+2. **Contexto automático** — `lib/ai/context.ts` busca palestras ativas no banco e monta o system prompt com grade horária completa (Dia 1/2/3, horários, palestrantes, vagas).
+
+3. **API route** — `app/api/chat/route.ts` com `streamText()` + `toTextStreamResponse()`.
+
+4. **Visível em todas as páginas** — `<ChatFab />` incluído no root layout.
+
+**Arquivos alterados/novos:**
+- `lib/ai/context.ts` (novo)
+- `app/api/chat/route.ts` (novo)
+- `components/chat-fab.tsx` (novo)
+- `app/layout.tsx` — import + `<ChatFab />`
+- `package.json` — adicionado `ai`, `@ai-sdk/groq`, `@ai-sdk/react`
+- `.env.local` — `GROQ_API_KEY=`
+
+**⚠️ Necessário:** Criar chave em https://console.groq.com, colar no `.env.local` e adicionar `GROQ_API_KEY` no Vercel.
+<!-- END:opencode-session -->
