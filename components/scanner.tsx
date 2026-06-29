@@ -14,7 +14,7 @@ export function Scanner({ onScan }: ScannerProps) {
   const [error, setError] = useState('')
   const [processing, setProcessing] = useState(false)
   const streamRef = useRef<MediaStream | null>(null)
-  const animationRef = useRef<number>(0)
+  const scanTimeoutRef = useRef<any>(null)
   const onScanRef = useRef(onScan)
   const startBtnRef = useRef<HTMLButtonElement>(null)
   const statusRef = useRef<HTMLDivElement>(null)
@@ -30,13 +30,25 @@ export function Scanner({ onScan }: ScannerProps) {
       const video = videoRef.current
       video.srcObject = streamRef.current
       video.play().then(() => {
-        setTimeout(scanFrame, 500)
+        scanTimeoutRef.current = setTimeout(scanFrame, 500)
       }).catch(() => {
         setError('Erro ao iniciar o vídeo da câmera')
         setScanning(false)
       })
     }
   }, [scanning])
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      if (scanTimeoutRef.current) {
+        clearTimeout(scanTimeoutRef.current)
+      }
+      if (streamRef.current) {
+        streamRef.current.getTracks().forEach((t) => t.stop())
+      }
+    }
+  }, [])
 
   useEffect(() => {
     if (!scanning && !processing) {
@@ -51,31 +63,37 @@ export function Scanner({ onScan }: ScannerProps) {
   }
 
   function scanFrame() {
-    if (!videoRef.current || !canvasRef.current) return
+    if (!videoRef.current || !canvasRef.current || !scanning) return
 
     const video = videoRef.current
     const canvas = canvasRef.current
 
     if (video.readyState !== video.HAVE_ENOUGH_DATA) {
-      animationRef.current = requestAnimationFrame(scanFrame)
+      scanTimeoutRef.current = setTimeout(scanFrame, 100)
       return
     }
 
     const srcWidth = video.videoWidth
     const srcHeight = video.videoHeight
 
+    // Crop central
     const size = Math.min(srcWidth, srcHeight)
     const offsetX = (srcWidth - size) / 2
     const offsetY = (srcHeight - size) / 2
 
-    canvas.width = size
-    canvas.height = size
+    // Downscale target size to 400x400 for faster CPU processing
+    const targetSize = 400
+    canvas.width = targetSize
+    canvas.height = targetSize
 
-    const ctx = canvas.getContext('2d')
-    if (!ctx) return
+    const ctx = canvas.getContext('2d', { willReadFrequently: true })
+    if (!ctx) {
+      scanTimeoutRef.current = setTimeout(scanFrame, 200)
+      return
+    }
 
-    ctx.drawImage(video, offsetX, offsetY, size, size, 0, 0, size, size)
-    const imageData = ctx.getImageData(0, 0, size, size)
+    ctx.drawImage(video, offsetX, offsetY, size, size, 0, 0, targetSize, targetSize)
+    const imageData = ctx.getImageData(0, 0, targetSize, targetSize)
     const code = jsQR(imageData.data, imageData.width, imageData.height, {
       inversionAttempts: 'attemptBoth',
     })
@@ -91,11 +109,15 @@ export function Scanner({ onScan }: ScannerProps) {
       return
     }
 
-    animationRef.current = requestAnimationFrame(scanFrame)
+    // Schedule next frame with 200ms delay to keep the camera feed smooth and CPU cool
+    scanTimeoutRef.current = setTimeout(scanFrame, 200)
   }
 
   function stopCamera() {
-    if (animationRef.current) cancelAnimationFrame(animationRef.current)
+    if (scanTimeoutRef.current) {
+      clearTimeout(scanTimeoutRef.current)
+      scanTimeoutRef.current = null
+    }
     if (streamRef.current) {
       streamRef.current.getTracks().forEach((t) => t.stop())
       streamRef.current = null
