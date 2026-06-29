@@ -40,6 +40,7 @@ export default function ScannerPage() {
   }
 
   async function handleScan(data: string) {
+    console.log('Scanned data:', data);
     setResultado(null)
 
     const parsed = tryParseQr(data)
