@@ -4,7 +4,6 @@ import { useState, useEffect } from 'react'
 import { Mail, RefreshCw } from 'lucide-react'
 import { getConfiguracoes, salvarConfiguracao } from '@/lib/actions/admin'
 import { EMAIL_CONFIG_KEYS, getEmailConfig } from '@/lib/email/config'
-import type { EmailConfig } from '@/lib/email/config'
 
 export function ConfigPage() {
   const [config, setConfig] = useState<Record<string, string>>({})

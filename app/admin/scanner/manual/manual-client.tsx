@@ -2,7 +2,7 @@
 
 import { useState, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
-import { Search, CheckCircle2, XCircle, ArrowLeft, CheckSquare } from 'lucide-react'
+import { Search, CheckCircle2, ArrowLeft, CheckSquare } from 'lucide-react'
 import Link from 'next/link'
 import { toast } from 'sonner'
 import type { Palestra, Inscrito } from '@/types'

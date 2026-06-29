@@ -25,7 +25,7 @@ export async function sendText(telefone: string, message: string): Promise<ZapEn
   const { instance, token, enabled } = getConfig()
 
   if (!enabled) {
-    console.log('[WhatsApp mock] Para:', telefone, 'Msg:', message)
+    console.debug('[WhatsApp mock] Para:', telefone, 'Msg:', message)
     return { sucesso: true, zaapId: 'mock' }
   }
 

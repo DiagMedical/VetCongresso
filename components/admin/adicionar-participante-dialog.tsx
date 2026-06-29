@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useId } from 'react'
-import { Plus, Loader2 } from 'lucide-react'
+import { Loader2 } from 'lucide-react'
 import type { Palestra } from '@/types'
 import { adicionarParticipanteSchema } from '@/lib/schemas'
 import { toast } from 'sonner'

@@ -33,7 +33,7 @@ export default function LoginPage() {
         return
       }
 
-      const { data: { user } } = await supabase.auth.getUser()
+      await supabase.auth.getUser()
       toast.success('Login realizado!')
       router.replace('/admin')
     } catch (err) {

@@ -56,8 +56,6 @@ export async function sendEmail(
     : inscrito.palestra
   if (!palestra) return
 
-  const inicio = new Date(palestra.horario_inicio)
-  const fim = new Date(palestra.horario_fim)
   const ticketUrl = `${process.env.NEXT_PUBLIC_SITE_URL ?? ''}/ticket/${inscrito.id}`
 
   const emailData = {

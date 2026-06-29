@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, startTransition } from 'react'
 import { Sparkles, Loader2, RefreshCw } from 'lucide-react'
 import type { DashboardData } from '@/lib/actions/admin'
 
@@ -28,7 +28,7 @@ export function DashboardResumoIA({ data }: Props) {
 
   useEffect(() => {
     mounted.current = true
-    fetchResumo()
+    startTransition(() => { fetchResumo() })
     return () => { mounted.current = false }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])

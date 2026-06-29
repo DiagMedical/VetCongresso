@@ -596,6 +596,55 @@ This version has breaking changes — APIs, conventions, and file structure may 
 <!-- END:opencode-session -->
 
 <!-- BEGIN:opencode-session -->
+## Session — 29/06/2026
+
+### Correções + Melhorias Pré-evento
+
+**Problemas resolvidos:**
+
+1. **14 erros de lint** — `SetaIcon` criado dentro do render em `dashboard-tabela-palestras.tsx` e `leads-table.tsx`. Extraído para função separada fora do componente. `setState` síncrono em `useEffect` no `dashboard-resumo-ia.tsx` resolvido com `startTransition`.
+
+2. **`as any` na query** — `lib/actions/admin.ts:64` refatorado para evitar `any`.
+
+3. **console.log vazando dados** — `lib/whatsapp/client.ts:28` trocado para `console.debug`.
+
+4. **16 warnings de lint** — 10 unused imports removidos, 2 `<img>` com eslint-disable (html2canvas), `_error` não destruturado em error boundaries, eslint-disable desnecessário removido do `next.config.ts`.
+
+5. **`.env.example` desatualizado** — Adicionado `NEXT_PUBLIC_SITE_URL`, `GROQ_API_KEY`, `CRON_SECRET` com comentários.
+
+6. **Token GitHub exposto** — Remote trocado de `https://DiagMedical:ghp_...@github.com/...` para `https://github.com/DiagMedical/VetCongresso.git`. ⚠️ Necessário revogar o token manualmente em github.com/settings/tokens.
+
+7. **Badge "Esgotado"** — Adicionado `Badge variant="destructive"` nos cards de palestra quando `vagas <= 0`.
+
+**Métricas finais:**
+- Lint: 0 erros, 0 warnings
+- Build: sucesso
+- Testes: 29/29 passando
+
+**Arquivos alterados:**
+- `components/admin/dashboard-tabela-palestras.tsx` — SetaIcon extraído
+- `components/admin/leads-table.tsx` — SetaIcon extraído
+- `components/admin/dashboard-resumo-ia.tsx` — startTransition
+- `lib/actions/admin.ts` — query sem any
+- `lib/whatsapp/client.ts` — console.log → console.debug
+- `components/palestra-card.tsx` — Badge Esgotado
+- `app/admin/error.tsx` — unused _error removido
+- `app/global-error.tsx` — unused _error removido
+- `app/admin/analytics/analytics-charts.tsx` — unused imports
+- `app/admin/config/config-page.tsx` — unused import
+- `app/admin/login/page.tsx` — unused user var
+- `app/admin/scanner/manual/manual-client.tsx` — unused XCircle
+- `components/admin/adicionar-participante-dialog.tsx` — unused Plus
+- `components/admin/palestra-dialog.tsx` — unused useId
+- `components/palestra-card.tsx` — unused Button
+- `lib/email/send.ts` — unused inicio/fim
+- `next.config.ts` — unused eslint-disable
+- `.env.example` — novas variáveis
+- `app/admin/certificados/certificados-client.tsx` — eslint-disable img
+
+<!-- END:opencode-session -->
+
+<!-- BEGIN:opencode-session -->
 ## Session — 28/06/2026 (5)
 
 ### Ajustes Finais — vercel.json maxDuration

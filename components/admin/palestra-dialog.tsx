@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useId } from 'react'
+import { useState } from 'react'
 import type { Palestra, PalestraFormData, DiaEvento } from '@/types'
 import {
   Dialog,

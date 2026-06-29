@@ -133,12 +133,14 @@ export function CertificadosClient({ dados }: Props) {
 
                             <div className="relative flex flex-col items-center">
                               <div className="flex items-center justify-center gap-6 mb-6">
+                                {/* eslint-disable-next-line @next/next/no-img-element */}
                                 <img
                                   src="/logo-abraveq.svg"
                                   alt="ABRAVEQ"
                                   className="h-14 w-auto"
                                 />
                                 <div className="h-12 w-px bg-gray-300" />
+                                {/* eslint-disable-next-line @next/next/no-img-element */}
                                 <img
                                   src="/logo-diagnostic-vet.png"
                                   alt="Diagnostic Vet"

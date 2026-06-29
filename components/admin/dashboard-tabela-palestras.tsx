@@ -8,18 +8,18 @@ interface Props {
   data: DashboardData
 }
 
+function SetaIcon({ ordem, col }: { ordem: { col: string; dir: string }; col: string }) {
+  if (ordem.col !== col) return <ArrowUpDown className="ml-1 inline size-3 text-muted/40" />
+  return ordem.dir === 'asc'
+    ? <ArrowUp className="ml-1 inline size-3 text-primary" />
+    : <ArrowDown className="ml-1 inline size-3 text-primary" />
+}
+
 export function DashboardTabelaPalestras({ data }: Props) {
   const [ordem, setOrdem] = useState<{ col: string; dir: 'asc' | 'desc' }>({ col: 'reservas', dir: 'desc' })
 
   function toggleOrdem(col: string) {
     setOrdem((prev) => prev.col === col ? { col, dir: prev.dir === 'asc' ? 'desc' : 'asc' } : { col, dir: 'asc' })
-  }
-
-  function SetaIcon({ col }: { col: string }) {
-    if (ordem.col !== col) return <ArrowUpDown className="ml-1 inline size-3 text-muted/40" />
-    return ordem.dir === 'asc'
-      ? <ArrowUp className="ml-1 inline size-3 text-primary" />
-      : <ArrowDown className="ml-1 inline size-3 text-primary" />
   }
 
   const ordenados = useMemo(() => {
@@ -58,37 +58,37 @@ export function DashboardTabelaPalestras({ data }: Props) {
               <tr className="text-left text-muted">
                 <th scope="col" className="px-4 py-3 font-medium">
                   <button onClick={() => toggleOrdem('tema')} className="flex items-center gap-1 hover:text-foreground transition-colors">
-                    Palestra <SetaIcon col="tema" />
+                    Palestra <SetaIcon ordem={ordem} col="tema" />
                   </button>
                 </th>
                 <th scope="col" className="px-4 py-3 font-medium">
                   <button onClick={() => toggleOrdem('palestrante')} className="flex items-center gap-1 hover:text-foreground transition-colors">
-                    Palestrante <SetaIcon col="palestrante" />
+                    Palestrante <SetaIcon ordem={ordem} col="palestrante" />
                   </button>
                 </th>
                 <th scope="col" className="px-4 py-3 font-medium">
                   <button onClick={() => toggleOrdem('vagas')} className="flex items-center gap-1 hover:text-foreground transition-colors">
-                    Vagas <SetaIcon col="vagas" />
+                    Vagas <SetaIcon ordem={ordem} col="vagas" />
                   </button>
                 </th>
                 <th scope="col" className="px-4 py-3 font-medium">
                   <button onClick={() => toggleOrdem('reservas')} className="flex items-center gap-1 hover:text-foreground transition-colors">
-                    Inscritos <SetaIcon col="reservas" />
+                    Inscritos <SetaIcon ordem={ordem} col="reservas" />
                   </button>
                 </th>
                 <th scope="col" className="px-4 py-3 font-medium">
                   <button onClick={() => toggleOrdem('checkins')} className="flex items-center gap-1 hover:text-foreground transition-colors">
-                    Check-ins <SetaIcon col="checkins" />
+                    Check-ins <SetaIcon ordem={ordem} col="checkins" />
                   </button>
                 </th>
                 <th scope="col" className="px-4 py-3 font-medium">
                   <button onClick={() => toggleOrdem('taxa_checkin')} className="flex items-center gap-1 hover:text-foreground transition-colors">
-                    % Check-in <SetaIcon col="taxa_checkin" />
+                    % Check-in <SetaIcon ordem={ordem} col="taxa_checkin" />
                   </button>
                 </th>
                 <th scope="col" className="px-4 py-3 font-medium">
                   <button onClick={() => toggleOrdem('taxa_ocupacao')} className="flex items-center gap-1 hover:text-foreground transition-colors">
-                    % Ocupação <SetaIcon col="taxa_ocupacao" />
+                    % Ocupação <SetaIcon ordem={ordem} col="taxa_ocupacao" />
                   </button>
                 </th>
               </tr>

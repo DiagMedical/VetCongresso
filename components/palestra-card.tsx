@@ -4,7 +4,6 @@ import type { Palestra } from '@/types'
 import { formatTime } from '@/lib/utils'
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
 import { buildGoogleCalendarUrl, buildAppleCalendarUrl } from '@/lib/calendar'
 
 interface PalestraCardProps {
@@ -20,6 +19,7 @@ export function PalestraCard({ palestra }: PalestraCardProps) {
       <CardContent className="flex flex-col gap-3">
         <div className="flex items-start justify-between gap-2">
           <h3 className="font-semibold text-foreground">{palestra.tema}</h3>
+          {lotado && <Badge variant="destructive">Esgotado</Badge>}
           <Badge variant="secondary">Dia {palestra.dia_evento}</Badge>
         </div>
 

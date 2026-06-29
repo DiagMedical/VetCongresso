@@ -12,6 +12,13 @@ interface LeadsTableProps {
   limiteAtingido: boolean
 }
 
+function SetaIcon({ ordem, col }: { ordem: { col: string; dir: string }; col: string }) {
+  if (ordem.col !== col) return <ArrowUpDown className="ml-1 inline size-3 text-muted/40" />
+  return ordem.dir === 'asc'
+    ? <ArrowUp className="ml-1 inline size-3 text-primary" />
+    : <ArrowDown className="ml-1 inline size-3 text-primary" />
+}
+
 export function LeadsTable({ inscritos, palestras, totalCount, limiteAtingido }: LeadsTableProps) {
   const [busca, setBusca] = useState('')
   const [filtroStatus, setFiltroStatus] = useState<StatusInscricao | ''>('')
@@ -20,13 +27,6 @@ export function LeadsTable({ inscritos, palestras, totalCount, limiteAtingido }:
 
   function toggleOrdem(col: string) {
     setOrdem((prev) => prev.col === col ? { col, dir: prev.dir === 'asc' ? 'desc' : 'asc' } : { col, dir: 'asc' })
-  }
-
-  function SetaIcon({ col }: { col: string }) {
-    if (ordem.col !== col) return <ArrowUpDown className="ml-1 inline size-3 text-muted/40" />
-    return ordem.dir === 'asc'
-      ? <ArrowUp className="ml-1 inline size-3 text-primary" />
-      : <ArrowDown className="ml-1 inline size-3 text-primary" />
   }
 
   const statusLabels: Record<StatusInscricao, string> = {
@@ -148,29 +148,29 @@ export function LeadsTable({ inscritos, palestras, totalCount, limiteAtingido }:
             <tr className="text-left text-muted">
               <th scope="col" className="px-4 py-3 font-medium">
                 <button onClick={() => toggleOrdem('nome')} className="flex items-center gap-1 hover:text-foreground transition-colors">
-                  Nome <SetaIcon col="nome" />
+                  Nome <SetaIcon ordem={ordem} col="nome" />
                 </button>
               </th>
               <th scope="col" className="px-4 py-3 font-medium">
                 <button onClick={() => toggleOrdem('email')} className="flex items-center gap-1 hover:text-foreground transition-colors">
-                  Email <SetaIcon col="email" />
+                  Email <SetaIcon ordem={ordem} col="email" />
                 </button>
               </th>
               <th scope="col" className="px-4 py-3 font-medium">Telefone</th>
               <th scope="col" className="px-4 py-3 font-medium">Palestra</th>
               <th scope="col" className="px-4 py-3 font-medium">
                 <button onClick={() => toggleOrdem('status')} className="flex items-center gap-1 hover:text-foreground transition-colors">
-                  Status <SetaIcon col="status" />
+                  Status <SetaIcon ordem={ordem} col="status" />
                 </button>
               </th>
               <th scope="col" className="px-4 py-3 font-medium">
                 <button onClick={() => toggleOrdem('origem')} className="flex items-center gap-1 hover:text-foreground transition-colors">
-                  Origem <SetaIcon col="origem" />
+                  Origem <SetaIcon ordem={ordem} col="origem" />
                 </button>
               </th>
               <th scope="col" className="px-4 py-3 font-medium">
                 <button onClick={() => toggleOrdem('created_at')} className="flex items-center gap-1 hover:text-foreground transition-colors">
-                  Data <SetaIcon col="created_at" />
+                  Data <SetaIcon ordem={ordem} col="created_at" />
                 </button>
               </th>
             </tr>

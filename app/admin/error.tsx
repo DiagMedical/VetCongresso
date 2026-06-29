@@ -3,7 +3,6 @@
 import { AlertTriangle } from 'lucide-react'
 
 export default function AdminError({
-  error,
   reset,
 }: {
   error: Error & { digest?: string }

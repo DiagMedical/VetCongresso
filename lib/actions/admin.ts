@@ -60,11 +60,10 @@ export async function getDashboardData(diaFiltro?: number): Promise<DashboardDat
   const inscritosBase = supabase.from('inscritos')
 
   async function executar<T>(query: ReturnType<typeof inscritosBase.select>) {
-    if (palestraIds && palestraIds.length > 0) {
-      const { data, count } = await (query as any).in('palestra_id', palestraIds) as { data: T | null; count: number | null }
-      return { data, count }
-    }
-    const { data, count } = await query as { data: T | null; count: number | null }
+    const q = palestraIds && palestraIds.length > 0
+      ? query.in('palestra_id', palestraIds)
+      : query
+    const { data, count } = await q as { data: T | null; count: number | null }
     return { data, count }
   }
 

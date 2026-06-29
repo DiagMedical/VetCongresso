@@ -1,12 +1,10 @@
 'use client'
 
 import { useState } from 'react'
-import { useRouter } from 'next/navigation'
 import { Gift, CheckCircle2 } from 'lucide-react'
 import { inscreverSorteio } from '@/lib/actions/sorteio'
 
 export function CadastroSorteio() {
-  const router = useRouter()
   const [step, setStep] = useState<'form' | 'success'>('form')
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
