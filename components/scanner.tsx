@@ -59,35 +59,41 @@ export function Scanner({ onScan }: ScannerProps) {
     const video = videoRef.current
     const canvas = canvasRef.current
 
-    if (video.readyState !== video.HAVE_ENOUGH_DATA) {
-      animationRef.current = requestAnimationFrame(scanFrame)
-      return
-    }
+    try {
+      if (video.readyState !== video.HAVE_ENOUGH_DATA) {
+        animationRef.current = requestAnimationFrame(scanFrame)
+        return
+      }
 
-    canvas.width = video.videoWidth
-    canvas.height = video.videoHeight
+      canvas.width = video.videoWidth
+      canvas.height = video.videoHeight
 
-    const ctx = canvas.getContext('2d')
-    if (!ctx) return
+      const ctx = canvas.getContext('2d')
+      if (!ctx) return
 
-    ctx.drawImage(video, 0, 0, canvas.width, canvas.height)
-    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height)
-    const code = jsQR(imageData.data, imageData.width, imageData.height, {
-      inversionAttempts: 'dontInvert',
-    })
-
-    if (code) {
-      stopCamera()
-      setProcessing(true)
-      announceStatus('QR Code detectado. Processando...')
-      onScanRef.current(code.data).finally(() => {
-        setProcessing(false)
-        announceStatus('')
+      ctx.drawImage(video, 0, 0, canvas.width, canvas.height)
+      const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height)
+      const code = jsQR(imageData.data, imageData.width, imageData.height, {
+        inversionAttempts: 'dontInvert',
       })
-      return
-    }
 
-    animationRef.current = requestAnimationFrame(scanFrame)
+      if (code) {
+        stopCamera()
+        setProcessing(true)
+        announceStatus('QR Code detectado. Processando...')
+        onScanRef.current(code.data).finally(() => {
+          setProcessing(false)
+          announceStatus('')
+        })
+        return
+      }
+
+      animationRef.current = requestAnimationFrame(scanFrame)
+    } catch (e) {
+      console.error('scanFrame error:', e)
+      setError('Erro ao processar o frame da câmera')
+      stopCamera()
+    }
   }
 
   function stopCamera() {
