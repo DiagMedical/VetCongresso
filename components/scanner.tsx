@@ -29,10 +29,10 @@ export function Scanner({ onScan }: ScannerProps) {
     if (scanning && videoRef.current && streamRef.current) {
       const video = videoRef.current
       video.srcObject = streamRef.current
-      video.play().then(() => {
-        // Start scanning frames after video is playing
-        scanFrame()
-      }).catch((e) => {
+video.play().then(() => {
+          // Give camera a moment to stabilize before scanning
+          setTimeout(scanFrame, 500)
+        }).catch((e) => {
         console.error('Erro ao iniciar vídeo:', e)
         setError('Erro ao iniciar o vídeo da câmera')
         announceStatus('Erro ao iniciar o vídeo')
@@ -112,7 +112,11 @@ export function Scanner({ onScan }: ScannerProps) {
 
     try {
       const stream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: { ideal: 'environment' } },
+        video: {
+          facingMode: { ideal: 'environment' },
+          width: { ideal: 1280 },
+          height: { ideal: 720 },
+        },
       })
       streamRef.current = stream
       // Enable UI and focus stop button; video will be attached in useEffect when rendered
