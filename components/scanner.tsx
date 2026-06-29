@@ -92,14 +92,18 @@ export function Scanner({ onScan }: ScannerProps) {
         video: { facingMode: { ideal: 'environment' } },
       })
       streamRef.current = stream
-      if (videoRef.current) {
-        videoRef.current.srcObject = stream
-        await videoRef.current.play()
+      const video = videoRef.current
+      if (video) {
+        video.onloadedmetadata = () => {
+          video.play().then(() => {
+            setScanning(true)
+            announceStatus('Câmera ativa. Apontando para o QR Code.')
+            stopBtnRef.current?.focus()
+            scanFrame()
+          }).catch(() => {})
+        }
+        video.srcObject = stream
       }
-      setScanning(true)
-      announceStatus('Câmera ativa. Apontando para o QR Code.')
-      stopBtnRef.current?.focus()
-      setTimeout(scanFrame, 300)
     } catch (err) {
       const msg = err instanceof DOMException
         ? err.name === 'NotAllowedError'
@@ -136,8 +140,8 @@ export function Scanner({ onScan }: ScannerProps) {
       )}
 
       {scanning && (
-        <div className="relative overflow-hidden rounded-lg border border-border">
-          <video ref={videoRef} className="max-w-full aspect-video" autoPlay muted playsInline aria-label="Leitor de QR Code pela câmera" />
+        <div className="relative w-full max-w-sm h-72 overflow-hidden rounded-lg border border-border">
+          <video ref={videoRef} className="size-full object-cover" autoPlay muted playsInline aria-label="Leitor de QR Code pela câmera" />
           <canvas ref={canvasRef} className="hidden" />
           <div className="absolute inset-0 border-[3px] border-primary/50 rounded-lg pointer-events-none" />
         </div>
