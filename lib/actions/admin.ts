@@ -182,6 +182,31 @@ export async function getDashboardData(diaFiltro?: number): Promise<DashboardDat
   }
 }
 
+export async function obterDadosInscrito(inscritoId: string) {
+  const supabase = await createClient()
+
+  const { data: inscrito, error } = await supabase
+    .from('inscritos')
+    .select('id, nome, status, palestra:palestra_id(tema, palestrante, horario_inicio)')
+    .eq('id', inscritoId)
+    .single()
+
+  if (error || !inscrito) return null
+
+  const palestraData = inscrito.palestra as any
+  const palestra = Array.isArray(palestraData) ? palestraData[0] : palestraData
+
+  return {
+    v: 1,
+    id: inscrito.id,
+    n: inscrito.nome,
+    t: palestra?.tema ?? '',
+    p: palestra?.palestrante ?? '',
+    d: palestra?.horario_inicio ?? '',
+    e: 'VetCongresso 2026',
+  }
+}
+
 export async function realizarCheckIn(inscritoId: string) {
   const supabase = await createClient()
 

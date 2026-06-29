@@ -9,16 +9,7 @@ interface QrTicketProps {
 }
 
 function buildQrPayload(i: Inscrito): string {
-  const payload = {
-    v: 1,
-    id: i.id,
-    n: i.nome,
-    t: i.palestra?.tema ?? '',
-    p: i.palestra?.palestrante ?? '',
-    d: i.palestra?.horario_inicio ?? '',
-    e: 'VetCongresso 2026',
-  }
-  return JSON.stringify(payload)
+  return i.id
 }
 
 export async function QrTicket({ inscrito }: QrTicketProps) {

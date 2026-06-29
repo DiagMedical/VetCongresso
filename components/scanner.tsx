@@ -73,40 +73,45 @@ export function Scanner({ onScan }: ScannerProps) {
       return
     }
 
-    const srcWidth = video.videoWidth
-    const srcHeight = video.videoHeight
+    try {
+      const srcWidth = video.videoWidth
+      const srcHeight = video.videoHeight
 
-    // Crop central
-    const size = Math.min(srcWidth, srcHeight)
-    const offsetX = (srcWidth - size) / 2
-    const offsetY = (srcHeight - size) / 2
+      if (!srcWidth || !srcHeight) {
+        scanTimeoutRef.current = setTimeout(scanFrame, 100)
+        return
+      }
 
-    // Downscale target size to 400x400 for faster CPU processing
-    const targetSize = 400
-    canvas.width = targetSize
-    canvas.height = targetSize
+      // Process complete frame downscaled to 480px width (highly robust for any rotation/alignment)
+      const targetWidth = 480
+      const targetHeight = Math.round((srcHeight / srcWidth) * targetWidth)
+      canvas.width = targetWidth
+      canvas.height = targetHeight
 
-    const ctx = canvas.getContext('2d', { willReadFrequently: true })
-    if (!ctx) {
-      scanTimeoutRef.current = setTimeout(scanFrame, 200)
-      return
-    }
+      const ctx = canvas.getContext('2d', { willReadFrequently: true })
+      if (!ctx) {
+        scanTimeoutRef.current = setTimeout(scanFrame, 200)
+        return
+      }
 
-    ctx.drawImage(video, offsetX, offsetY, size, size, 0, 0, targetSize, targetSize)
-    const imageData = ctx.getImageData(0, 0, targetSize, targetSize)
-    const code = jsQR(imageData.data, imageData.width, imageData.height, {
-      inversionAttempts: 'attemptBoth',
-    })
-
-    if (code) {
-      stopCamera()
-      setProcessing(true)
-      announceStatus('QR Code detectado. Processando...')
-      onScanRef.current(code.data).finally(() => {
-        setProcessing(false)
-        announceStatus('')
+      ctx.drawImage(video, 0, 0, srcWidth, srcHeight, 0, 0, targetWidth, targetHeight)
+      const imageData = ctx.getImageData(0, 0, targetWidth, targetHeight)
+      const code = jsQR(imageData.data, imageData.width, imageData.height, {
+        inversionAttempts: 'attemptBoth',
       })
-      return
+
+      if (code) {
+        stopCamera()
+        setProcessing(true)
+        announceStatus('QR Code detectado. Processando...')
+        onScanRef.current(code.data).finally(() => {
+          setProcessing(false)
+          announceStatus('')
+        })
+        return
+      }
+    } catch (err) {
+      console.error('Erro ao ler frame do scanner:', err)
     }
 
     // Schedule next frame with 200ms delay to keep the camera feed smooth and CPU cool

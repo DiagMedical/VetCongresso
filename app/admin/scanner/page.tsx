@@ -55,12 +55,34 @@ export default function ScannerPage() {
     console.log('Scanned data:', data);
     setResultado(null)
 
-    const parsed = tryParseQr(data)
+    const trimmed = data.trim()
+
+    // 1. Se for o formato antigo (JSON completo)
+    const parsed = tryParseQr(trimmed)
     if (parsed) {
       setQrData(parsed)
       return
     }
 
+    // 2. Se for o novo formato (apenas UUID)
+    const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(trimmed)
+    if (isUuid) {
+      setConfirmando(true)
+      try {
+        const { obterDadosInscrito } = await import('@/lib/actions/admin')
+        const dados = await obterDadosInscrito(trimmed)
+        if (dados) {
+          setQrData(dados)
+          return
+        }
+      } catch (err) {
+        console.error('Erro ao carregar dados do QR code:', err)
+      } finally {
+        setConfirmando(false)
+      }
+    }
+
+    // 3. Fallback: tenta check-in direto
     await doCheckin(data)
   }
 
