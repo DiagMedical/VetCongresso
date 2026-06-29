@@ -65,22 +65,14 @@ video.play().then(() => {
         return
       }
 
-      const srcWidth = video.videoWidth
-      const srcHeight = video.videoHeight
-
-      // Crop center square for better close-up detection
-      const size = Math.min(srcWidth, srcHeight)
-      const offsetX = (srcWidth - size) / 2
-      const offsetY = (srcHeight - size) / 2
-
-      canvas.width = size
-      canvas.height = size
+      canvas.width = video.videoWidth
+      canvas.height = video.videoHeight
 
       const ctx = canvas.getContext('2d')
       if (!ctx) return
 
-      ctx.drawImage(video, offsetX, offsetY, size, size, 0, 0, size, size)
-      const imageData = ctx.getImageData(0, 0, size, size)
+      ctx.drawImage(video, 0, 0, canvas.width, canvas.height)
+      const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height)
       const code = jsQR(imageData.data, imageData.width, imageData.height, {
         inversionAttempts: 'attemptBoth',
       })
