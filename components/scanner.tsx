@@ -88,15 +88,9 @@ export function Scanner({ onScan }: ScannerProps) {
     setProcessing(false)
 
     try {
-      const constraints: MediaStreamConstraints = {
-        video: {
-          facingMode: { ideal: 'environment' },
-          width: { ideal: 640 },
-          height: { ideal: 480 },
-        },
-      }
-
-      const stream = await navigator.mediaDevices.getUserMedia(constraints)
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: { facingMode: { ideal: 'environment' } },
+      })
       streamRef.current = stream
       if (videoRef.current) {
         videoRef.current.srcObject = stream
@@ -105,7 +99,7 @@ export function Scanner({ onScan }: ScannerProps) {
       setScanning(true)
       announceStatus('Câmera ativa. Apontando para o QR Code.')
       stopBtnRef.current?.focus()
-      scanFrame()
+      setTimeout(scanFrame, 300)
     } catch (err) {
       const msg = err instanceof DOMException
         ? err.name === 'NotAllowedError'
@@ -143,7 +137,7 @@ export function Scanner({ onScan }: ScannerProps) {
 
       {scanning && (
         <div className="relative overflow-hidden rounded-lg border border-border">
-          <video ref={videoRef} className="max-w-full" playsInline aria-label="Leitor de QR Code pela câmera" />
+          <video ref={videoRef} className="max-w-full aspect-video" autoPlay muted playsInline aria-label="Leitor de QR Code pela câmera" />
           <canvas ref={canvasRef} className="hidden" />
           <div className="absolute inset-0 border-[3px] border-primary/50 rounded-lg pointer-events-none" />
         </div>
