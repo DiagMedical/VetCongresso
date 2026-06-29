@@ -277,17 +277,46 @@ export async function realizarCheckInAdmin(inscritoId: string) {
   )
 }
 
+export async function excluirInscrito(inscritoId: string) {
+  const supabase = await createClient()
+  const { data: inscrito } = await supabase
+    .from('inscritos')
+    .select('id')
+    .eq('id', inscritoId)
+    .single()
+
+  if (!inscrito) throw new Error('Inscrito não encontrado')
+
+  const { error } = await supabase
+    .from('inscritos')
+    .delete()
+    .eq('id', inscritoId)
+
+  if (error) throw new Error(error.message)
+}
+
 export async function cancelarPorFalta(inscritoId: string) {
   const supabase = await createClient()
 
   const { data: atual } = await supabase
     .from('inscritos')
-    .select('palestra_id')
+    .select('palestra_id, status')
     .eq('id', inscritoId)
     .single()
 
   if (!atual) throw new Error('Inscrito não encontrado')
 
+  // Check-in já realizado — hard delete (desfaz presença)
+  if (atual.status === 'check-in') {
+    const { error } = await supabase
+      .from('inscritos')
+      .delete()
+      .eq('id', inscritoId)
+    if (error) throw new Error(error.message)
+    return
+  }
+
+  // Soft cancel para confirmado/espera
   const { error } = await supabase
     .from('inscritos')
     .update({ status: 'cancelado_por_falta', cancelado_at: new Date().toISOString() })

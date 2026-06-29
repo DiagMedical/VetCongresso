@@ -22,7 +22,7 @@ export function LiberarVagaDialog({ open, onClose, inscritos, onCancelar }: Libe
   const [cancelando, setCancelando] = useState<string | null>(null)
   const [erro, setErro] = useState('')
 
-  const confirmados = inscritos.filter((i) => i.status === 'confirmado')
+  const confirmados = inscritos.filter((i) => i.status === 'confirmado' || i.status === 'check-in')
 
   async function handleCancelar(id: string) {
     setCancelando(id)
@@ -49,7 +49,7 @@ export function LiberarVagaDialog({ open, onClose, inscritos, onCancelar }: Libe
 
         {confirmados.length === 0 ? (
           <p className="text-muted-foreground text-sm py-8 text-center">
-            Nenhum participante confirmado para liberar vaga.
+            Nenhum participante disponível para liberar vaga.
           </p>
         ) : (
           <div className="max-h-80 space-y-2 overflow-auto" role="list">

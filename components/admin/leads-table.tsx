@@ -1,9 +1,11 @@
 'use client'
 
 import { useState, useMemo } from 'react'
-import { Download, Inbox, Search, ArrowUpDown, ArrowUp, ArrowDown } from 'lucide-react'
+import { useRouter } from 'next/navigation'
+import { Download, Inbox, Search, ArrowUpDown, ArrowUp, ArrowDown, Trash2 } from 'lucide-react'
 import type { Inscrito, StatusInscricao } from '@/types'
 import { formatDate } from '@/lib/utils'
+import { toast } from 'sonner'
 
 interface LeadsTableProps {
   inscritos: Inscrito[]
@@ -20,6 +22,7 @@ function SetaIcon({ ordem, col }: { ordem: { col: string; dir: string }; col: st
 }
 
 export function LeadsTable({ inscritos, palestras, totalCount, limiteAtingido }: LeadsTableProps) {
+  const router = useRouter()
   const [busca, setBusca] = useState('')
   const [filtroStatus, setFiltroStatus] = useState<StatusInscricao | ''>('')
   const [filtroPalestra, setFiltroPalestra] = useState('')
@@ -68,6 +71,18 @@ export function LeadsTable({ inscritos, palestras, totalCount, limiteAtingido }:
 
     return filtrados
   }, [inscritos, busca, filtroStatus, filtroPalestra, ordem])
+
+  async function handleDelete(id: string, nome: string) {
+    if (!confirm(`Excluir inscrição de "${nome}"? Essa ação não pode ser desfeita.`)) return
+    try {
+      const { excluirInscrito } = await import('@/lib/actions/admin')
+      await excluirInscrito(id)
+      toast.success('Inscrição excluída!')
+      router.refresh()
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : 'Erro ao excluir')
+    }
+  }
 
   async function handleExport(formato: 'xlsx' | 'csv') {
     const { exportarLeads } = await import('@/lib/actions/admin')
@@ -173,6 +188,7 @@ export function LeadsTable({ inscritos, palestras, totalCount, limiteAtingido }:
                   Data <SetaIcon ordem={ordem} col="created_at" />
                 </button>
               </th>
+              <th scope="col" className="px-4 py-3 font-medium sr-only">Ações</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-border">
@@ -191,6 +207,16 @@ export function LeadsTable({ inscritos, palestras, totalCount, limiteAtingido }:
                 </td>
                 <td className="px-4 py-3 text-muted">{i.origem}</td>
                 <td className="px-4 py-3 text-muted text-xs">{formatDate(i.created_at)}</td>
+                <td className="px-4 py-3 text-right">
+                  <button
+                    onClick={() => handleDelete(i.id, i.nome)}
+                    className="rounded-md p-1.5 text-muted hover:bg-danger/10 hover:text-danger transition-colors"
+                    title="Excluir inscrição"
+                    aria-label={`Excluir inscrição de ${i.nome}`}
+                  >
+                    <Trash2 className="size-4" />
+                  </button>
+                </td>
               </tr>
             ))}
           </tbody>
