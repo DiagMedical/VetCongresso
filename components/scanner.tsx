@@ -82,7 +82,7 @@ video.play().then(() => {
       ctx.drawImage(video, offsetX, offsetY, size, size, 0, 0, size, size)
       const imageData = ctx.getImageData(0, 0, size, size)
       const code = jsQR(imageData.data, imageData.width, imageData.height, {
-        inversionAttempts: 'both',
+        inversionAttempts: 'attemptBoth',
       })
 
       if (code) {
