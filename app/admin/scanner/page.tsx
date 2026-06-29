@@ -1,14 +1,26 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, Component, type ReactNode } from 'react'
 import { useRouter } from 'next/navigation'
 import { CheckCircle2, XCircle, ArrowLeft, User, BookOpen, Clock } from 'lucide-react'
 import Link from 'next/link'
 import { Scanner } from '@/components/scanner'
 import { BackToTop } from '@/components/back-to-top'
-import { format } from 'date-fns'
-import { ptBR } from 'date-fns/locale'
 import { toast } from 'sonner'
+
+class ScanErrorBoundary extends Component<{ children: ReactNode }> {
+  state = { hasError: false }
+  static getDerivedStateFromError() {
+    return { hasError: true }
+  }
+  componentDidCatch(error: unknown) {
+    console.error('ScanErrorBoundary caught:', error)
+  }
+  render() {
+    if (this.state.hasError) return <p className="text-sm text-danger">Erro interno ao exibir dados do participante</p>
+    return this.props.children
+  }
+}
 
 interface QrData {
   v: number
@@ -113,47 +125,49 @@ export default function ScannerPage() {
         {!qrData && <Scanner key={scannerKey} onScan={handleScan} />}
 
         {qrData && (
-          <div className="w-full max-w-sm space-y-4 animate-fade-in">
-            <div className="rounded-lg border border-border bg-card p-4">
-              <h3 className="mb-3 text-sm font-semibold text-foreground">Dados do Participante</h3>
-              <div className="space-y-2 text-sm">
-                <div className="flex items-center gap-2 text-foreground">
-                  <User className="size-4 text-muted" />
-                  <span>{qrData.n}</span>
-                </div>
-                <div className="flex items-center gap-2 text-foreground">
-                  <BookOpen className="size-4 text-muted" />
-                  <div>
-                    <p>{qrData.t}</p>
-                    <p className="text-xs text-muted">{qrData.p}</p>
+          <ScanErrorBoundary>
+            <div className="w-full max-w-sm space-y-4 animate-fade-in">
+              <div className="rounded-lg border border-border bg-card p-4">
+                <h3 className="mb-3 text-sm font-semibold text-foreground">Dados do Participante</h3>
+                <div className="space-y-2 text-sm">
+                  <div className="flex items-center gap-2 text-foreground">
+                    <User className="size-4 text-muted" />
+                    <span>{qrData.n}</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-foreground">
+                    <BookOpen className="size-4 text-muted" />
+                    <div>
+                      <p>{qrData.t}</p>
+                      <p className="text-xs text-muted">{qrData.p}</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2 text-foreground">
+                    <Clock className="size-4 text-muted" />
+                    <span>
+                      {qrData.d?.slice(0, 16).replace('T', ' ')}
+                    </span>
                   </div>
                 </div>
-                <div className="flex items-center gap-2 text-foreground">
-                  <Clock className="size-4 text-muted" />
-                  <span>
-                    {(() => { const date = new Date(qrData.d); return isNaN(date.getTime()) ? 'Data inválida' : format(date, "dd/MM/yyyy 'às' HH:mm", { locale: ptBR }); })()}
-                  </span>
-                </div>
+              </div>
+
+              <div className="flex gap-3">
+                <button
+                  onClick={() => doCheckin(qrData.id)}
+                  disabled={confirmando}
+                  className="flex-1 rounded-md bg-success px-4 py-3 text-sm font-medium text-success-foreground hover:brightness-110 transition-all disabled:opacity-50"
+                >
+                  {confirmando ? 'Confirmando...' : '✓ Confirmar Check-in'}
+                </button>
+                <button
+                  onClick={cancelar}
+                  disabled={confirmando}
+                  className="flex-1 rounded-md border border-border px-4 py-3 text-sm text-muted hover:text-foreground transition-colors disabled:opacity-50"
+                >
+                  Cancelar
+                </button>
               </div>
             </div>
-
-            <div className="flex gap-3">
-              <button
-                onClick={() => doCheckin(qrData.id)}
-                disabled={confirmando}
-                className="flex-1 rounded-md bg-success px-4 py-3 text-sm font-medium text-success-foreground hover:brightness-110 transition-all disabled:opacity-50"
-              >
-                {confirmando ? 'Confirmando...' : '✓ Confirmar Check-in'}
-              </button>
-              <button
-                onClick={cancelar}
-                disabled={confirmando}
-                className="flex-1 rounded-md border border-border px-4 py-3 text-sm text-muted hover:text-foreground transition-colors disabled:opacity-50"
-              >
-                Cancelar
-              </button>
-            </div>
-          </div>
+          </ScanErrorBoundary>
         )}
 
         {resultado && (
