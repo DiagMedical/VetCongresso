@@ -105,8 +105,8 @@ export default function ScannerPage() {
   async function doCheckin(inscritoId: string) {
     setConfirmando(true)
     try {
-      const { realizarCheckIn } = await import('@/lib/actions/admin')
-      await realizarCheckIn(inscritoId)
+      const { realizarCheckInAdmin } = await import('@/lib/actions/admin')
+      await realizarCheckInAdmin(inscritoId)
       beep()
       setResultado({ tipo: 'sucesso', mensagem: 'Check-in realizado com sucesso!' })
       toast.success('Check-in realizado!')
