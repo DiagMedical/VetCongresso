@@ -130,7 +130,7 @@ export default function ScannerPage() {
                 <div className="flex items-center gap-2 text-foreground">
                   <Clock className="size-4 text-muted" />
                   <span>
-                    {format(new Date(qrData.d), "dd/MM/yyyy 'às' HH:mm", { locale: ptBR })}
+                    {(() => { const date = new Date(qrData.d); return isNaN(date.getTime()) ? 'Data inválida' : format(date, "dd/MM/yyyy 'às' HH:mm", { locale: ptBR }); })()}
                   </span>
                 </div>
               </div>
