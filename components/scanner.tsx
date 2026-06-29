@@ -24,6 +24,23 @@ export function Scanner({ onScan }: ScannerProps) {
     onScanRef.current = onScan
   }, [onScan])
 
+  // Attach stream to video element when scanning starts
+  useEffect(() => {
+    if (scanning && videoRef.current && streamRef.current) {
+      const video = videoRef.current
+      video.srcObject = streamRef.current
+      video.play().then(() => {
+        // Start scanning frames after video is playing
+        scanFrame()
+      }).catch((e) => {
+        console.error('Erro ao iniciar vídeo:', e)
+        setError('Erro ao iniciar o vídeo da câmera')
+        announceStatus('Erro ao iniciar o vídeo')
+        setScanning(false)
+      })
+    }
+  }, [scanning])
+
   useEffect(() => {
     if (!scanning && !processing) {
       startBtnRef.current?.focus()
@@ -92,18 +109,10 @@ export function Scanner({ onScan }: ScannerProps) {
         video: { facingMode: { ideal: 'environment' } },
       })
       streamRef.current = stream
-      const video = videoRef.current
-      if (video) {
-        video.onloadedmetadata = () => {
-          video.play().then(() => {
-            setScanning(true)
-            announceStatus('Câmera ativa. Apontando para o QR Code.')
-            stopBtnRef.current?.focus()
-            scanFrame()
-          }).catch(() => {})
-        }
-        video.srcObject = stream
-      }
+      // Enable UI and focus stop button; video will be attached in useEffect when rendered
+      setScanning(true)
+      announceStatus('Câmera ativa. Apontando para o QR Code.')
+      stopBtnRef.current?.focus()
     } catch (err) {
       const msg = err instanceof DOMException
         ? err.name === 'NotAllowedError'
