@@ -65,16 +65,24 @@ video.play().then(() => {
         return
       }
 
-      canvas.width = video.videoWidth
-      canvas.height = video.videoHeight
+      const srcWidth = video.videoWidth
+      const srcHeight = video.videoHeight
+
+      // Crop center square for better close-up detection
+      const size = Math.min(srcWidth, srcHeight)
+      const offsetX = (srcWidth - size) / 2
+      const offsetY = (srcHeight - size) / 2
+
+      canvas.width = size
+      canvas.height = size
 
       const ctx = canvas.getContext('2d')
       if (!ctx) return
 
-      ctx.drawImage(video, 0, 0, canvas.width, canvas.height)
-      const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height)
+      ctx.drawImage(video, offsetX, offsetY, size, size, 0, 0, size, size)
+      const imageData = ctx.getImageData(0, 0, size, size)
       const code = jsQR(imageData.data, imageData.width, imageData.height, {
-        inversionAttempts: 'dontInvert',
+        inversionAttempts: 'both',
       })
 
       if (code) {
@@ -113,9 +121,9 @@ video.play().then(() => {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({
         video: {
-          facingMode: { ideal: 'environment' },
-          width: { ideal: 1280 },
-          height: { ideal: 720 },
+          facingMode: 'environment',
+          width: { min: 640, ideal: 1280 },
+          height: { min: 480, ideal: 720 },
         },
       })
       streamRef.current = stream
