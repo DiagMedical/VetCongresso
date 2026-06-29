@@ -88,10 +88,15 @@ export function Scanner({ onScan }: ScannerProps) {
     setProcessing(false)
 
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: 'environment', width: 640, height: 480 },
-      })
+      const constraints: MediaStreamConstraints = {
+        video: {
+          facingMode: { ideal: 'environment' },
+          width: { ideal: 640 },
+          height: { ideal: 480 },
+        },
+      }
 
+      const stream = await navigator.mediaDevices.getUserMedia(constraints)
       streamRef.current = stream
       if (videoRef.current) {
         videoRef.current.srcObject = stream
@@ -101,8 +106,17 @@ export function Scanner({ onScan }: ScannerProps) {
       announceStatus('Câmera ativa. Apontando para o QR Code.')
       stopBtnRef.current?.focus()
       scanFrame()
-    } catch {
-      setError('Erro ao acessar a câmera. Verifique as permissões.')
+    } catch (err) {
+      const msg = err instanceof DOMException
+        ? err.name === 'NotAllowedError'
+          ? 'Permissão de câmera negada. Permita o acesso nos ajustes do navegador.'
+          : err.name === 'NotFoundError'
+            ? 'Nenhuma câmera encontrada no dispositivo.'
+            : err.name === 'NotReadableError'
+              ? 'Câmera em uso por outro aplicativo. Feche e tente novamente.'
+              : `Erro ao acessar a câmera: ${err.message}`
+        : 'Erro ao acessar a câmera. Verifique as permissões.'
+      setError(msg)
       announceStatus('Erro ao acessar a câmera')
     }
   }
