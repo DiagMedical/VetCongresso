@@ -1,3 +1,4 @@
+import { Suspense } from 'react'
 import { BarChart3, Clock, TicketCheck, Users, UserMinus } from 'lucide-react'
 import { AnimatedKpi } from '@/components/admin/animated-kpi'
 import { DashboardCharts } from '@/components/admin/dashboard-charts'
@@ -30,7 +31,7 @@ export default async function AdminDashboard(props: { searchParams?: Promise<{ d
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h2 className="text-2xl font-bold text-foreground">Dashboard</h2>
-        <DashboardFiltroData />
+        <Suspense><DashboardFiltroData /></Suspense>
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">

@@ -193,7 +193,8 @@ export async function obterDadosInscrito(inscritoId: string) {
 
   if (error || !inscrito) return null
 
-  const palestraData = inscrito.palestra as any
+  type PalestraInfo = { tema: string; palestrante: string; horario_inicio: string }
+  const palestraData = inscrito.palestra as PalestraInfo | PalestraInfo[] | null
   const palestra = Array.isArray(palestraData) ? palestraData[0] : palestraData
 
   return {

@@ -10,7 +10,7 @@ export default function AdminError({
   reset: () => void
 }) {
   console.error('AdminError caught:', error);
-  const message = (error as any).message || 'Erro inesperado';
+  const message = error instanceof Error ? error.message : 'Erro inesperado';
   return (
     <div className="flex flex-1 flex-col items-center justify-center gap-4 p-8 text-center">
       <AlertTriangle className="size-12 text-danger/60" />

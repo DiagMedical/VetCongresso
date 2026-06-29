@@ -3,11 +3,12 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
-import { BookOpen, Copy, Edit, Plus, Power, PowerOff, Trash2, Calendar } from 'lucide-react'
+import { BookOpen, Copy, Edit, Plus, Power, PowerOff, Trash2, Calendar, Users } from 'lucide-react'
 import type { Palestra } from '@/types'
 import { PalestraDialog } from '@/components/admin/palestra-dialog'
 import type { PalestraFormData } from '@/types'
 import { buildGoogleCalendarUrl, buildAppleCalendarUrl } from '@/lib/calendar'
+import { VerInscritosDialog } from '@/components/admin/ver-inscritos-dialog'
 
 interface PalestrasClientProps {
   palestras: Palestra[]
@@ -17,6 +18,7 @@ export function PalestrasClient({ palestras }: PalestrasClientProps) {
   const router = useRouter()
   const [dialogOpen, setDialogOpen] = useState(false)
   const [editando, setEditando] = useState<Palestra | null>(null)
+  const [verInscritosPalestra, setVerInscritosPalestra] = useState<{ id: string; tema: string } | null>(null)
 
   async function handleSave(data: PalestraFormData) {
     try {
@@ -168,6 +170,14 @@ export function PalestrasClient({ palestras }: PalestrasClientProps) {
                       >
                         <Copy className="size-4" />
                       </button>
+                      <button
+                        onClick={() => setVerInscritosPalestra({ id: p.id, tema: p.tema })}
+                        className="rounded-md p-1.5 text-muted hover:bg-primary/10 hover:text-primary transition-colors"
+                        title="Ver inscritos"
+                        aria-label={`Ver inscritos de ${p.tema}`}
+                      >
+                        <Users className="size-4" />
+                      </button>
                       <div className="flex items-center gap-0.5">
                         <a
                           href={buildGoogleCalendarUrl(p)}
@@ -229,6 +239,14 @@ export function PalestrasClient({ palestras }: PalestrasClientProps) {
         onClose={() => { setDialogOpen(false); setEditando(null) }}
         onSave={handleSave}
         palestra={editando}
+      />
+
+      <VerInscritosDialog
+        key={verInscritosPalestra?.id ?? 'none'}
+        open={!!verInscritosPalestra}
+        onClose={() => setVerInscritosPalestra(null)}
+        palestraId={verInscritosPalestra?.id ?? ''}
+        palestraNome={verInscritosPalestra?.tema ?? ''}
       />
     </>
   )
