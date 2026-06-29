@@ -659,3 +659,41 @@ This version has breaking changes â€” APIs, conventions, and file structure may 
 **Commits:**
 - Pendente
 <!-- END:opencode-session -->
+
+<!-- BEGIN:opencode-session -->
+## Session — 29/06/2026 (2)
+
+### Revisão Final Pré-evento — Scanner, Nav, Ver Inscritos
+
+**Problemas resolvidos:**
+
+1. **SheetClose no nav admin** — ender={<Link.../>} não funciona no Base UI (ender espera função, não elemento). Corrigido para <SheetClose><Link ...>...</Link></SheetClose>.
+
+2. **DashboardFiltroData sem Suspense** — Next.js 16 exige Suspense para componentes que usam useSearchParams. Envolto em <Suspense> no pp/admin/page.tsx.
+
+3. **Lint errors** — (error as any).message corrigido para error instanceof Error ? error.message : 'Erro inesperado'. s any na query substituído por tipo inline PalestraInfo.
+
+4. **Scanner** — Crop central + inversionAttempts: 'attemptBoth' + setTimeout(500) + canvas hidden. Versão 410bb4d que efetivamente leu QR. Removido ormat() (data crua). Adicionado ScanErrorBoundary.
+
+5. **Excluir Inscrito** — Hard delete via DELETE FROM inscritos. Botão ??? na leads-table.tsx. cancelarPorFalta modificado para deletar se status check-in.
+
+6. **Ver Inscritos por Palestra** — VerInscritosDialog com tabela (Nome, Email, Telefone, Status, Data). Botão Users na tabela de palestras.
+
+7. **Liberar vaga** — Filtro inclui check-in além de confirmado.
+
+8. **setState síncrono em effect** — Resolvido com key={palestraId} forçando remontagem.
+
+**Arquivos alterados/novos:**
+- components/admin/nav.tsx — SheetClose corrigido
+- pp/admin/page.tsx — Suspense no DashboardFiltroData
+- pp/admin/error.tsx — lint fix
+- lib/actions/admin.ts — lint fix (type inline), excluirInscrito, cancelarPorFalta ampliado
+- components/admin/leads-table.tsx — coluna Excluir
+- components/admin/liberar-vaga-dialog.tsx — filtro inclui check-in
+- components/admin/ver-inscritos-dialog.tsx (novo)
+- pp/admin/palestras/palestras-client.tsx — botão Ver Inscritos + key
+- components/scanner.tsx — restaurado versão 410bb4d
+
+**Commits:**
+- 174ab2 — "Fix nav SheetClose, Suspense no filtro data, VerInscritosDialog, lint errors"
+<!-- END:opencode-session -->
