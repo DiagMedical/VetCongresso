@@ -3,6 +3,13 @@
 import { useEffect, useRef, useState } from 'react'
 import jsQR from 'jsqr'
 
+// Native BarcodeDetector API (Chrome 83+, Android Chrome — hardware accelerated)
+declare class BarcodeDetector {
+  constructor(options: { formats: string[] })
+  detect(source: HTMLVideoElement | ImageBitmap): Promise<{ rawValue: string }[]>
+  static getSupportedFormats(): Promise<string[]>
+}
+
 interface ScannerProps {
   onScan: (data: string) => Promise<void>
 }
@@ -14,15 +21,29 @@ export function Scanner({ onScan }: ScannerProps) {
   const [error, setError] = useState('')
   const [processing, setProcessing] = useState(false)
   const streamRef = useRef<MediaStream | null>(null)
-  const scanTimeoutRef = useRef<any>(null)
+  const rafRef = useRef<number>(0)
+  const frameCountRef = useRef(0)
+  const detectorRef = useRef<BarcodeDetector | null>(null)
   const onScanRef = useRef(onScan)
   const startBtnRef = useRef<HTMLButtonElement>(null)
   const statusRef = useRef<HTMLDivElement>(null)
   const stopBtnRef = useRef<HTMLButtonElement>(null)
+  const processingRef = useRef(false)
 
   useEffect(() => {
     onScanRef.current = onScan
   }, [onScan])
+
+  // Initialize BarcodeDetector once
+  useEffect(() => {
+    if (typeof BarcodeDetector !== 'undefined') {
+      try {
+        detectorRef.current = new BarcodeDetector({ formats: ['qr_code'] })
+      } catch {
+        detectorRef.current = null
+      }
+    }
+  }, [])
 
   // Attach stream to video element when scanning starts
   useEffect(() => {
@@ -30,7 +51,8 @@ export function Scanner({ onScan }: ScannerProps) {
       const video = videoRef.current
       video.srcObject = streamRef.current
       video.play().then(() => {
-        scanTimeoutRef.current = setTimeout(scanFrame, 500)
+        frameCountRef.current = 0
+        rafRef.current = requestAnimationFrame(scanLoop)
       }).catch(() => {
         setError('Erro ao iniciar o vídeo da câmera')
         setScanning(false)
@@ -41,56 +63,76 @@ export function Scanner({ onScan }: ScannerProps) {
   // Cleanup on unmount
   useEffect(() => {
     return () => {
-      if (scanTimeoutRef.current) {
-        clearTimeout(scanTimeoutRef.current)
-      }
-      if (streamRef.current) {
-        streamRef.current.getTracks().forEach((t) => t.stop())
-      }
+      if (rafRef.current) cancelAnimationFrame(rafRef.current)
+      if (streamRef.current) streamRef.current.getTracks().forEach((t) => t.stop())
     }
   }, [])
 
   useEffect(() => {
-    if (!scanning && !processing) {
-      startBtnRef.current?.focus()
-    }
+    if (!scanning && !processing) startBtnRef.current?.focus()
   }, [scanning, processing])
 
   function announceStatus(msg: string) {
-    if (statusRef.current) {
-      statusRef.current.textContent = msg
-    }
+    if (statusRef.current) statusRef.current.textContent = msg
   }
 
-  function scanFrame() {
-    if (!videoRef.current || !canvasRef.current || !scanning) return
-
+  function scanLoop() {
     const video = videoRef.current
-    const canvas = canvasRef.current
+    if (!video || processingRef.current) {
+      rafRef.current = requestAnimationFrame(scanLoop)
+      return
+    }
 
     if (video.readyState !== video.HAVE_ENOUGH_DATA) {
-      scanTimeoutRef.current = setTimeout(scanFrame, 100)
+      rafRef.current = requestAnimationFrame(scanLoop)
+      return
+    }
+
+    frameCountRef.current++
+    // Process every 5 frames (~12fps at 60fps display, ~8fps at 48fps)
+    if (frameCountRef.current % 5 !== 0) {
+      rafRef.current = requestAnimationFrame(scanLoop)
+      return
+    }
+
+    // Try BarcodeDetector first (native, hardware-accelerated on Android Chrome)
+    if (detectorRef.current) {
+      detectorRef.current.detect(video).then((results) => {
+        if (results.length > 0 && !processingRef.current) {
+          handleDetected(results[0].rawValue)
+        } else {
+          rafRef.current = requestAnimationFrame(scanLoop)
+        }
+      }).catch(() => {
+        // BarcodeDetector failed, fall through to jsQR on next frame
+        rafRef.current = requestAnimationFrame(scanLoop)
+      })
+      return
+    }
+
+    // jsQR fallback
+    const canvas = canvasRef.current
+    if (!canvas) {
+      rafRef.current = requestAnimationFrame(scanLoop)
       return
     }
 
     try {
       const srcWidth = video.videoWidth
       const srcHeight = video.videoHeight
-
       if (!srcWidth || !srcHeight) {
-        scanTimeoutRef.current = setTimeout(scanFrame, 100)
+        rafRef.current = requestAnimationFrame(scanLoop)
         return
       }
 
-      // Process complete frame downscaled to 480px width (highly robust for any rotation/alignment)
-      const targetWidth = 480
+      const targetWidth = 400
       const targetHeight = Math.round((srcHeight / srcWidth) * targetWidth)
       canvas.width = targetWidth
       canvas.height = targetHeight
 
       const ctx = canvas.getContext('2d', { willReadFrequently: true })
       if (!ctx) {
-        scanTimeoutRef.current = setTimeout(scanFrame, 200)
+        rafRef.current = requestAnimationFrame(scanLoop)
         return
       }
 
@@ -100,28 +142,35 @@ export function Scanner({ onScan }: ScannerProps) {
         inversionAttempts: 'attemptBoth',
       })
 
-      if (code) {
-        stopCamera()
-        setProcessing(true)
-        announceStatus('QR Code detectado. Processando...')
-        onScanRef.current(code.data).finally(() => {
-          setProcessing(false)
-          announceStatus('')
-        })
+      if (code && !processingRef.current) {
+        handleDetected(code.data)
         return
       }
     } catch (err) {
-      console.error('Erro ao ler frame do scanner:', err)
+      console.error('Erro no scanner jsQR:', err)
     }
 
-    // Schedule next frame with 200ms delay to keep the camera feed smooth and CPU cool
-    scanTimeoutRef.current = setTimeout(scanFrame, 200)
+    rafRef.current = requestAnimationFrame(scanLoop)
+  }
+
+  function handleDetected(data: string) {
+    if (processingRef.current) return
+    processingRef.current = true
+    if (rafRef.current) cancelAnimationFrame(rafRef.current)
+    stopCamera()
+    setProcessing(true)
+    announceStatus('QR Code detectado. Processando...')
+    onScanRef.current(data).finally(() => {
+      processingRef.current = false
+      setProcessing(false)
+      announceStatus('')
+    })
   }
 
   function stopCamera() {
-    if (scanTimeoutRef.current) {
-      clearTimeout(scanTimeoutRef.current)
-      scanTimeoutRef.current = null
+    if (rafRef.current) {
+      cancelAnimationFrame(rafRef.current)
+      rafRef.current = 0
     }
     if (streamRef.current) {
       streamRef.current.getTracks().forEach((t) => t.stop())
@@ -134,6 +183,7 @@ export function Scanner({ onScan }: ScannerProps) {
   async function startCamera() {
     setError('')
     setProcessing(false)
+    processingRef.current = false
 
     try {
       const stream = await navigator.mediaDevices.getUserMedia({
@@ -141,6 +191,8 @@ export function Scanner({ onScan }: ScannerProps) {
           facingMode: 'environment',
           width: { min: 640, ideal: 1280 },
           height: { min: 480, ideal: 720 },
+          // @ts-expect-error – advanced constraint (Chrome on Android)
+          advanced: [{ focusMode: 'continuous' }],
         },
       })
       streamRef.current = stream
@@ -148,17 +200,33 @@ export function Scanner({ onScan }: ScannerProps) {
       announceStatus('Câmera ativa. Apontando para o QR Code.')
       stopBtnRef.current?.focus()
     } catch (err) {
-      const msg = err instanceof DOMException
-        ? err.name === 'NotAllowedError'
-          ? 'Permissão de câmera negada. Permita o acesso nos ajustes do navegador.'
-          : err.name === 'NotFoundError'
-            ? 'Nenhuma câmera encontrada no dispositivo.'
-            : err.name === 'NotReadableError'
-              ? 'Câmera em uso por outro aplicativo. Feche e tente novamente.'
-              : `Erro ao acessar a câmera: ${err.message}`
-        : 'Erro ao acessar a câmera. Verifique as permissões.'
-      setError(msg)
-      announceStatus('Erro ao acessar a câmera')
+      // If advanced constraint fails, retry without it
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({
+          video: {
+            facingMode: 'environment',
+            width: { min: 640, ideal: 1280 },
+            height: { min: 480, ideal: 720 },
+          },
+        })
+        streamRef.current = stream
+        setScanning(true)
+        announceStatus('Câmera ativa. Apontando para o QR Code.')
+        stopBtnRef.current?.focus()
+      } catch (err2) {
+        const e = err2 instanceof DOMException ? err2 : (err instanceof DOMException ? err : null)
+        const msg = e
+          ? e.name === 'NotAllowedError'
+            ? 'Permissão de câmera negada. Permita o acesso nos ajustes do navegador.'
+            : e.name === 'NotFoundError'
+              ? 'Nenhuma câmera encontrada no dispositivo.'
+              : e.name === 'NotReadableError'
+                ? 'Câmera em uso por outro aplicativo. Feche e tente novamente.'
+                : `Erro ao acessar a câmera: ${e.message}`
+          : 'Erro ao acessar a câmera. Verifique as permissões.'
+        setError(msg)
+        announceStatus('Erro ao acessar a câmera')
+      }
     }
   }
 
@@ -186,6 +254,10 @@ export function Scanner({ onScan }: ScannerProps) {
         <div className="relative w-full max-w-sm h-72 overflow-hidden rounded-lg border border-border">
           <video ref={videoRef} className="size-full object-cover" autoPlay muted playsInline aria-label="Leitor de QR Code pela câmera" />
           <canvas ref={canvasRef} className="hidden" />
+          {/* Mira visual para guiar o usuário */}
+          <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+            <div className="size-48 border-2 border-accent rounded-lg opacity-70" />
+          </div>
           <div className="absolute inset-0 border-[3px] border-primary/50 rounded-lg pointer-events-none" />
         </div>
       )}
@@ -214,3 +286,5 @@ export function Scanner({ onScan }: ScannerProps) {
     </div>
   )
 }
+
+
