@@ -38,6 +38,7 @@ export default function ScannerPage() {
   const [qrData, setQrData] = useState<QrData | null>(null)
   const [confirmando, setConfirmando] = useState(false)
   const [scannerKey, setScannerKey] = useState(0)
+  const [manualText, setManualText] = useState('')
 
   function tryParseQr(data: string): QrData | null {
     try {
@@ -187,6 +188,27 @@ export default function ScannerPage() {
           </div>
         )}
       </div>
+
+      <details className="mt-8 w-full max-w-sm">
+        <summary className="cursor-pointer text-sm text-muted hover:text-foreground">
+          Não consegue ler com a câmera? Cole o JSON manualmente
+        </summary>
+        <div className="mt-3 space-y-3">
+          <textarea
+            rows={4}
+            value={manualText}
+            onChange={(e) => setManualText(e.target.value)}
+            placeholder='Cole aqui o JSON do QR Code'
+            className="w-full rounded-md border border-border bg-background p-3 text-sm text-foreground resize-none"
+          />
+          <button
+            onClick={() => handleScan(manualText)}
+            className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground"
+          >
+            Usar texto
+          </button>
+        </div>
+      </details>
 
       <BackToTop />
     </div>
