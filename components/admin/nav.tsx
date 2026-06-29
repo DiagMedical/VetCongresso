@@ -52,7 +52,7 @@ export function AdminNav({ className }: { className?: string }) {
   return (
     <nav
       aria-label="Navegação principal"
-      className={`flex-col gap-1 bg-card p-4 border-r border-border min-w-56 ${className ?? ''}`}
+      className={`flex w-56 flex-col gap-1 bg-card p-4 border-r border-border ${className ?? ''}`}
     >
       <NavLinks />
     </nav>
