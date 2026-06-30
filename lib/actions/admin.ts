@@ -6,6 +6,7 @@ import { adicionarParticipanteSchema } from '@/lib/schemas'
 import { sendWhatsApp } from '@/lib/whatsapp/send'
 import { sendEmail } from '@/lib/email/send'
 import { listarPalestras } from '@/lib/actions/reserva'
+import { listarSorteioLeads } from '@/lib/actions/sorteio'
 import { groq } from '@ai-sdk/groq'
 import { generateText } from 'ai'
 
@@ -428,6 +429,7 @@ export interface LeadExport {
   telefone: string
   palestra: string
   status: string
+  origem?: string
   data: string
 }
 
@@ -784,6 +786,44 @@ export async function exportarLeads(): Promise<LeadExport[]> {
       data: new Date(String(i.created_at)).toLocaleString('pt-BR'),
     }
   })
+}
+
+export async function exportarLeadsConsolidados(): Promise<LeadExport[]> {
+  const supabase = await createClient()
+
+  const [inscritosResult, sorteioResult] = await Promise.all([
+    supabase
+      .from('inscritos')
+      .select('*, palestra:palestra_id(tema)')
+      .order('created_at', { ascending: false }),
+    listarSorteioLeads(),
+  ])
+
+  const leads: LeadExport[] = [
+    ...((inscritosResult.data ?? []).map((i: Record<string, unknown>) => {
+      const palestra = i.palestra as { tema: string } | null
+      return {
+        nome: String(i.nome ?? ''),
+        email: String(i.email ?? ''),
+        telefone: String(i.telefone ?? ''),
+        palestra: palestra?.tema ?? '—',
+        status: String(i.status ?? ''),
+        origem: String(i.origem ?? ''),
+        data: new Date(String(i.created_at)).toLocaleString('pt-BR'),
+      }
+    })),
+    ...(sorteioResult.map((i) => ({
+      nome: i.nome,
+      email: i.email,
+      telefone: i.whatsapp,
+      palestra: 'Sorteio Powerbank',
+      status: 'sorteio',
+      origem: 'sorteio',
+      data: new Date(i.created_at).toLocaleString('pt-BR'),
+    }))),
+  ]
+
+  return leads.sort((a, b) => new Date(b.data).getTime() - new Date(a.data).getTime())
 }
 
 export async function limparPalestrasDuplicadas(confirmacao?: string) {

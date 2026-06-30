@@ -1,8 +1,10 @@
 'use client'
 
 import { useState } from 'react'
-import { Gift, Download, Search, ExternalLink, Shuffle, Trophy, X } from 'lucide-react'
-import { exportarSorteioLeads } from '@/lib/actions/sorteio'
+import { useRouter } from 'next/navigation'
+import { Gift, Download, Search, ExternalLink, Shuffle, Trophy, X, Trash2 } from 'lucide-react'
+import { exportarSorteioLeads, removerSorteioLead } from '@/lib/actions/sorteio'
+import { toast } from 'sonner'
 import type { SorteioLead } from '@/lib/actions/sorteio'
 
 interface Props {
@@ -10,10 +12,12 @@ interface Props {
 }
 
 export function SorteioAdmin({ leads }: Props) {
+  const router = useRouter()
   const [search, setSearch] = useState('')
   const [exporting, setExporting] = useState(false)
   const [winner, setWinner] = useState<SorteioLead | null>(null)
   const [sorting, setSorting] = useState(false)
+  const [deletingId, setDeletingId] = useState<string | null>(null)
 
   const filtered = leads.filter(
     (l) =>
@@ -48,6 +52,21 @@ export function SorteioAdmin({ leads }: Props) {
       // erro silencioso — botão volta ao normal
     } finally {
       setExporting(false)
+    }
+  }
+
+  async function handleDelete(lead: SorteioLead) {
+    if (!confirm(`Remover "${lead.nome}" da lista de sorteio?`)) return
+
+    setDeletingId(lead.id)
+    try {
+      await removerSorteioLead(lead.id)
+      toast.success('Lead removido do sorteio!')
+      router.refresh()
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : 'Erro ao remover lead')
+    } finally {
+      setDeletingId(null)
     }
   }
 
@@ -128,7 +147,7 @@ export function SorteioAdmin({ leads }: Props) {
           <p className="text-xs text-muted">{filtered.length} de {leads.length} cadastros</p>
           <div className="overflow-hidden rounded-lg border border-border">
             <div className="overflow-x-auto">
-              <table className="w-full text-sm min-w-[720px]">
+              <table className="w-full text-sm min-w-[760px]">
                 <caption className="sr-only">Leads do sorteio</caption>
                 <thead className="bg-card">
                   <tr className="text-left text-muted">
@@ -136,6 +155,7 @@ export function SorteioAdmin({ leads }: Props) {
                     <th scope="col" className="px-4 py-3 font-medium">WhatsApp</th>
                     <th scope="col" className="px-4 py-3 font-medium">Email</th>
                     <th scope="col" className="px-4 py-3 font-medium">Data</th>
+                    <th scope="col" className="px-4 py-3 font-medium">Ação</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-border">
@@ -146,6 +166,18 @@ export function SorteioAdmin({ leads }: Props) {
                       <td className="px-4 py-3 text-muted">{l.email}</td>
                       <td className="px-4 py-3 text-xs text-muted">
                         {new Date(l.created_at).toLocaleString('pt-BR')}
+                      </td>
+                      <td className="px-4 py-3">
+                        <button
+                          onClick={() => handleDelete(l)}
+                          disabled={deletingId === l.id}
+                          className="inline-flex min-h-[36px] items-center gap-1 rounded-md px-3 py-2 text-xs text-danger transition-colors hover:bg-danger/10 disabled:opacity-50"
+                          title="Remover da lista"
+                          aria-label={`Remover ${l.nome} da lista de sorteio`}
+                        >
+                          <Trash2 className="size-3.5" />
+                          {deletingId === l.id ? 'Removendo...' : 'Excluir'}
+                        </button>
                       </td>
                     </tr>
                   ))}
