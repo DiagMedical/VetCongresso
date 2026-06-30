@@ -29,12 +29,12 @@ export default async function AdminDashboard(props: { searchParams?: Promise<{ d
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
         <h2 className="text-2xl font-bold text-foreground">Dashboard</h2>
         <Suspense><DashboardFiltroData /></Suspense>
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-5">
         <AnimatedKpi title="Total de Leads" value={data.total_leads} icon={<Users className="size-5" />} className="animate-glow" />
         <AnimatedKpi title="Check-ins Hoje" value={data.checkins_hoje} icon={<TicketCheck className="size-5" />} />
         <AnimatedKpi title="Palestras Ativas" value={data.palestras_ativas} icon={<BarChart3 className="size-5" />} />

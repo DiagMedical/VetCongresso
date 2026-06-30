@@ -98,8 +98,8 @@ export function LeadsTable({ inscritos, palestras, totalCount, limiteAtingido }:
 
   return (
     <div className="space-y-4">
-      <div className="flex flex-wrap gap-3" role="search" aria-label="Filtrar leads">
-        <div className="relative flex-1 min-w-48">
+      <div className="flex flex-col gap-3 xl:flex-row xl:flex-wrap xl:items-center" role="search" aria-label="Filtrar leads">
+        <div className="relative min-w-0 flex-1">
           <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted" aria-hidden="true" />
           <input
             type="text"
@@ -115,7 +115,7 @@ export function LeadsTable({ inscritos, palestras, totalCount, limiteAtingido }:
           value={filtroStatus}
           onChange={(e) => setFiltroStatus(e.target.value as StatusInscricao | '')}
           aria-label="Filtrar por status"
-          className="rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground"
+          className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground xl:w-auto"
         >
           <option value="">Todos os status</option>
           <option value="confirmado">Confirmado</option>
@@ -128,7 +128,7 @@ export function LeadsTable({ inscritos, palestras, totalCount, limiteAtingido }:
           value={filtroPalestra}
           onChange={(e) => setFiltroPalestra(e.target.value)}
           aria-label="Filtrar por palestra"
-          className="rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground"
+          className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground xl:w-auto"
         >
           <option value="">Todas as palestras</option>
           {palestras.map((p) => (
@@ -157,6 +157,7 @@ export function LeadsTable({ inscritos, palestras, totalCount, limiteAtingido }:
       </div>
 
       <div className="overflow-hidden rounded-lg border border-border">
+        <div className="overflow-x-auto">
         <table className="w-full text-sm" aria-label="Lista de leads">
           <caption className="sr-only">Lista de leads cadastrados</caption>
           <thead className="bg-card">
@@ -221,6 +222,7 @@ export function LeadsTable({ inscritos, palestras, totalCount, limiteAtingido }:
             ))}
           </tbody>
         </table>
+        </div>
 
         {filtrados.length === 0 && (
           <div role="status" className="flex flex-col items-center justify-center py-12 text-center animate-fade-in">

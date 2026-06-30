@@ -48,7 +48,7 @@ export function AnalyticsKpis({ data }: Props) {
   ]
 
   return (
-    <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
+    <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-6">
       {kpis.map((kpi) => (
         <div key={kpi.title} className="flex items-center gap-3 rounded-lg border border-border bg-card p-4">
           <div className={`${kpi.color}`}>{kpi.icon}</div>

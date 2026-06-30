@@ -62,7 +62,7 @@ export function CertificadosClient({ dados }: Props) {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between gap-4">
+      <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
         <h2 className="text-2xl font-bold text-foreground">Certificados</h2>
         <p className="text-sm text-muted-foreground">
           {dados.length} participante(s) com check-in
@@ -82,6 +82,7 @@ export function CertificadosClient({ dados }: Props) {
       </div>
 
       <div className="overflow-hidden rounded-lg border border-border">
+        <div className="overflow-x-auto">
         <table className="w-full text-sm" aria-label="Participantes com check-in">
           <caption className="sr-only">Lista de participantes habilitados para certificado</caption>
           <thead className="bg-card">
@@ -208,6 +209,7 @@ export function CertificadosClient({ dados }: Props) {
             ))}
           </tbody>
         </table>
+        </div>
 
         {filtrados.length === 0 && (
           <div className="flex flex-col items-center justify-center py-12 text-center">

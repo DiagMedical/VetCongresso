@@ -49,7 +49,7 @@ export function AdminsClient({ admins }: AdminsClientProps) {
     <div className="space-y-6">
       <h2 className="text-2xl font-bold text-foreground">Gerenciar Admins</h2>
 
-      <form onSubmit={handleSubmit} className="flex flex-wrap items-end gap-3 rounded-lg border border-border bg-card p-4">
+      <form onSubmit={handleSubmit} className="flex flex-col gap-3 rounded-lg border border-border bg-card p-4 lg:flex-row lg:flex-wrap lg:items-end">
         <div className="space-y-1">
           <label htmlFor="nome" className="text-xs font-medium text-muted">Nome</label>
           <input
@@ -59,7 +59,7 @@ export function AdminsClient({ admins }: AdminsClientProps) {
             onChange={(e) => setNome(e.target.value)}
             required
             disabled={carregando}
-            className="w-48 rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground disabled:opacity-50"
+            className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground disabled:opacity-50 lg:w-48"
           />
         </div>
         <div className="space-y-1">
@@ -71,7 +71,7 @@ export function AdminsClient({ admins }: AdminsClientProps) {
             onChange={(e) => setEmail(e.target.value)}
             required
             disabled={carregando}
-            className="w-64 rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground disabled:opacity-50"
+            className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground disabled:opacity-50 lg:w-64"
           />
         </div>
         <button
@@ -85,6 +85,7 @@ export function AdminsClient({ admins }: AdminsClientProps) {
       </form>
 
       <div className="overflow-hidden rounded-lg border border-border">
+        <div className="overflow-x-auto">
         <table className="w-full text-sm">
           <thead className="bg-card">
             <tr className="text-left text-muted">
@@ -115,6 +116,7 @@ export function AdminsClient({ admins }: AdminsClientProps) {
             ))}
           </tbody>
         </table>
+        </div>
         {admins.length === 0 && (
           <div className="flex flex-col items-center justify-center py-12 text-center">
             <Shield className="mx-auto size-12 text-muted/40" />

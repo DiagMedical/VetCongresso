@@ -3,7 +3,7 @@ export default function AdminLoading() {
     <div className="space-y-6 animate-pulse">
       <div className="h-8 w-48 rounded-md bg-muted/20" />
 
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-5">
         {Array.from({ length: 5 }).map((_, i) => (
           <div key={i} className="flex items-center gap-4 rounded-lg border border-border bg-card p-4">
             <div className="size-10 rounded-md bg-muted/20" />

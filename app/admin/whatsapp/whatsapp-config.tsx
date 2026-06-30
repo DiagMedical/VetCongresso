@@ -77,18 +77,18 @@ export function WhatsAppConfig() {
             <div key={chave}>
               <label className="mb-1 block text-xs text-muted">{label}</label>
               <p className="mb-1 text-xs text-muted">{desc}</p>
-              <div className="flex gap-2">
+              <div className="flex flex-col gap-2 md:flex-row">
                 <input
                   type="text"
                   value={config[chave] ?? ''}
                   onChange={(e) => setConfig((prev) => ({ ...prev, [chave]: e.target.value }))}
-                  className="flex-1 rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground"
+                  className="min-w-0 flex-1 rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground"
                   placeholder={chave}
                 />
                 <button
                   onClick={() => handleSave(chave, config[chave] ?? '')}
                   disabled={salvando === chave}
-                  className="rounded-md bg-primary px-3 py-2 text-xs text-primary-foreground hover:brightness-110 transition-all disabled:opacity-50"
+                  className="rounded-md bg-primary px-3 py-2 text-xs text-primary-foreground transition-all hover:brightness-110 disabled:opacity-50 md:whitespace-nowrap"
                 >
                   {salvando === chave ? 'Salvando...' : 'Salvar'}
                 </button>
@@ -103,18 +103,18 @@ export function WhatsAppConfig() {
         <p className="mb-3 text-xs text-muted">
           Envie uma mensagem de confirmação para testar a integração. Informe o ID do inscrito.
         </p>
-        <div className="flex gap-2">
+        <div className="flex flex-col gap-2 md:flex-row">
           <input
             type="text"
             value={testId}
             onChange={(e) => setTestId(e.target.value)}
             placeholder="ID do inscrito"
-            className="flex-1 rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground"
+            className="min-w-0 flex-1 rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground"
           />
           <button
             onClick={handleTest}
             disabled={testLoading || !testId.trim()}
-            className="flex items-center gap-1 rounded-md bg-primary px-4 py-2 text-sm text-primary-foreground hover:brightness-110 transition-all disabled:opacity-50"
+            className="flex items-center gap-1 rounded-md bg-primary px-4 py-2 text-sm text-primary-foreground transition-all hover:brightness-110 disabled:opacity-50 md:whitespace-nowrap"
           >
             {testLoading ? <RefreshCw className="size-4 animate-spin" /> : <Send className="size-4" />}
             Enviar

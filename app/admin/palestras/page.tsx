@@ -11,7 +11,7 @@ export default async function PalestrasPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
         <h2 className="text-2xl font-bold text-foreground">Palestras</h2>
       </div>
 

@@ -51,20 +51,20 @@ export function ConfigPage() {
             <div key={chave}>
               <label className="mb-1 block text-xs text-muted">{label}</label>
               <p className="mb-1 text-xs text-muted">{desc}</p>
-              <div className="flex gap-2">
+              <div className="flex flex-col gap-2 md:flex-row">
                 <input
                   type={type ?? 'text'}
                   value={emailConfig[chave]}
                   onChange={(e) =>
                     setConfig((prev) => ({ ...prev, [chave]: e.target.value }))
                   }
-                  className="flex-1 rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground"
+                  className="min-w-0 flex-1 rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground"
                   placeholder={placeholder}
                 />
                 <button
                   onClick={() => handleSave(chave, config[chave] ?? '')}
                   disabled={salvando === chave}
-                  className="rounded-md bg-primary px-3 py-2 text-xs text-primary-foreground hover:brightness-110 transition-all disabled:opacity-50"
+                  className="rounded-md bg-primary px-3 py-2 text-xs text-primary-foreground transition-all hover:brightness-110 disabled:opacity-50 md:whitespace-nowrap"
                 >
                   {salvando === chave ? 'Salvando...' : 'Salvar'}
                 </button>
