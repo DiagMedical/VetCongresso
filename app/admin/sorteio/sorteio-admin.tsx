@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Gift, Download, Search, ExternalLink, Shuffle, Trophy, X, Trash2 } from 'lucide-react'
 import { exportarSorteioLeads, removerSorteioLead } from '@/lib/actions/sorteio'
+import { AdminSectionCard } from '@/components/admin/section-card'
 import { toast } from 'sonner'
 import type { SorteioLead } from '@/lib/actions/sorteio'
 
@@ -49,7 +50,7 @@ export function SorteioAdmin({ leads }: Props) {
       a.click()
       URL.revokeObjectURL(url)
     } catch {
-      // erro silencioso — botão volta ao normal
+      // erro silencioso
     } finally {
       setExporting(false)
     }
@@ -71,53 +72,58 @@ export function SorteioAdmin({ leads }: Props) {
   }
 
   return (
-    <div className="space-y-4">
-      <div className="flex flex-col gap-3 xl:flex-row xl:items-center xl:justify-between">
-        <div className="relative min-w-0 flex-1">
-          <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted" aria-hidden="true" />
-          <input
-            type="text"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            placeholder="Buscar por nome, email ou WhatsApp..."
-            className="w-full rounded-md border border-border bg-background py-2 pr-3 pl-9 text-sm text-foreground placeholder:text-muted-foreground"
-          />
+    <div className="space-y-6">
+      <AdminSectionCard
+        title="Controles do Sorteio"
+        description="Busque, sorteie, exporte ou remova cadastros do sorteio."
+      >
+        <div className="flex flex-col gap-3 xl:flex-row xl:items-center xl:justify-between">
+          <div className="relative min-w-0 flex-1">
+            <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted" aria-hidden="true" />
+            <input
+              type="text"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Buscar por nome, email ou WhatsApp..."
+              className="w-full rounded-xl border border-border bg-background py-2 pr-3 pl-9 text-sm text-foreground placeholder:text-muted-foreground"
+            />
+          </div>
+          <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center">
+            <button
+              onClick={handleSortear}
+              disabled={sorting || leads.length === 0}
+              title={leads.length === 0 ? 'Nenhum lead cadastrado para sortear' : undefined}
+              className="flex min-h-[44px] items-center justify-center gap-2 rounded-xl border-2 border-primary/30 bg-card px-4 py-2 text-sm font-medium text-foreground transition-all hover:border-primary/60 hover:bg-primary/5 disabled:opacity-50"
+            >
+              <Shuffle className="size-4 text-primary" />
+              {sorting ? 'Sorteando...' : 'Sortear'}
+            </button>
+            <button
+              onClick={handleExport}
+              disabled={exporting || leads.length === 0}
+              className="flex min-h-[44px] items-center justify-center gap-2 rounded-xl bg-primary px-4 py-2 text-sm text-primary-foreground transition-all hover:brightness-110 disabled:opacity-50"
+            >
+              <Download className="size-4" />
+              {exporting ? 'Exportando...' : 'Exportar CSV'}
+            </button>
+          </div>
         </div>
-        <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center">
-          <button
-            onClick={handleSortear}
-            disabled={sorting || leads.length === 0}
-            title={leads.length === 0 ? 'Nenhum lead cadastrado para sortear' : undefined}
-            className="flex min-h-[44px] items-center justify-center gap-2 rounded-md border-2 border-primary/30 bg-card px-4 py-2 text-sm font-medium text-foreground transition-all hover:border-primary/60 hover:bg-primary/5 disabled:opacity-50"
-          >
-            <Shuffle className="size-4 text-primary" />
-            {sorting ? 'Sorteando...' : 'Sortear'}
-          </button>
-          <button
-            onClick={handleExport}
-            disabled={exporting || leads.length === 0}
-            className="flex min-h-[44px] items-center justify-center gap-2 rounded-md bg-primary px-4 py-2 text-sm text-primary-foreground transition-all hover:brightness-110 disabled:opacity-50"
-          >
-            <Download className="size-4" />
-            {exporting ? 'Exportando...' : 'Exportar CSV'}
-          </button>
-        </div>
-      </div>
+      </AdminSectionCard>
 
-      <div className="rounded-lg border border-border bg-card p-4">
-        <p className="text-xs text-muted">
-          Exporte o CSV e use um sorteador online:
-        </p>
+      <AdminSectionCard
+        title="Guia rápida"
+        description="Exporte o CSV e use um sorteador online se preferir uma seleção manual."
+      >
         <a
           href="https://sorteador.com.br/sorteio-de-nomes"
           target="_blank"
           rel="noopener noreferrer"
-          className="mt-1 inline-flex items-center gap-1 text-xs text-primary hover:underline"
+          className="inline-flex items-center gap-1 text-xs text-primary hover:underline"
         >
           sorteador.com.br/sorteio-de-nomes
           <ExternalLink className="size-3" />
         </a>
-      </div>
+      </AdminSectionCard>
 
       {winner && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50" onClick={() => setWinner(null)}>
@@ -129,7 +135,7 @@ export function SorteioAdmin({ leads }: Props) {
               <X className="size-5" />
             </button>
             <Trophy className="mx-auto mb-4 size-16 text-yellow-500" />
-            <p className="text-xs text-muted uppercase tracking-wider">Vencedor</p>
+            <p className="text-xs uppercase tracking-wider text-muted">Vencedor</p>
             <p className="mt-1 text-2xl font-bold text-foreground">{winner.nome}</p>
             <p className="mt-1 text-sm text-muted">{winner.whatsapp}</p>
             <p className="text-sm text-muted">{winner.email}</p>
@@ -137,17 +143,19 @@ export function SorteioAdmin({ leads }: Props) {
         </div>
       )}
 
-      {leads.length === 0 ? (
-        <div className="flex flex-col items-center justify-center rounded-lg border border-border bg-card py-12 text-center" role="status" aria-live="polite">
-          <Gift className="mb-3 size-10 text-muted/40" aria-hidden="true" />
-          <p className="text-sm text-muted">Nenhum cadastro no sorteio ainda.</p>
-        </div>
-      ) : (
-        <>
-          <p className="text-xs text-muted">{filtered.length} de {leads.length} cadastros</p>
-          <div className="overflow-hidden rounded-lg border border-border">
+      <AdminSectionCard
+        title="Leads do Sorteio"
+        description={`${filtered.length} de ${leads.length} cadastros`}
+      >
+        {leads.length === 0 ? (
+          <div className="flex flex-col items-center justify-center py-12 text-center" role="status" aria-live="polite">
+            <Gift className="mb-3 size-10 text-muted/40" aria-hidden="true" />
+            <p className="text-sm text-muted">Nenhum cadastro no sorteio ainda.</p>
+          </div>
+        ) : (
+          <div className="overflow-hidden rounded-xl border border-border">
             <div className="overflow-x-auto">
-              <table className="w-full text-sm min-w-[760px]">
+              <table className="w-full min-w-[760px] text-sm">
                 <caption className="sr-only">Leads do sorteio</caption>
                 <thead className="bg-card">
                   <tr className="text-left text-muted">
@@ -160,7 +168,7 @@ export function SorteioAdmin({ leads }: Props) {
                 </thead>
                 <tbody className="divide-y divide-border">
                   {filtered.map((l) => (
-                    <tr key={l.id} className="bg-background hover:bg-card/50 transition-colors">
+                    <tr key={l.id} className="bg-background transition-colors hover:bg-card/50">
                       <td className="px-4 py-3 font-medium text-foreground">{l.nome}</td>
                       <td className="px-4 py-3 text-muted">{l.whatsapp}</td>
                       <td className="px-4 py-3 text-muted">{l.email}</td>
@@ -185,8 +193,8 @@ export function SorteioAdmin({ leads }: Props) {
               </table>
             </div>
           </div>
-        </>
-      )}
+        )}
+      </AdminSectionCard>
     </div>
   )
 }
