@@ -1,12 +1,13 @@
 'use client'
 
-import { useState, useRef } from 'react'
+import { useState, useRef, useMemo } from 'react'
 import { Award, Download, Loader2, Search, Inbox } from 'lucide-react'
 import { toast } from 'sonner'
 import type { CertificadoData } from '@/lib/actions/admin'
 import { formatDateShort, formatDuracao } from '@/lib/utils'
 import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
+import { AdminPagination } from '@/components/admin/pagination'
 
 interface Props {
   dados: CertificadoData[]
@@ -16,14 +17,22 @@ export function CertificadosClient({ dados }: Props) {
   const [busca, setBusca] = useState('')
   const [emitindo, setEmitindo] = useState<string | null>(null)
   const [selected, setSelected] = useState<CertificadoData | null>(null)
+  const [currentPage, setCurrentPage] = useState(1)
   const certRef = useRef<HTMLDivElement>(null)
+  const pageSize = 10
 
-  const filtrados = dados.filter(
-    (d) =>
-      d.nome.toLowerCase().includes(busca.toLowerCase()) ||
-      d.email.toLowerCase().includes(busca.toLowerCase()) ||
-      d.palestra_nome.toLowerCase().includes(busca.toLowerCase())
-  )
+  const filtrados = useMemo(() => (
+    dados.filter(
+      (d) =>
+        d.nome.toLowerCase().includes(busca.toLowerCase()) ||
+        d.email.toLowerCase().includes(busca.toLowerCase()) ||
+        d.palestra_nome.toLowerCase().includes(busca.toLowerCase())
+    )
+  ), [dados, busca])
+
+  const totalPages = Math.max(1, Math.ceil(filtrados.length / pageSize))
+  const paginaAtual = Math.min(currentPage, totalPages)
+  const visiveis = filtrados.slice((paginaAtual - 1) * pageSize, paginaAtual * pageSize)
 
   async function handleEmitirPDF(item: CertificadoData) {
     if (!certRef.current) return
@@ -92,7 +101,7 @@ export function CertificadosClient({ dados }: Props) {
             </tr>
           </thead>
           <tbody className="divide-y divide-border">
-            {filtrados.map((item) => (
+            {visiveis.map((item) => (
               <tr key={item.id} className="bg-background hover:bg-card/50 transition-colors">
                 <td className="px-4 py-3 font-medium text-foreground">{item.nome}</td>
                 <td className="px-4 py-3 text-muted">{item.email}</td>
@@ -219,6 +228,17 @@ export function CertificadosClient({ dados }: Props) {
           </div>
         )}
       </div>
+
+      {filtrados.length > 0 && (
+        <AdminPagination
+          currentPage={paginaAtual}
+          totalPages={totalPages}
+          onPageChange={setCurrentPage}
+          totalItems={filtrados.length}
+          pageSize={pageSize}
+          label="participantes"
+        />
+      )}
     </div>
   )
 }

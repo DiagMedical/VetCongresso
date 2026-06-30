@@ -64,12 +64,12 @@ export function SorteioAdmin({ leads }: Props) {
             className="w-full rounded-md border border-border bg-background py-2 pr-3 pl-9 text-sm text-foreground placeholder:text-muted-foreground"
           />
         </div>
-        <div className="flex flex-wrap items-center gap-2">
+        <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center">
           <button
             onClick={handleSortear}
             disabled={sorting || leads.length === 0}
             title={leads.length === 0 ? 'Nenhum lead cadastrado para sortear' : undefined}
-            className="flex items-center gap-2 rounded-md border-2 border-primary/30 bg-card px-4 py-2 text-sm font-medium text-foreground hover:border-primary/60 hover:bg-primary/5 transition-all disabled:opacity-50"
+            className="flex min-h-[44px] items-center justify-center gap-2 rounded-md border-2 border-primary/30 bg-card px-4 py-2 text-sm font-medium text-foreground transition-all hover:border-primary/60 hover:bg-primary/5 disabled:opacity-50"
           >
             <Shuffle className="size-4 text-primary" />
             {sorting ? 'Sorteando...' : 'Sortear'}
@@ -77,7 +77,7 @@ export function SorteioAdmin({ leads }: Props) {
           <button
             onClick={handleExport}
             disabled={exporting || leads.length === 0}
-            className="flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm text-primary-foreground hover:brightness-110 transition-all disabled:opacity-50"
+            className="flex min-h-[44px] items-center justify-center gap-2 rounded-md bg-primary px-4 py-2 text-sm text-primary-foreground transition-all hover:brightness-110 disabled:opacity-50"
           >
             <Download className="size-4" />
             {exporting ? 'Exportando...' : 'Exportar CSV'}
@@ -128,7 +128,7 @@ export function SorteioAdmin({ leads }: Props) {
           <p className="text-xs text-muted">{filtered.length} de {leads.length} cadastros</p>
           <div className="overflow-hidden rounded-lg border border-border">
             <div className="overflow-x-auto">
-              <table className="w-full text-sm">
+              <table className="w-full text-sm min-w-[720px]">
                 <caption className="sr-only">Leads do sorteio</caption>
                 <thead className="bg-card">
                   <tr className="text-left text-muted">

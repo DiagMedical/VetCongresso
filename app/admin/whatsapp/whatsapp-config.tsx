@@ -59,7 +59,7 @@ export function WhatsAppConfig() {
           Configure as credenciais do Z-API no arquivo <code>.env.local</code>:
         </p>
         <div className="space-y-3">
-          <div className="rounded-md bg-muted/20 p-3 font-mono text-xs">
+          <div className="rounded-md bg-muted/20 p-3 font-mono text-xs leading-6">
             ZAPI_INSTANCE=seu_instance_id<br />
             ZAPI_TOKEN=seu_token<br />
             ZAPI_ENABLED=0
@@ -126,7 +126,7 @@ export function WhatsAppConfig() {
       </div>
 
       <div className="rounded-lg border border-border">
-        <div className="flex items-center justify-between border-b border-border bg-card px-4 py-3">
+        <div className="flex flex-col gap-2 border-b border-border bg-card px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-center gap-2">
             <MessageSquare className="size-4 text-muted" />
             <h3 className="text-sm font-semibold text-foreground">Mensagens Enviadas</h3>
@@ -145,7 +145,7 @@ export function WhatsAppConfig() {
           <p className="p-4 text-center text-sm text-muted">Nenhuma mensagem enviada ainda.</p>
         ) : (
           <div className="overflow-x-auto">
-            <table className="w-full text-sm">
+            <table className="w-full min-w-[720px] text-sm">
               <thead className="bg-card">
                 <tr className="text-left text-muted">
                   <th className="px-4 py-3 font-medium">Data</th>

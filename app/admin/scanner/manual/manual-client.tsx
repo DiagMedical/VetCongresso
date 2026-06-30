@@ -145,7 +145,7 @@ export function ManualClient({ palestras, inscritos }: Props) {
         {selecionados.size > 0 && (
           <button
             onClick={handleCheckinLote}
-            className="flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:brightness-110 transition-all"
+            className="flex min-h-[44px] items-center justify-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-all hover:brightness-110"
           >
             <CheckSquare className="size-4" />
             Check-in em Lote ({selecionados.size})
@@ -155,7 +155,7 @@ export function ManualClient({ palestras, inscritos }: Props) {
 
       <div className="overflow-hidden rounded-lg border border-border">
         <div className="overflow-x-auto">
-        <table className="w-full text-sm" aria-label="Participantes">
+        <table className="w-full min-w-[860px] text-sm" aria-label="Participantes">
           <caption className="sr-only">Lista de participantes</caption>
           <thead className="bg-card">
             <tr className="text-left text-muted">

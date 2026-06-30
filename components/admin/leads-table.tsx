@@ -6,6 +6,7 @@ import { Download, Inbox, Search, ArrowUpDown, ArrowUp, ArrowDown, Trash2 } from
 import type { Inscrito, StatusInscricao } from '@/types'
 import { formatDate } from '@/lib/utils'
 import { toast } from 'sonner'
+import { AdminPagination } from '@/components/admin/pagination'
 
 interface LeadsTableProps {
   inscritos: Inscrito[]
@@ -27,6 +28,8 @@ export function LeadsTable({ inscritos, palestras, totalCount, limiteAtingido }:
   const [filtroStatus, setFiltroStatus] = useState<StatusInscricao | ''>('')
   const [filtroPalestra, setFiltroPalestra] = useState('')
   const [ordem, setOrdem] = useState<{ col: string; dir: 'asc' | 'desc' }>({ col: 'created_at', dir: 'desc' })
+  const [currentPage, setCurrentPage] = useState(1)
+  const pageSize = 15
 
   function toggleOrdem(col: string) {
     setOrdem((prev) => prev.col === col ? { col, dir: prev.dir === 'asc' ? 'desc' : 'asc' } : { col, dir: 'asc' })
@@ -71,6 +74,10 @@ export function LeadsTable({ inscritos, palestras, totalCount, limiteAtingido }:
 
     return filtrados
   }, [inscritos, busca, filtroStatus, filtroPalestra, ordem])
+
+  const totalPages = Math.max(1, Math.ceil(filtrados.length / pageSize))
+  const paginaAtual = Math.min(currentPage, totalPages)
+  const visiveis = filtrados.slice((paginaAtual - 1) * pageSize, paginaAtual * pageSize)
 
   async function handleDelete(id: string, nome: string) {
     if (!confirm(`Excluir inscrição de "${nome}"? Essa ação não pode ser desfeita.`)) return
@@ -193,7 +200,7 @@ export function LeadsTable({ inscritos, palestras, totalCount, limiteAtingido }:
             </tr>
           </thead>
           <tbody className="divide-y divide-border">
-            {filtrados.map((i) => (
+            {visiveis.map((i) => (
               <tr key={i.id} className="bg-background hover:bg-card/50 transition-colors">
                 <td className="px-4 py-3 font-medium text-foreground">{i.nome}</td>
                 <td className="px-4 py-3 text-muted">{i.email}</td>
@@ -243,8 +250,20 @@ export function LeadsTable({ inscritos, palestras, totalCount, limiteAtingido }:
         )}
       </div>
 
+      {filtrados.length > 0 && (
+        <AdminPagination
+          currentPage={paginaAtual}
+          totalPages={totalPages}
+          onPageChange={setCurrentPage}
+          totalItems={filtrados.length}
+          pageSize={pageSize}
+          label="leads"
+        />
+      )}
+
       <p className="text-xs text-muted" role="status">
-        Mostrando {filtrados.length} de {totalCount} leads
+        Mostrando {visiveis.length} de {filtrados.length} leads filtrados
+        {busca || filtroStatus || filtroPalestra ? '' : ` · ${totalCount} no total`}
         {limiteAtingido && ' (exibindo apenas os 1000 mais recentes)'}
       </p>
     </div>
