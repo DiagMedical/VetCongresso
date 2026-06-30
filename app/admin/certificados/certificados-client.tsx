@@ -62,12 +62,9 @@ export function CertificadosClient({ dados }: Props) {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-        <h2 className="text-2xl font-bold text-foreground">Certificados</h2>
-        <p className="text-sm text-muted-foreground">
-          {dados.length} participante(s) com check-in
-        </p>
-      </div>
+      <p className="text-sm text-muted-foreground">
+        {dados.length} participante(s) com check-in
+      </p>
 
       <div className="relative max-w-sm">
         <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted" aria-hidden="true" />

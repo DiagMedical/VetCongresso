@@ -1,5 +1,6 @@
 import { createClient } from '@/lib/supabase/server'
 import { LeadsTable } from '@/components/admin/leads-table'
+import { AdminPageHeader } from '@/components/admin/page-header'
 import { BackToTop } from '@/components/back-to-top'
 import type { Inscrito } from '@/types'
 
@@ -32,7 +33,10 @@ export default async function LeadsPage() {
 
   return (
     <div className="space-y-6">
-      <h2 className="text-2xl font-bold text-foreground">Leads</h2>
+      <AdminPageHeader
+        title="Leads"
+        description="Lista completa das reservas recebidas, com filtros, ordenação e exportação."
+      />
       <LeadsTable
         inscritos={(inscritos ?? []) as Inscrito[]}
         palestras={palestras ?? []}

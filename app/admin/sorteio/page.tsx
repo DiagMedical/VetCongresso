@@ -1,5 +1,6 @@
 import { listarSorteioLeads } from '@/lib/actions/sorteio'
 import { SorteioAdmin } from './sorteio-admin'
+import { AdminPageHeader } from '@/components/admin/page-header'
 
 export default async function AdminSorteioPage() {
   let leads
@@ -11,7 +12,10 @@ export default async function AdminSorteioPage() {
 
   return (
     <div className="space-y-6">
-      <h2 className="text-2xl font-bold text-foreground">Sorteio Powerbank</h2>
+      <AdminPageHeader
+        title="Sorteio Powerbank"
+        description="Busca, exportação e sorteio manual dos cadastros do powerbank."
+      />
       <SorteioAdmin leads={leads} />
     </div>
   )

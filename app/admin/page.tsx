@@ -7,6 +7,7 @@ import { DashboardTabelaPalestras } from '@/components/admin/dashboard-tabela-pa
 import { DashboardUltimosLeads } from '@/components/admin/dashboard-ultimos-leads'
 import { DashboardFiltroData } from '@/components/admin/dashboard-filtro-data'
 import { DashboardResumoIA } from '@/components/admin/dashboard-resumo-ia'
+import { AdminPageHeader } from '@/components/admin/page-header'
 import { BackToTop } from '@/components/back-to-top'
 import { getDashboardData, listarPalestrasComVagas } from '@/lib/actions/admin'
 import type { DashboardData } from '@/lib/actions/admin'
@@ -29,10 +30,11 @@ export default async function AdminDashboard(props: { searchParams?: Promise<{ d
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-        <h2 className="text-2xl font-bold text-foreground">Dashboard</h2>
-        <Suspense><DashboardFiltroData /></Suspense>
-      </div>
+      <AdminPageHeader
+        title="Dashboard"
+        description="Visão geral do congresso com leads, check-ins, ocupação e tendências."
+        actions={<Suspense><DashboardFiltroData /></Suspense>}
+      />
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-5">
         <AnimatedKpi title="Total de Leads" value={data.total_leads} icon={<Users className="size-5" />} className="animate-glow" />

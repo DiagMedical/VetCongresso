@@ -6,6 +6,7 @@ import { CheckCircle2, XCircle, ArrowLeft, User, BookOpen, Clock } from 'lucide-
 import Link from 'next/link'
 import { Scanner } from '@/components/scanner'
 import { BackToTop } from '@/components/back-to-top'
+import { AdminPageHeader } from '@/components/admin/page-header'
 import { toast } from 'sonner'
 
 class ScanErrorBoundary extends Component<{ children: ReactNode }> {
@@ -138,10 +139,10 @@ export default function ScannerPage() {
         Voltar ao Dashboard
       </Link>
 
-      <h2 className="text-2xl font-bold text-foreground">Scanner QR</h2>
-      <p className="text-sm text-muted">
-        Posicione o QR Code do ticket na frente da câmera para realizar o check-in.
-      </p>
+      <AdminPageHeader
+        title="Scanner QR"
+        description="Posicione o QR Code do ticket na frente da câmera para realizar o check-in."
+      />
 
       <div className="flex flex-col items-center">
         {!qrData && <Scanner key={scannerKey} onScan={handleScan} />}

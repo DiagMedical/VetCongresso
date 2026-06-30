@@ -47,8 +47,6 @@ export function AdminsClient({ admins }: AdminsClientProps) {
 
   return (
     <div className="space-y-6">
-      <h2 className="text-2xl font-bold text-foreground">Gerenciar Admins</h2>
-
       <form onSubmit={handleSubmit} className="flex flex-col gap-3 rounded-lg border border-border bg-card p-4 lg:flex-row lg:flex-wrap lg:items-end">
         <div className="space-y-1">
           <label htmlFor="nome" className="text-xs font-medium text-muted">Nome</label>

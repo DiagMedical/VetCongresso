@@ -3,6 +3,7 @@ import { getRelatorios } from '@/lib/actions/admin'
 import { KpiCard } from '@/components/admin/kpi-card'
 import { BotaoExportarPDF } from '@/components/admin/botao-exportar-pdf'
 import { BotaoExportarXLSX } from '@/components/admin/botao-exportar-xlsx'
+import { AdminPageHeader } from '@/components/admin/page-header'
 import { RelatoriosCharts } from './relatorios-charts'
 import { RelatoriosTabela } from './relatorios-tabela'
 import { BackToTop } from '@/components/back-to-top'
@@ -30,13 +31,16 @@ export default async function RelatoriosPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-        <h2 className="text-2xl font-bold text-foreground">Relatórios</h2>
-        <div className="flex flex-wrap items-center gap-2">
-          <BotaoExportarXLSX data={dadosXLSX} filename="relatorio-vetcongresso" />
-          <BotaoExportarPDF containerId="relatorio-conteudo" filename="relatorio-vetcongresso" />
-        </div>
-      </div>
+      <AdminPageHeader
+        title="Relatórios"
+        description="Painel executivo com visão por palestra, desempenho e distribuição dos resultados."
+        actions={
+          <>
+            <BotaoExportarXLSX data={dadosXLSX} filename="relatorio-vetcongresso" />
+            <BotaoExportarPDF containerId="relatorio-conteudo" filename="relatorio-vetcongresso" />
+          </>
+        }
+      />
 
       <div id="relatorio-conteudo" className="space-y-6">
         <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-5">

@@ -1,6 +1,7 @@
 import { getAnalyticsData } from '@/lib/actions/admin'
 import { AnalyticsCharts } from './analytics-charts'
 import { AnalyticsKpis } from './analytics-kpis'
+import { AdminPageHeader } from '@/components/admin/page-header'
 
 export default async function AnalyticsPage() {
   let data
@@ -12,7 +13,10 @@ export default async function AnalyticsPage() {
 
   return (
     <div className="space-y-6">
-      <h2 className="text-2xl font-bold text-foreground">Analytics</h2>
+      <AdminPageHeader
+        title="Analytics"
+        description="Indicadores de comportamento, previsões e ocupação para apoiar decisões rápidas."
+      />
 
       <AnalyticsKpis data={data} />
       <AnalyticsCharts data={data} />
