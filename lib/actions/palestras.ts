@@ -60,14 +60,25 @@ export async function desativarPalestra(id: string) {
 export async function listarPalestrasAdmin(): Promise<Palestra[]> {
   const supabase = await createClient()
 
-  const { data, error } = await supabase
+  const [{ data, error }, { data: vagas }] = await Promise.all([
+    supabase
     .from('palestras')
     .select('*')
     .order('dia_evento')
     .order('horario_inicio')
+    ,
+    supabase
+      .from('vagas_disponiveis')
+      .select('id, vagas_restantes'),
+  ])
 
   if (error) throw new Error(error.message)
-  return data as Palestra[]
+  const vagasMap = new Map((vagas ?? []).map((v) => [v.id, v.vagas_restantes]))
+
+  return (data ?? []).map((p) => ({
+    ...p,
+    vagas_restantes: vagasMap.get(p.id) ?? p.vagas_totais,
+  })) as Palestra[]
 }
 
 export async function duplicarPalestra(id: string) {

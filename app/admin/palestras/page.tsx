@@ -1,6 +1,7 @@
 import { listarPalestrasAdmin } from '@/lib/actions/palestras'
 import { PalestrasClient } from './palestras-client'
 import { AdminPageHeader } from '@/components/admin/page-header'
+import { PalestrasAutoRefresh } from './palestras-auto-refresh'
 
 export default async function PalestrasPage() {
   let palestras
@@ -16,6 +17,7 @@ export default async function PalestrasPage() {
         title="Palestras"
         description="Cadastro, edição e organização da grade de palestras do congresso."
       />
+      <PalestrasAutoRefresh />
       <PalestrasClient palestras={palestras} />
     </div>
   )

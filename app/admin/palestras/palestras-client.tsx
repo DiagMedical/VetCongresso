@@ -9,6 +9,7 @@ import { PalestraDialog } from '@/components/admin/palestra-dialog'
 import type { PalestraFormData } from '@/types'
 import { buildGoogleCalendarUrl, buildAppleCalendarUrl } from '@/lib/calendar'
 import { VerInscritosDialog } from '@/components/admin/ver-inscritos-dialog'
+import { Badge } from '@/components/ui/badge'
 
 interface PalestrasClientProps {
   palestras: Palestra[]
@@ -144,7 +145,16 @@ export function PalestrasClient({ palestras }: PalestrasClientProps) {
                   <td className="px-4 py-3 font-medium text-foreground">{p.tema}</td>
                   <td className="px-4 py-3 text-muted">{p.palestrante}</td>
                   <td className="px-4 py-3 text-muted">{horario}</td>
-                  <td className="px-4 py-3 text-foreground">{p.vagas_totais}</td>
+                  <td className="px-4 py-3">
+                    <div className="flex items-center gap-2">
+                      <Badge variant={p.vagas_restantes && p.vagas_restantes > 0 ? 'secondary' : 'destructive'}>
+                        {p.vagas_restantes ?? p.vagas_totais} restantes
+                      </Badge>
+                      <span className="text-xs text-muted">
+                        de {p.vagas_totais}
+                      </span>
+                    </div>
+                  </td>
                   <td className="px-4 py-3">
                     <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${
                       p.ativo

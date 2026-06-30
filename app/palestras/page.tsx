@@ -4,6 +4,7 @@ import { Home, Lock } from 'lucide-react'
 import { PalestraCard } from '@/components/palestra-card'
 import { listarPalestras } from '@/lib/actions/reserva'
 import type { DiaEvento } from '@/types'
+import { PalestrasAutoRefresh } from './palestras-auto-refresh'
 
 function PalestrasSkeleton() {
   return (
@@ -106,6 +107,7 @@ export default async function PalestrasPage(props: {
       </section>
 
       <section className="mx-auto w-full max-w-5xl px-4 py-6">
+        <PalestrasAutoRefresh />
         <div className="flex flex-wrap gap-2 mb-6">
           <DiaTab dia={null} atual={diaAtual} />
           <DiaTab dia={1} atual={diaAtual} />
