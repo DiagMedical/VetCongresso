@@ -2,6 +2,7 @@
 
 import { TrendingUp, Users, TicketCheck, Clock, AlertTriangle, Target } from 'lucide-react'
 import type { AnalyticsData } from '@/lib/actions/admin'
+import { AdminSectionCard } from '@/components/admin/section-card'
 
 interface Props {
   data: AnalyticsData
@@ -48,16 +49,22 @@ export function AnalyticsKpis({ data }: Props) {
   ]
 
   return (
-    <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-6">
-      {kpis.map((kpi) => (
-        <div key={kpi.title} className="flex items-center gap-3 rounded-lg border border-border bg-card p-4">
-          <div className={`${kpi.color}`}>{kpi.icon}</div>
-          <div>
-            <p className="text-xs text-muted">{kpi.title}</p>
-            <p className="text-xl font-bold text-foreground">{kpi.value}</p>
+    <AdminSectionCard
+      title="Indicadores de operação"
+      description="Resumo rápido de comparecimento, ocupação e volume total para leitura em notebook."
+      bodyClassName="p-4 sm:p-5"
+    >
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-6">
+        {kpis.map((kpi) => (
+          <div key={kpi.title} className="flex items-center gap-3 rounded-xl border border-border bg-background/60 p-4">
+            <div className={`${kpi.color}`}>{kpi.icon}</div>
+            <div>
+              <p className="text-xs text-muted">{kpi.title}</p>
+              <p className="text-xl font-bold text-foreground">{kpi.value}</p>
+            </div>
           </div>
-        </div>
-      ))}
-    </div>
+        ))}
+      </div>
+    </AdminSectionCard>
   )
 }

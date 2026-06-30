@@ -7,6 +7,7 @@ import Link from 'next/link'
 import type { Palestra, Inscrito } from '@/types'
 import { LiberarVagaDialog } from './liberar-vaga-dialog'
 import { AdicionarParticipanteDialog } from './adicionar-participante-dialog'
+import { AdminSectionCard } from '@/components/admin/section-card'
 
 interface DashboardActionsProps {
   palestras: Palestra[]
@@ -41,12 +42,14 @@ export function DashboardActions({ palestras }: DashboardActionsProps) {
 
   return (
     <>
-      <div className="rounded-lg border border-border bg-card p-4">
-        <h3 className="mb-4 text-sm font-semibold text-foreground">Ações Rápidas</h3>
+      <AdminSectionCard
+        title="Ações rápidas"
+        description="Atalhos para check-in, liberação de vaga e cadastro manual."
+      >
         <div className="flex flex-col gap-3">
           <Link
             href="/admin/scanner"
-            className="flex items-center gap-3 rounded-md bg-primary/10 min-h-[44px] p-3 text-primary hover:bg-primary/20 transition-colors"
+            className="flex min-h-[44px] items-center gap-3 rounded-xl bg-primary/10 p-3 text-primary transition-colors hover:bg-primary/20"
           >
             <QrCode className="size-5" aria-hidden="true" />
             <div>
@@ -57,7 +60,7 @@ export function DashboardActions({ palestras }: DashboardActionsProps) {
 
           <button
             onClick={openLiberarVaga}
-            className="flex items-center gap-3 rounded-md bg-danger/10 min-h-[44px] p-3 text-left text-danger hover:bg-danger/20 transition-colors"
+            className="flex min-h-[44px] items-center gap-3 rounded-xl bg-danger/10 p-3 text-left text-danger transition-colors hover:bg-danger/20"
           >
             <UserX className="size-5" aria-hidden="true" />
             <div>
@@ -68,7 +71,7 @@ export function DashboardActions({ palestras }: DashboardActionsProps) {
 
           <button
             onClick={() => setShowAdicionar(true)}
-            className="flex items-center gap-3 rounded-md bg-success/10 min-h-[44px] p-3 text-left text-success hover:bg-success/20 transition-colors"
+            className="flex min-h-[44px] items-center gap-3 rounded-xl bg-success/10 p-3 text-left text-success transition-colors hover:bg-success/20"
           >
             <UserPlus className="size-5" aria-hidden="true" />
             <div>
@@ -77,7 +80,7 @@ export function DashboardActions({ palestras }: DashboardActionsProps) {
             </div>
           </button>
         </div>
-      </div>
+      </AdminSectionCard>
 
       <LiberarVagaDialog
         open={showLiberar}
