@@ -39,3 +39,6 @@ Deixar o admin visualmente uniforme, mais confortável no notebook e com acabame
 
 ## Próximo Passo Natural
 Padronizar `Scanner`, `Certificados` e `Relatórios` com o mesmo padrão visual já aplicado nas demais páginas.
+## Atualizacao desta passada
+- Scanner, Certificados e Relatorios ja foram padronizados com cards e layout mais confortavel no notebook.
+- Proximo passo: revisar rapidamente os espacos, alinhamentos e estados vazios em uma passada final.

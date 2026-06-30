@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from 'react'
 import jsQR from 'jsqr'
 
-// Native BarcodeDetector API (Chrome 83+, Android Chrome — hardware accelerated)
+// Native BarcodeDetector API (Chrome 83+, Android Chrome - hardware accelerated)
 declare class BarcodeDetector {
   constructor(options: { formats: string[] })
   detect(source: HTMLVideoElement | ImageBitmap): Promise<{ rawValue: string }[]>
@@ -34,7 +34,6 @@ export function Scanner({ onScan }: ScannerProps) {
     onScanRef.current = onScan
   }, [onScan])
 
-  // Initialize BarcodeDetector once
   useEffect(() => {
     if (typeof BarcodeDetector !== 'undefined') {
       try {
@@ -45,22 +44,110 @@ export function Scanner({ onScan }: ScannerProps) {
     }
   }, [])
 
-  // Attach stream to video element when scanning starts
   useEffect(() => {
-    if (scanning && videoRef.current && streamRef.current) {
-      const video = videoRef.current
-      video.srcObject = streamRef.current
-      video.play().then(() => {
+    if (!scanning || !videoRef.current || !streamRef.current) return
+
+    const video = videoRef.current
+    let active = true
+
+    const loop = () => {
+      if (!active) return
+
+      if (!video || processingRef.current) {
+        rafRef.current = requestAnimationFrame(loop)
+        return
+      }
+
+      if (video.readyState !== video.HAVE_ENOUGH_DATA) {
+        rafRef.current = requestAnimationFrame(loop)
+        return
+      }
+
+      frameCountRef.current++
+      if (frameCountRef.current % 5 !== 0) {
+        rafRef.current = requestAnimationFrame(loop)
+        return
+      }
+
+      if (detectorRef.current) {
+        detectorRef.current
+          .detect(video)
+          .then((results) => {
+            if (!active) return
+
+            if (results.length > 0 && !processingRef.current) {
+              handleDetected(results[0].rawValue)
+            } else {
+              rafRef.current = requestAnimationFrame(loop)
+            }
+          })
+          .catch(() => {
+            rafRef.current = requestAnimationFrame(loop)
+          })
+        return
+      }
+
+      const canvas = canvasRef.current
+      if (!canvas) {
+        rafRef.current = requestAnimationFrame(loop)
+        return
+      }
+
+      try {
+        const srcWidth = video.videoWidth
+        const srcHeight = video.videoHeight
+        if (!srcWidth || !srcHeight) {
+          rafRef.current = requestAnimationFrame(loop)
+          return
+        }
+
+        const targetWidth = 400
+        const targetHeight = Math.round((srcHeight / srcWidth) * targetWidth)
+        canvas.width = targetWidth
+        canvas.height = targetHeight
+
+        const ctx = canvas.getContext('2d', { willReadFrequently: true })
+        if (!ctx) {
+          rafRef.current = requestAnimationFrame(loop)
+          return
+        }
+
+        ctx.drawImage(video, 0, 0, srcWidth, srcHeight, 0, 0, targetWidth, targetHeight)
+        const imageData = ctx.getImageData(0, 0, targetWidth, targetHeight)
+        const code = jsQR(imageData.data, imageData.width, imageData.height, {
+          inversionAttempts: 'attemptBoth',
+        })
+
+        if (code && !processingRef.current) {
+          handleDetected(code.data)
+          return
+        }
+      } catch (err) {
+        console.error('Erro no scanner jsQR:', err)
+      }
+
+      rafRef.current = requestAnimationFrame(loop)
+    }
+
+    video.srcObject = streamRef.current
+    video
+      .play()
+      .then(() => {
         frameCountRef.current = 0
-        rafRef.current = requestAnimationFrame(scanLoop)
-      }).catch(() => {
+        rafRef.current = requestAnimationFrame(loop)
+      })
+      .catch(() => {
         setError('Erro ao iniciar o vídeo da câmera')
         setScanning(false)
       })
+
+    return () => {
+      active = false
+      if (rafRef.current) cancelAnimationFrame(rafRef.current)
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [scanning])
 
-  // Cleanup on unmount
   useEffect(() => {
     return () => {
       if (rafRef.current) cancelAnimationFrame(rafRef.current)
@@ -74,83 +161,6 @@ export function Scanner({ onScan }: ScannerProps) {
 
   function announceStatus(msg: string) {
     if (statusRef.current) statusRef.current.textContent = msg
-  }
-
-  function scanLoop() {
-    const video = videoRef.current
-    if (!video || processingRef.current) {
-      rafRef.current = requestAnimationFrame(scanLoop)
-      return
-    }
-
-    if (video.readyState !== video.HAVE_ENOUGH_DATA) {
-      rafRef.current = requestAnimationFrame(scanLoop)
-      return
-    }
-
-    frameCountRef.current++
-    // Process every 5 frames (~12fps at 60fps display, ~8fps at 48fps)
-    if (frameCountRef.current % 5 !== 0) {
-      rafRef.current = requestAnimationFrame(scanLoop)
-      return
-    }
-
-    // Try BarcodeDetector first (native, hardware-accelerated on Android Chrome)
-    if (detectorRef.current) {
-      detectorRef.current.detect(video).then((results) => {
-        if (results.length > 0 && !processingRef.current) {
-          handleDetected(results[0].rawValue)
-        } else {
-          rafRef.current = requestAnimationFrame(scanLoop)
-        }
-      }).catch(() => {
-        // BarcodeDetector failed, fall through to jsQR on next frame
-        rafRef.current = requestAnimationFrame(scanLoop)
-      })
-      return
-    }
-
-    // jsQR fallback
-    const canvas = canvasRef.current
-    if (!canvas) {
-      rafRef.current = requestAnimationFrame(scanLoop)
-      return
-    }
-
-    try {
-      const srcWidth = video.videoWidth
-      const srcHeight = video.videoHeight
-      if (!srcWidth || !srcHeight) {
-        rafRef.current = requestAnimationFrame(scanLoop)
-        return
-      }
-
-      const targetWidth = 400
-      const targetHeight = Math.round((srcHeight / srcWidth) * targetWidth)
-      canvas.width = targetWidth
-      canvas.height = targetHeight
-
-      const ctx = canvas.getContext('2d', { willReadFrequently: true })
-      if (!ctx) {
-        rafRef.current = requestAnimationFrame(scanLoop)
-        return
-      }
-
-      ctx.drawImage(video, 0, 0, srcWidth, srcHeight, 0, 0, targetWidth, targetHeight)
-      const imageData = ctx.getImageData(0, 0, targetWidth, targetHeight)
-      const code = jsQR(imageData.data, imageData.width, imageData.height, {
-        inversionAttempts: 'attemptBoth',
-      })
-
-      if (code && !processingRef.current) {
-        handleDetected(code.data)
-        return
-      }
-    } catch (err) {
-      console.error('Erro no scanner jsQR:', err)
-    }
-
-    rafRef.current = requestAnimationFrame(scanLoop)
   }
 
   function handleDetected(data: string) {
@@ -191,7 +201,7 @@ export function Scanner({ onScan }: ScannerProps) {
           facingMode: 'environment',
           width: { min: 640, ideal: 1280 },
           height: { min: 480, ideal: 720 },
-          // @ts-expect-error – advanced constraint (Chrome on Android)
+          // @ts-expect-error - advanced constraint (Chrome on Android)
           advanced: [{ focusMode: 'continuous' }],
         },
       })
@@ -200,7 +210,6 @@ export function Scanner({ onScan }: ScannerProps) {
       announceStatus('Câmera ativa. Apontando para o QR Code.')
       stopBtnRef.current?.focus()
     } catch (err) {
-      // If advanced constraint fails, retry without it
       try {
         const stream = await navigator.mediaDevices.getUserMedia({
           video: {
@@ -232,31 +241,25 @@ export function Scanner({ onScan }: ScannerProps) {
 
   return (
     <div className="flex flex-col items-center gap-4">
-      <div
-        ref={statusRef}
-        role="status"
-        aria-live="polite"
-        className="sr-only"
-      />
+      <div ref={statusRef} role="status" aria-live="polite" className="sr-only" />
 
       {!scanning && !processing && (
         <button
           ref={startBtnRef}
           onClick={startCamera}
           aria-label="Iniciar leitura de QR Code pela câmera"
-          className="rounded-md bg-primary px-6 py-3 text-primary-foreground font-medium hover:brightness-110 transition-all"
+          className="rounded-md bg-primary px-6 py-3 font-medium text-primary-foreground transition-all hover:brightness-110"
         >
           Iniciar Scanner
         </button>
       )}
 
       {scanning && (
-        <div className="relative w-full max-w-sm h-72 overflow-hidden rounded-lg border border-border">
+        <div className="relative h-72 w-full max-w-md overflow-hidden rounded-lg border border-border lg:max-w-lg">
           <video ref={videoRef} className="size-full object-cover" autoPlay muted playsInline aria-label="Leitor de QR Code pela câmera" />
           <canvas ref={canvasRef} className="hidden" />
-          {/* Mira visual para guiar o usuário */}
           <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-            <div className="size-48 border-2 border-accent rounded-lg opacity-70" />
+            <div className="size-48 rounded-lg border-2 border-accent opacity-70" />
           </div>
           <div className="absolute inset-0 border-[3px] border-primary/50 rounded-lg pointer-events-none" />
         </div>
@@ -278,7 +281,7 @@ export function Scanner({ onScan }: ScannerProps) {
           ref={stopBtnRef}
           onClick={stopCamera}
           aria-label="Parar leitura de QR Code"
-          className="rounded-md bg-danger px-4 py-2 text-sm text-danger-foreground font-medium hover:brightness-110 transition-all"
+          className="rounded-md bg-danger px-4 py-2 text-sm font-medium text-danger-foreground transition-all hover:brightness-110"
         >
           Parar Scanner
         </button>
@@ -286,5 +289,3 @@ export function Scanner({ onScan }: ScannerProps) {
     </div>
   )
 }
-
-

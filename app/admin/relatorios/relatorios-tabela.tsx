@@ -2,6 +2,7 @@
 
 import { BarChart3 } from 'lucide-react'
 import type { RelatoriosData } from '@/lib/actions/admin'
+import { AdminSectionCard } from '@/components/admin/section-card'
 
 interface Props {
   data: RelatoriosData
@@ -9,10 +10,11 @@ interface Props {
 
 export function RelatoriosTabela({ data }: Props) {
   return (
-    <div className="rounded-lg border border-border">
-      <div className="border-b border-border bg-card px-4 py-3">
-        <h3 className="text-sm font-semibold text-foreground">Detalhamento por Palestra</h3>
-      </div>
+    <AdminSectionCard
+      title="Detalhamento por Palestra"
+      description="Tabela completa com vagas, reservas, check-ins, cancelamentos e ocupação por palestra."
+      bodyClassName="p-0"
+    >
       {data.por_palestra.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-12 text-center" role="status" aria-live="polite">
           <BarChart3 className="mx-auto mb-3 size-10 text-muted/40" />
@@ -69,6 +71,6 @@ export function RelatoriosTabela({ data }: Props) {
         </table>
       </div>
       )}
-    </div>
+    </AdminSectionCard>
   )
 }

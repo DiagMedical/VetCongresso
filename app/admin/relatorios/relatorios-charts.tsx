@@ -14,6 +14,7 @@ import {
   Cell,
 } from 'recharts'
 import type { RelatoriosData } from '@/lib/actions/admin'
+import { AdminSectionCard } from '@/components/admin/section-card'
 
 interface Props {
   data: RelatoriosData
@@ -55,8 +56,10 @@ export function RelatoriosCharts({ data }: Props) {
 
   return (
     <div className="grid gap-6 lg:grid-cols-2">
-      <div className="rounded-lg border border-border bg-card p-4">
-        <h3 className="mb-4 text-sm font-semibold text-foreground">Reservas por Dia</h3>
+      <AdminSectionCard
+        title="Reservas por Dia"
+        description="Evolução das reservas, check-ins, cancelamentos e lista de espera ao longo do evento."
+      >
         {porDia.every((d) => d.Reservas === 0) ? (
           <p className="py-8 text-center text-sm text-muted">Nenhum dado disponível</p>
         ) : (
@@ -74,10 +77,12 @@ export function RelatoriosCharts({ data }: Props) {
             </BarChart>
           </ResponsiveContainer>
         )}
-      </div>
+      </AdminSectionCard>
 
-      <div className="rounded-lg border border-border bg-card p-4">
-        <h3 className="mb-4 text-sm font-semibold text-foreground">Distribuição de Status</h3>
+      <AdminSectionCard
+        title="Distribuição de Status"
+        description="Visão rápida do mix de inscritos, confirmados e espera."
+      >
         {pieData.length === 0 ? (
           <p className="py-8 text-center text-sm text-muted">Nenhum dado disponível</p>
         ) : (
@@ -103,10 +108,13 @@ export function RelatoriosCharts({ data }: Props) {
             </PieChart>
           </ResponsiveContainer>
         )}
-      </div>
+      </AdminSectionCard>
 
-      <div className="rounded-lg border border-border bg-card p-4 lg:col-span-2">
-        <h3 className="mb-4 text-sm font-semibold text-foreground">Ranking de Palestras</h3>
+      <AdminSectionCard
+        className="lg:col-span-2"
+        title="Ranking de Palestras"
+        description="As palestras mais concorridas, ordenadas por volume de reservas."
+      >
         {porPalestra.length === 0 ? (
           <p className="py-8 text-center text-sm text-muted">Nenhum dado disponível</p>
         ) : (
@@ -122,7 +130,7 @@ export function RelatoriosCharts({ data }: Props) {
             </BarChart>
           </ResponsiveContainer>
         )}
-      </div>
+      </AdminSectionCard>
     </div>
   )
 }

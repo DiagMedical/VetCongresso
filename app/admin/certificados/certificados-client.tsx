@@ -8,6 +8,7 @@ import { formatDateShort, formatDuracao } from '@/lib/utils'
 import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 import { AdminPagination } from '@/components/admin/pagination'
+import { AdminSectionCard } from '@/components/admin/section-card'
 
 interface Props {
   dados: CertificadoData[]
@@ -71,10 +72,11 @@ export function CertificadosClient({ dados }: Props) {
 
   return (
     <div className="space-y-6">
-      <p className="text-sm text-muted-foreground">
-        {dados.length} participante(s) com check-in
-      </p>
-
+      <AdminSectionCard
+        title="Participantes com certificado"
+        description={`${dados.length} participante(s) com check-in habilitados para emissão.`}
+        bodyClassName="space-y-4"
+      >
       <div className="relative max-w-sm">
         <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted" aria-hidden="true" />
         <input
@@ -121,7 +123,7 @@ export function CertificadosClient({ dados }: Props) {
                         </Button>
                       }
                     />
-                    <DialogContent className="sm:max-w-3xl">
+                    <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-3xl">
                       <DialogHeader>
                         <DialogTitle>Certificado</DialogTitle>
                       </DialogHeader>
@@ -228,6 +230,7 @@ export function CertificadosClient({ dados }: Props) {
           </div>
         )}
       </div>
+      </AdminSectionCard>
 
       {filtrados.length > 0 && (
         <AdminPagination

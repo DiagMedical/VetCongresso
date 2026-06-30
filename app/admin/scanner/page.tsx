@@ -7,6 +7,8 @@ import Link from 'next/link'
 import { Scanner } from '@/components/scanner'
 import { BackToTop } from '@/components/back-to-top'
 import { AdminPageHeader } from '@/components/admin/page-header'
+import { AdminSectionCard } from '@/components/admin/section-card'
+import { Button } from '@/components/ui/button'
 import { toast } from 'sonner'
 
 class ScanErrorBoundary extends Component<{ children: ReactNode }> {
@@ -53,19 +55,16 @@ export default function ScannerPage() {
   }
 
   async function handleScan(data: string) {
-    console.log('Scanned data:', data);
     setResultado(null)
 
     const trimmed = data.trim()
 
-    // 1. Se for o formato antigo (JSON completo)
     const parsed = tryParseQr(trimmed)
     if (parsed) {
       setQrData(parsed)
       return
     }
 
-    // 2. Se for o novo formato (apenas UUID)
     const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(trimmed)
     if (isUuid) {
       setConfirmando(true)
@@ -83,7 +82,6 @@ export default function ScannerPage() {
       }
     }
 
-    // 3. Fallback: tenta check-in direto
     await doCheckin(data)
   }
 
@@ -100,7 +98,7 @@ export default function ScannerPage() {
       osc.start()
       osc.stop(ctx.currentTime + 0.15)
       osc.onended = () => ctx.close()
-    } catch {} // fallback silencioso se AudioContext não disponível
+    } catch {}
   }
 
   async function doCheckin(inscritoId: string) {
@@ -133,7 +131,7 @@ export default function ScannerPage() {
     <div className="space-y-6">
       <Link
         href="/admin"
-        className="flex items-center gap-1 text-sm text-muted hover:text-foreground transition-colors"
+        className="flex items-center gap-1 text-sm text-muted transition-colors hover:text-foreground"
       >
         <ArrowLeft className="size-4" />
         Voltar ao Dashboard
@@ -144,15 +142,56 @@ export default function ScannerPage() {
         description="Posicione o QR Code do ticket na frente da câmera para realizar o check-in."
       />
 
-      <div className="flex flex-col items-center">
-        {!qrData && <Scanner key={scannerKey} onScan={handleScan} />}
+      <div className="grid gap-6 xl:grid-cols-[minmax(0,1.15fr)_minmax(320px,0.85fr)]">
+        <AdminSectionCard
+          title="Leitura do QR"
+          description="Abra a câmera e aponte para o QR Code. Quando a leitura terminar, os dados aparecem ao lado."
+          bodyClassName="space-y-4"
+        >
+          <div className="flex flex-col items-center gap-4">
+            {!qrData && <Scanner key={scannerKey} onScan={handleScan} />}
 
-        {qrData && (
-          <ScanErrorBoundary>
-            <div className="w-full max-w-sm space-y-4 animate-fade-in">
-              <div className="rounded-lg border border-border bg-card p-4">
-                <h3 className="mb-3 text-sm font-semibold text-foreground">Dados do Participante</h3>
-                <div className="space-y-2 text-sm">
+            {confirmando && (
+              <div className="flex items-center gap-2 text-muted-foreground" aria-live="polite">
+                <div className="size-5 animate-spin rounded-full border-2 border-primary border-t-transparent" role="status" aria-label="Carregando" />
+                Carregando dados do participante...
+              </div>
+            )}
+
+            {!qrData && !confirmando && !resultado && (
+              <p className="max-w-md text-center text-sm leading-relaxed text-muted">
+                Posicione o QR Code dentro da moldura e aguarde o reconhecimento automático.
+              </p>
+            )}
+
+            {resultado && (
+              <div
+                className={`flex w-full items-center gap-3 rounded-xl border p-4 ${
+                  resultado.tipo === 'sucesso'
+                    ? 'border-success/30 bg-success/10 text-success'
+                    : 'border-danger/30 bg-danger/10 text-danger'
+                }`}
+              >
+                {resultado.tipo === 'sucesso' ? (
+                  <CheckCircle2 className="size-6 shrink-0" />
+                ) : (
+                  <XCircle className="size-6 shrink-0" />
+                )}
+                <p className="text-sm font-medium">{resultado.mensagem}</p>
+              </div>
+            )}
+          </div>
+        </AdminSectionCard>
+
+        <ScanErrorBoundary>
+          <AdminSectionCard
+            title="Participante detectado"
+            description={qrData ? 'Revise os dados antes de confirmar.' : 'Os dados lidos aparecerão aqui.'}
+            bodyClassName="space-y-4"
+          >
+            {qrData ? (
+              <>
+                <div className="space-y-3 text-sm">
                   <div className="flex items-center gap-2 text-foreground">
                     <User className="size-4 text-muted" />
                     <span>{qrData.n}</span>
@@ -166,49 +205,35 @@ export default function ScannerPage() {
                   </div>
                   <div className="flex items-center gap-2 text-foreground">
                     <Clock className="size-4 text-muted" />
-                    <span>
-                      {qrData.d?.slice(0, 16).replace('T', ' ')}
-                    </span>
+                    <span>{qrData.d?.slice(0, 16).replace('T', ' ')}</span>
                   </div>
                 </div>
-              </div>
 
-              <div className="flex gap-3">
-                <button
-                  onClick={() => doCheckin(qrData.id)}
-                  disabled={confirmando}
-                  className="flex-1 rounded-md bg-success px-4 py-3 text-sm font-medium text-success-foreground hover:brightness-110 transition-all disabled:opacity-50"
-                >
-                  {confirmando ? 'Confirmando...' : '✓ Confirmar Check-in'}
-                </button>
-                <button
-                  onClick={cancelar}
-                  disabled={confirmando}
-                  className="flex-1 rounded-md border border-border px-4 py-3 text-sm text-muted hover:text-foreground transition-colors disabled:opacity-50"
-                >
-                  Cancelar
-                </button>
-              </div>
-            </div>
-          </ScanErrorBoundary>
-        )}
-
-        {resultado && (
-          <div
-            className={`mt-6 flex w-full max-w-sm items-center gap-3 rounded-lg border p-4 animate-fade-in ${
-              resultado.tipo === 'sucesso'
-                ? 'border-success/30 bg-success/10 text-success'
-                : 'border-danger/30 bg-danger/10 text-danger'
-            }`}
-          >
-            {resultado.tipo === 'sucesso' ? (
-              <CheckCircle2 className="size-6 shrink-0" />
+                <div className="flex flex-col gap-3 sm:flex-row">
+                  <Button
+                    onClick={() => doCheckin(qrData.id)}
+                    disabled={confirmando}
+                    className="flex-1"
+                  >
+                    {confirmando ? 'Confirmando...' : 'Confirmar Check-in'}
+                  </Button>
+                  <Button
+                    onClick={cancelar}
+                    disabled={confirmando}
+                    variant="outline"
+                    className="flex-1"
+                  >
+                    Cancelar
+                  </Button>
+                </div>
+              </>
             ) : (
-              <XCircle className="size-6 shrink-0" />
+              <div className="rounded-xl border border-dashed border-border/80 bg-background/60 p-4 text-sm text-muted">
+                Nenhum QR Code confirmado ainda. Assim que uma leitura válida acontecer, este painel será preenchido automaticamente.
+              </div>
             )}
-            <p className="text-sm font-medium">{resultado.mensagem}</p>
-          </div>
-        )}
+          </AdminSectionCard>
+        </ScanErrorBoundary>
       </div>
 
       <BackToTop />

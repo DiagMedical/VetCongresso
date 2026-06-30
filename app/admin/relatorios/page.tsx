@@ -52,27 +52,21 @@ export default async function RelatoriosPage() {
         </div>
 
         <div className="grid gap-4 md:grid-cols-3">
-          <div className="rounded-lg border border-border bg-card p-4">
-            <div className="flex items-center gap-2 text-sm text-muted">
-              <TrendingUp className="size-4" />
-              <span>Taxa de Comparecimento</span>
-            </div>
-            <p className="mt-1 text-3xl font-bold text-foreground">{data.taxa_comparecimento}%</p>
-          </div>
-          <div className="rounded-lg border border-border bg-card p-4">
-            <div className="flex items-center gap-2 text-sm text-muted">
-              <Calendar className="size-4" />
-              <span>Ocupação Média</span>
-            </div>
-            <p className="mt-1 text-3xl font-bold text-foreground">{data.ocupacao_media}%</p>
-          </div>
-          <div className="rounded-lg border border-border bg-card p-4">
-            <div className="flex items-center gap-2 text-sm text-muted">
-              <Clock className="size-4" />
-              <span>Demanda (reservas + espera)</span>
-            </div>
-            <p className="mt-1 text-3xl font-bold text-foreground">{data.total_reservas + data.total_espera}</p>
-          </div>
+          <KpiCard
+            title="Taxa de Comparecimento"
+            value={`${data.taxa_comparecimento}%`}
+            icon={<TrendingUp className="size-5" />}
+          />
+          <KpiCard
+            title="Ocupação Média"
+            value={`${data.ocupacao_media}%`}
+            icon={<Calendar className="size-5" />}
+          />
+          <KpiCard
+            title="Demanda"
+            value={data.total_reservas + data.total_espera}
+            icon={<Clock className="size-5" />}
+          />
         </div>
 
         <RelatoriosCharts data={data} />
