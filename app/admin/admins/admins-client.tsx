@@ -99,40 +99,65 @@ export function AdminsClient({ admins }: AdminsClientProps) {
             <p className="mt-2 text-sm font-medium text-foreground">Nenhum admin cadastrado</p>
           </div>
         ) : (
-          <div className="overflow-hidden rounded-xl border border-border">
-            <div className="overflow-x-auto">
-              <table className="w-full min-w-[640px] text-sm">
-                <thead className="bg-card">
-                  <tr className="text-left text-muted">
-                    <th scope="col" className="px-4 py-3 font-medium">Nome</th>
-                    <th scope="col" className="px-4 py-3 font-medium">Email</th>
-                    <th scope="col" className="px-4 py-3 font-medium">Desde</th>
-                    <th scope="col" className="px-4 py-3 font-medium">Ações</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-border">
-                  {admins.map((a) => (
-                    <tr key={a.id} className="bg-background transition-colors hover:bg-card/50">
-                      <td className="px-4 py-3 text-foreground">{a.nome}</td>
-                      <td className="px-4 py-3 text-muted">{a.email}</td>
-                      <td className="px-4 py-3 text-muted">
-                        {a.created_at ? new Date(a.created_at).toLocaleDateString('pt-BR') : '—'}
-                      </td>
-                      <td className="px-4 py-3">
-                        <button
-                          onClick={() => handleRemover(a.id, a.email)}
-                          className="rounded-md p-1.5 text-muted transition-colors hover:bg-danger/10 hover:text-danger"
-                          title="Remover admin"
-                        >
-                          <Trash2 className="size-4" />
-                        </button>
-                      </td>
+          <>
+            {/* Desktop: tabela */}
+            <div className="hidden md:block overflow-hidden rounded-xl border border-border">
+              <div className="overflow-x-auto">
+                <table className="w-full min-w-[640px] text-sm">
+                  <thead className="bg-card">
+                    <tr className="text-left text-muted">
+                      <th scope="col" className="px-4 py-3 font-medium">Nome</th>
+                      <th scope="col" className="px-4 py-3 font-medium">Email</th>
+                      <th scope="col" className="px-4 py-3 font-medium">Desde</th>
+                      <th scope="col" className="px-4 py-3 font-medium">Ações</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody className="divide-y divide-border">
+                    {admins.map((a) => (
+                      <tr key={a.id} className="bg-background transition-colors hover:bg-card/50">
+                        <td className="px-4 py-3 text-foreground">{a.nome}</td>
+                        <td className="px-4 py-3 text-muted">{a.email}</td>
+                        <td className="px-4 py-3 text-muted">
+                          {a.created_at ? new Date(a.created_at).toLocaleDateString('pt-BR') : '—'}
+                        </td>
+                        <td className="px-4 py-3">
+                          <button
+                            onClick={() => handleRemover(a.id, a.email)}
+                            className="rounded-md p-1.5 text-muted transition-colors hover:bg-danger/10 hover:text-danger"
+                            title="Remover admin"
+                          >
+                            <Trash2 className="size-4" />
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             </div>
-          </div>
+
+            {/* Mobile: card view */}
+            <div className="md:hidden divide-y divide-border rounded-xl border border-border">
+              {admins.map((a) => (
+                <div key={a.id} className="space-y-2 p-4">
+                  <div className="font-medium text-foreground">{a.nome}</div>
+                  <div className="space-y-1 text-sm text-muted">
+                    <div className="truncate">{a.email}</div>
+                    <div>
+                      {a.created_at ? `Desde ${new Date(a.created_at).toLocaleDateString('pt-BR')}` : '—'}
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => handleRemover(a.id, a.email)}
+                    className="inline-flex min-h-[44px] w-full items-center justify-center gap-2 rounded-lg border border-danger/30 px-3 text-sm text-danger transition-colors hover:bg-danger/5"
+                  >
+                    <Trash2 className="size-4" aria-hidden="true" />
+                    Remover admin
+                  </button>
+                </div>
+              ))}
+            </div>
+          </>
         )}
       </AdminSectionCard>
     </div>

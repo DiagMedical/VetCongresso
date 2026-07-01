@@ -154,46 +154,68 @@ export function WhatsAppConfig() {
         {mensagens.length === 0 ? (
           <p className="py-8 text-center text-sm text-muted">Nenhuma mensagem enviada ainda.</p>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full min-w-[720px] text-sm">
-              <thead className="bg-card">
-                <tr className="text-left text-muted">
-                  <th className="px-4 py-3 font-medium">Data</th>
-                  <th className="px-4 py-3 font-medium">Telefone</th>
-                  <th className="px-4 py-3 font-medium">Tipo</th>
-                  <th className="px-4 py-3 font-medium">Status</th>
-                  <th className="px-4 py-3 font-medium">Mensagem</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-border">
-                {mensagens.map((m) => (
-                  <tr key={m.id} className="bg-background transition-colors hover:bg-card/50">
-                    <td className="px-4 py-3 text-xs text-muted">
-                      {new Date(m.created_at).toLocaleString('pt-BR')}
-                    </td>
-                    <td className="px-4 py-3 text-foreground">{m.telefone}</td>
-                    <td className="px-4 py-3">
-                      <span className="rounded-full bg-muted/20 px-2 py-0.5 text-xs text-muted">
-                        {m.tipo}
-                      </span>
-                    </td>
-                    <td className="px-4 py-3">
-                      {m.sucesso ? (
-                        <span className="text-xs text-success">Enviado</span>
-                      ) : (
-                        <span className="text-xs text-danger" title={m.erro ?? ''}>
-                          Falhou
-                        </span>
-                      )}
-                    </td>
-                    <td className="max-w-xs truncate px-4 py-3 text-xs text-muted" title={m.mensagem}>
-                      {m.mensagem}
-                    </td>
+          <>
+            {/* Desktop: tabela */}
+            <div className="hidden md:block overflow-x-auto">
+              <table className="w-full min-w-[720px] text-sm">
+                <thead className="bg-card">
+                  <tr className="text-left text-muted">
+                    <th className="px-4 py-3 font-medium">Data</th>
+                    <th className="px-4 py-3 font-medium">Telefone</th>
+                    <th className="px-4 py-3 font-medium">Tipo</th>
+                    <th className="px-4 py-3 font-medium">Status</th>
+                    <th className="px-4 py-3 font-medium">Mensagem</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                </thead>
+                <tbody className="divide-y divide-border">
+                  {mensagens.map((m) => (
+                    <tr key={m.id} className="bg-background transition-colors hover:bg-card/50">
+                      <td className="px-4 py-3 text-xs text-muted">
+                        {new Date(m.created_at).toLocaleString('pt-BR')}
+                      </td>
+                      <td className="px-4 py-3 text-foreground">{m.telefone}</td>
+                      <td className="px-4 py-3">
+                        <span className="rounded-full bg-muted/20 px-2 py-0.5 text-xs text-muted">
+                          {m.tipo}
+                        </span>
+                      </td>
+                      <td className="px-4 py-3">
+                        {m.sucesso ? (
+                          <span className="text-xs text-success">Enviado</span>
+                        ) : (
+                          <span className="text-xs text-danger" title={m.erro ?? ''}>
+                            Falhou
+                          </span>
+                        )}
+                      </td>
+                      <td className="max-w-xs truncate px-4 py-3 text-xs text-muted" title={m.mensagem}>
+                        {m.mensagem}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Mobile: card view */}
+            <div className="md:hidden divide-y divide-border">
+              {mensagens.map((m) => (
+                <div key={m.id} className="space-y-1.5 p-4">
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="rounded-full bg-muted/20 px-2 py-0.5 text-xs text-muted">{m.tipo}</span>
+                    {m.sucesso ? (
+                      <span className="text-xs text-success">Enviado</span>
+                    ) : (
+                      <span className="text-xs text-danger" title={m.erro ?? ''}>Falhou</span>
+                    )}
+                  </div>
+                  <div className="text-sm text-foreground">{m.telefone}</div>
+                  <div className="truncate text-xs text-muted" title={m.mensagem}>{m.mensagem}</div>
+                  <div className="text-xs text-muted">{new Date(m.created_at).toLocaleString('pt-BR')}</div>
+                </div>
+              ))}
+            </div>
+          </>
         )}
       </AdminSectionCard>
     </div>

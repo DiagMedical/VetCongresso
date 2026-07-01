@@ -153,46 +153,73 @@ export function SorteioAdmin({ leads }: Props) {
             <p className="text-sm text-muted">Nenhum cadastro no sorteio ainda.</p>
           </div>
         ) : (
-          <div className="overflow-hidden rounded-xl border border-border">
-            <div className="overflow-x-auto">
-              <table className="w-full min-w-[760px] text-sm">
-                <caption className="sr-only">Leads do sorteio</caption>
-                <thead className="bg-card">
-                  <tr className="text-left text-muted">
-                    <th scope="col" className="px-4 py-3 font-medium">Nome</th>
-                    <th scope="col" className="px-4 py-3 font-medium">WhatsApp</th>
-                    <th scope="col" className="px-4 py-3 font-medium">Email</th>
-                    <th scope="col" className="px-4 py-3 font-medium">Data</th>
-                    <th scope="col" className="px-4 py-3 font-medium">Ação</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-border">
-                  {filtered.map((l) => (
-                    <tr key={l.id} className="bg-background transition-colors hover:bg-card/50">
-                      <td className="px-4 py-3 font-medium text-foreground">{l.nome}</td>
-                      <td className="px-4 py-3 text-muted">{l.whatsapp}</td>
-                      <td className="px-4 py-3 text-muted">{l.email}</td>
-                      <td className="px-4 py-3 text-xs text-muted">
-                        {new Date(l.created_at).toLocaleString('pt-BR')}
-                      </td>
-                      <td className="px-4 py-3">
-                        <button
-                          onClick={() => handleDelete(l)}
-                          disabled={deletingId === l.id}
-                          className="inline-flex min-h-[36px] items-center gap-1 rounded-md px-3 py-2 text-xs text-danger transition-colors hover:bg-danger/10 disabled:opacity-50"
-                          title="Remover da lista"
-                          aria-label={`Remover ${l.nome} da lista de sorteio`}
-                        >
-                          <Trash2 className="size-3.5" />
-                          {deletingId === l.id ? 'Removendo...' : 'Excluir'}
-                        </button>
-                      </td>
+          <>
+            {/* Desktop: tabela */}
+            <div className="hidden md:block overflow-hidden rounded-xl border border-border">
+              <div className="overflow-x-auto">
+                <table className="w-full min-w-[760px] text-sm">
+                  <caption className="sr-only">Leads do sorteio</caption>
+                  <thead className="bg-card">
+                    <tr className="text-left text-muted">
+                      <th scope="col" className="px-4 py-3 font-medium">Nome</th>
+                      <th scope="col" className="px-4 py-3 font-medium">WhatsApp</th>
+                      <th scope="col" className="px-4 py-3 font-medium">Email</th>
+                      <th scope="col" className="px-4 py-3 font-medium">Data</th>
+                      <th scope="col" className="px-4 py-3 font-medium">Ação</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody className="divide-y divide-border">
+                    {filtered.map((l) => (
+                      <tr key={l.id} className="bg-background transition-colors hover:bg-card/50">
+                        <td className="px-4 py-3 font-medium text-foreground">{l.nome}</td>
+                        <td className="px-4 py-3 text-muted">{l.whatsapp}</td>
+                        <td className="px-4 py-3 text-muted">{l.email}</td>
+                        <td className="px-4 py-3 text-xs text-muted">
+                          {new Date(l.created_at).toLocaleString('pt-BR')}
+                        </td>
+                        <td className="px-4 py-3">
+                          <button
+                            onClick={() => handleDelete(l)}
+                            disabled={deletingId === l.id}
+                            className="inline-flex min-h-[36px] items-center gap-1 rounded-md px-3 py-2 text-xs text-danger transition-colors hover:bg-danger/10 disabled:opacity-50"
+                            title="Remover da lista"
+                            aria-label={`Remover ${l.nome} da lista de sorteio`}
+                          >
+                            <Trash2 className="size-3.5" />
+                            {deletingId === l.id ? 'Removendo...' : 'Excluir'}
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             </div>
-          </div>
+
+            {/* Mobile: card view */}
+            <div className="md:hidden divide-y divide-border rounded-xl border border-border">
+              {filtered.map((l) => (
+                <div key={l.id} className="space-y-2 p-4">
+                  <div className="font-medium text-foreground">{l.nome}</div>
+                  <div className="space-y-1 text-sm text-muted">
+                    <div className="truncate">{l.whatsapp}</div>
+                    <div className="truncate">{l.email}</div>
+                    <div className="text-xs">
+                      {new Date(l.created_at).toLocaleString('pt-BR')}
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => handleDelete(l)}
+                    disabled={deletingId === l.id}
+                    className="inline-flex min-h-[44px] w-full items-center justify-center gap-2 rounded-lg border border-danger/30 px-3 text-sm text-danger transition-colors hover:bg-danger/5 disabled:opacity-50"
+                  >
+                    <Trash2 className="size-4" aria-hidden="true" />
+                    {deletingId === l.id ? 'Removendo...' : 'Excluir'}
+                  </button>
+                </div>
+              ))}
+            </div>
+          </>
         )}
       </AdminSectionCard>
     </div>
