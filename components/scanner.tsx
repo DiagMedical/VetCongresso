@@ -281,7 +281,7 @@ export function Scanner({ onScan }: ScannerProps) {
           ref={stopBtnRef}
           onClick={stopCamera}
           aria-label="Parar leitura de QR Code"
-          className="rounded-md bg-danger px-4 py-2 text-sm font-medium text-danger-foreground transition-all hover:brightness-110"
+          className="min-h-[44px] rounded-md bg-danger px-4 py-2 text-sm font-medium text-danger-foreground transition-all hover:brightness-110"
         >
           Parar Scanner
         </button>
