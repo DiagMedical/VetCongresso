@@ -40,7 +40,7 @@ export async function QrTicket({ inscrito }: QrTicketProps) {
       ) : qrDataUrl ? (
         <div className="rounded-lg border border-border bg-white p-2">
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={qrDataUrl} alt="QR Code de check-in" className="size-[260px]" style={{ imageRendering: 'pixelated' }} />
+          <img src={qrDataUrl} alt="QR Code de check-in" className="w-full max-w-[260px] aspect-square" style={{ imageRendering: 'pixelated' }} />
         </div>
       ) : null}
 

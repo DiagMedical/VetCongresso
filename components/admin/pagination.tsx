@@ -54,7 +54,7 @@ export function AdminPagination({
           type="button"
           onClick={() => onPageChange(Math.max(1, currentPage - 1))}
           disabled={currentPage === 1}
-          className="inline-flex min-h-[36px] items-center gap-1 rounded-md border border-border px-3 py-2 text-xs text-foreground transition-colors hover:bg-card disabled:cursor-not-allowed disabled:opacity-40"
+          className="inline-flex min-h-[44px] items-center gap-1 rounded-md border border-border px-3 py-2 text-xs text-foreground transition-colors hover:bg-card disabled:cursor-not-allowed disabled:opacity-40"
         >
           <ChevronLeft className="size-4" />
           Anterior
@@ -67,7 +67,7 @@ export function AdminPagination({
               type="button"
               onClick={() => onPageChange(page)}
               aria-current={page === currentPage ? 'page' : undefined}
-              className={`min-h-[36px] min-w-9 rounded-md border px-3 py-2 text-xs transition-colors ${
+              className={`min-h-[44px] min-w-9 rounded-md border px-3 py-2 text-xs transition-colors ${
                 page === currentPage
                   ? 'border-primary bg-primary text-primary-foreground'
                   : 'border-border text-muted hover:bg-card hover:text-foreground'
@@ -82,7 +82,7 @@ export function AdminPagination({
           type="button"
           onClick={() => onPageChange(Math.min(totalPages, currentPage + 1))}
           disabled={currentPage === totalPages}
-          className="inline-flex min-h-[36px] items-center gap-1 rounded-md border border-border px-3 py-2 text-xs text-foreground transition-colors hover:bg-card disabled:cursor-not-allowed disabled:opacity-40"
+          className="inline-flex min-h-[44px] items-center gap-1 rounded-md border border-border px-3 py-2 text-xs text-foreground transition-colors hover:bg-card disabled:cursor-not-allowed disabled:opacity-40"
         >
           Próxima
           <ChevronRight className="size-4" />
