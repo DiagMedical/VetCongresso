@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { Download, Inbox, Search, ArrowUpDown, ArrowUp, ArrowDown, Trash2 } from 'lucide-react'
+import { Download, Inbox, Search, ArrowUpDown, ArrowUp, ArrowDown, Trash2, Mail, Phone, CalendarDays } from 'lucide-react'
 import { toast } from 'sonner'
 import { AdminPagination } from '@/components/admin/pagination'
 import { AdminSectionCard } from '@/components/admin/section-card'
@@ -228,7 +228,9 @@ export function LeadsTable({ leads, palestras, totalCount, limiteAtingido }: Lea
             </p>
           </div>
         ) : (
-          <div className="overflow-hidden rounded-2xl">
+          <>
+          {/* Desktop: tabela */}
+          <div className="hidden md:block overflow-hidden rounded-2xl">
             <div className="overflow-x-auto">
               <table className="w-full min-w-[980px] text-sm" aria-label="Lista de leads">
                 <caption className="sr-only">Lista de leads cadastrados</caption>
@@ -299,6 +301,57 @@ export function LeadsTable({ leads, palestras, totalCount, limiteAtingido }: Lea
               </table>
             </div>
           </div>
+
+          {/* Mobile: card view */}
+          <div className="md:hidden divide-y divide-border">
+            {visiveis.map((i) => (
+              <div key={i.id} className="space-y-3 p-4">
+                {/* Nome + Status */}
+                <div className="flex items-center justify-between gap-2">
+                  <span className="font-medium text-foreground">{i.nome}</span>
+                  <span className={`shrink-0 rounded-full px-2 py-0.5 text-xs font-medium ${statusColors[i.status] ?? 'bg-muted/30 text-muted'}`}>
+                    {statusLabels[i.status] ?? i.status}
+                  </span>
+                </div>
+                {/* Contato */}
+                <div className="space-y-1">
+                  <div className="flex items-center gap-2 text-sm text-muted">
+                    <Mail className="size-3.5 shrink-0" aria-hidden="true" />
+                    <span className="truncate">{i.email}</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-sm text-muted">
+                    <Phone className="size-3.5 shrink-0" aria-hidden="true" />
+                    <span>{i.telefone}</span>
+                  </div>
+                </div>
+                {/* Palestra + Origem */}
+                <div className="flex items-center gap-2 flex-wrap">
+                  <span className="text-sm text-foreground">
+                    {i.palestra?.tema ?? (i.source === 'sorteio' ? 'Sorteio Powerbank' : '—')}
+                  </span>
+                  <span className="rounded-full bg-card px-2 py-0.5 text-xs font-medium text-muted">
+                    {i.source === 'sorteio' ? 'Sorteio' : 'Reserva'}
+                  </span>
+                </div>
+                {/* Data + Excluir */}
+                <div className="flex items-center justify-between gap-3">
+                  <div className="flex items-center gap-1.5 text-xs text-muted">
+                    <CalendarDays className="size-3.5" aria-hidden="true" />
+                    {formatDate(i.created_at)}
+                  </div>
+                  <button
+                    onClick={() => handleDelete(i.id, i.nome)}
+                    className="inline-flex min-h-[44px] items-center gap-2 rounded-lg border border-border px-3 text-sm text-muted transition-colors hover:bg-danger/10 hover:text-danger"
+                    aria-label={`Excluir ${i.nome}`}
+                  >
+                    <Trash2 className="size-4" aria-hidden="true" />
+                    Excluir
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+          </>
         )}
       </AdminSectionCard>
 
