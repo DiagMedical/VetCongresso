@@ -9,6 +9,7 @@ export function formatDate(date: string | Date) {
   return new Intl.DateTimeFormat('pt-BR', {
     dateStyle: 'long',
     timeStyle: 'short',
+    timeZone: 'America/Sao_Paulo',
   }).format(new Date(date))
 }
 
@@ -16,6 +17,7 @@ export function formatTime(date: string) {
   return new Intl.DateTimeFormat('pt-BR', {
     hour: '2-digit',
     minute: '2-digit',
+    timeZone: 'America/Sao_Paulo',
   }).format(new Date(date))
 }
 
@@ -31,5 +33,6 @@ export function formatDuracao(inicio: string, fim: string): string {
 export function formatDateShort(date: string | Date) {
   return new Intl.DateTimeFormat('pt-BR', {
     dateStyle: 'long',
+    timeZone: 'America/Sao_Paulo',
   }).format(new Date(date))
 }

@@ -661,39 +661,54 @@ This version has breaking changes â€” APIs, conventions, and file structure may 
 <!-- END:opencode-session -->
 
 <!-- BEGIN:opencode-session -->
-## Session — 29/06/2026 (2)
+## Session ï¿½ 29/06/2026 (2)
 
-### Revisão Final Pré-evento — Scanner, Nav, Ver Inscritos
+### Revisï¿½o Final Prï¿½-evento ï¿½ Scanner, Nav, Ver Inscritos
 
 **Problemas resolvidos:**
 
-1. **SheetClose no nav admin** — ender={<Link.../>} não funciona no Base UI (ender espera função, não elemento). Corrigido para <SheetClose><Link ...>...</Link></SheetClose>.
+1. **SheetClose no nav admin** ï¿½ ender={<Link.../>} nï¿½o funciona no Base UI (ender espera funï¿½ï¿½o, nï¿½o elemento). Corrigido para <SheetClose><Link ...>...</Link></SheetClose>.
 
-2. **DashboardFiltroData sem Suspense** — Next.js 16 exige Suspense para componentes que usam useSearchParams. Envolto em <Suspense> no pp/admin/page.tsx.
+2. **DashboardFiltroData sem Suspense** ï¿½ Next.js 16 exige Suspense para componentes que usam useSearchParams. Envolto em <Suspense> no pp/admin/page.tsx.
 
-3. **Lint errors** — (error as any).message corrigido para error instanceof Error ? error.message : 'Erro inesperado'. s any na query substituído por tipo inline PalestraInfo.
+3. **Lint errors** ï¿½ (error as any).message corrigido para error instanceof Error ? error.message : 'Erro inesperado'. s any na query substituï¿½do por tipo inline PalestraInfo.
 
-4. **Scanner** — Crop central + inversionAttempts: 'attemptBoth' + setTimeout(500) + canvas hidden. Versão 410bb4d que efetivamente leu QR. Removido ormat() (data crua). Adicionado ScanErrorBoundary.
+4. **Scanner** ï¿½ Crop central + inversionAttempts: 'attemptBoth' + setTimeout(500) + canvas hidden. Versï¿½o 410bb4d que efetivamente leu QR. Removido ormat() (data crua). Adicionado ScanErrorBoundary.
 
-5. **Excluir Inscrito** — Hard delete via DELETE FROM inscritos. Botão ??? na leads-table.tsx. cancelarPorFalta modificado para deletar se status check-in.
+5. **Excluir Inscrito** ï¿½ Hard delete via DELETE FROM inscritos. Botï¿½o ??? na leads-table.tsx. cancelarPorFalta modificado para deletar se status check-in.
 
-6. **Ver Inscritos por Palestra** — VerInscritosDialog com tabela (Nome, Email, Telefone, Status, Data). Botão Users na tabela de palestras.
+6. **Ver Inscritos por Palestra** ï¿½ VerInscritosDialog com tabela (Nome, Email, Telefone, Status, Data). Botï¿½o Users na tabela de palestras.
 
-7. **Liberar vaga** — Filtro inclui check-in além de confirmado.
+7. **Liberar vaga** ï¿½ Filtro inclui check-in alï¿½m de confirmado.
 
-8. **setState síncrono em effect** — Resolvido com key={palestraId} forçando remontagem.
+8. **setState sï¿½ncrono em effect** ï¿½ Resolvido com key={palestraId} forï¿½ando remontagem.
 
 **Arquivos alterados/novos:**
-- components/admin/nav.tsx — SheetClose corrigido
-- pp/admin/page.tsx — Suspense no DashboardFiltroData
-- pp/admin/error.tsx — lint fix
-- lib/actions/admin.ts — lint fix (type inline), excluirInscrito, cancelarPorFalta ampliado
-- components/admin/leads-table.tsx — coluna Excluir
-- components/admin/liberar-vaga-dialog.tsx — filtro inclui check-in
+- components/admin/nav.tsx ï¿½ SheetClose corrigido
+- pp/admin/page.tsx ï¿½ Suspense no DashboardFiltroData
+- pp/admin/error.tsx ï¿½ lint fix
+- lib/actions/admin.ts ï¿½ lint fix (type inline), excluirInscrito, cancelarPorFalta ampliado
+- components/admin/leads-table.tsx ï¿½ coluna Excluir
+- components/admin/liberar-vaga-dialog.tsx ï¿½ filtro inclui check-in
 - components/admin/ver-inscritos-dialog.tsx (novo)
-- pp/admin/palestras/palestras-client.tsx — botão Ver Inscritos + key
-- components/scanner.tsx — restaurado versão 410bb4d
+- pp/admin/palestras/palestras-client.tsx ï¿½ botï¿½o Ver Inscritos + key
+- components/scanner.tsx ï¿½ restaurado versï¿½o 410bb4d
 
 **Commits:**
-- 174ab2 — "Fix nav SheetClose, Suspense no filtro data, VerInscritosDialog, lint errors"
+- 174ab2 ï¿½ "Fix nav SheetClose, Suspense no filtro data, VerInscritosDialog, lint errors"
+<!-- END:opencode-session -->
+
+<!-- BEGIN:opencode-session -->
+## Session â€” 01/07/2026
+
+### Fix Fuso HorÃ¡rio â€” timeZone America/Sao_Paulo
+
+**Problema:** HorÃ¡rios das palestras na pÃ¡gina pÃºblica (`/palestras, /reserva/[id]`, ticket, email) mostravam 3h a mais que o admin. O `formatTime()` rodava no servidor (Vercel UTC) e `Intl.DateTimeFormat` sem `timeZone` usava UTC do servidor.
+
+**SoluÃ§Ã£o:** `timeZone: 'America/Sao_Paulo'` adicionado em `formatTime`, `formatDate`, `formatDateShort` no `lib/utils.ts` â†’ corrige todos os server components de uma vez. Mesmo fix aplicado no `toLocaleTimeString` do `palestras-client.tsx` para consistÃªncia.
+
+**Arquivos alterados:**
+- `lib/utils.ts` â€” timeZone nos 3 formatadores
+- `app/admin/palestras/palestras-client.tsx` â€” timeZone no toLocaleTimeString
+- `lib/__tests__/utils.test.ts` â€” novo caso testando UTC â†’ BRT
 <!-- END:opencode-session -->

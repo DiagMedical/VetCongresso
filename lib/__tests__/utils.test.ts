@@ -24,8 +24,13 @@ describe('formatDate', () => {
 })
 
 describe('formatTime', () => {
-  it('formats time from ISO string', () => {
+  it('formats time from ISO string with offset', () => {
     const result = formatTime('2026-07-01T09:00:00-03:00')
+    expect(result).toBe('09:00')
+  })
+
+  it('converts UTC to BRT (America/Sao_Paulo)', () => {
+    const result = formatTime('2026-07-01T12:00:00Z')
     expect(result).toBe('09:00')
   })
 })

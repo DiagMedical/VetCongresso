@@ -149,7 +149,7 @@ export function PalestrasClient({ palestras }: PalestrasClientProps) {
                 {palestras.map((p) => {
                   const inicio = new Date(p.horario_inicio)
                   const fim = new Date(p.horario_fim)
-                  const horario = `${inicio.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })} - ${fim.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}`
+                  const horario = `${inicio.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit', timeZone: 'America/Sao_Paulo' })} - ${fim.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit', timeZone: 'America/Sao_Paulo' })}`
 
                   return (
                     <tr key={p.id} className="bg-background hover:bg-card/50 transition-colors">
@@ -251,7 +251,7 @@ export function PalestrasClient({ palestras }: PalestrasClientProps) {
             {palestras.map((p) => {
               const inicio = new Date(p.horario_inicio)
               const fim = new Date(p.horario_fim)
-              const horario = `${inicio.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })} - ${fim.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}`
+              const horario = `${inicio.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit', timeZone: 'America/Sao_Paulo' })} - ${fim.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit', timeZone: 'America/Sao_Paulo' })}`
 
               return (
                 <div key={p.id} className="space-y-3 rounded-lg border border-border bg-background p-4">
