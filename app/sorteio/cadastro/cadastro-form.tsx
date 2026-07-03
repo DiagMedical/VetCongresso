@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { Gift, CheckCircle2 } from 'lucide-react'
 import { inscreverSorteio } from '@/lib/actions/sorteio'
+import { EmailInput } from '@/components/email-input'
 
 export function CadastroSorteio() {
   const [step, setStep] = useState<'form' | 'success'>('form')
@@ -71,13 +72,12 @@ export function CadastroSorteio() {
 
       <div>
         <label htmlFor="email" className="mb-1 block text-xs text-muted">E-mail</label>
-        <input
+        <EmailInput
           id="email"
           name="email"
-          type="email"
           required
-          className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground"
           placeholder="seu@email.com"
+          className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground"
         />
       </div>
 

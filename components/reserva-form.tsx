@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import { Loader2 } from 'lucide-react'
 import { reservaSchema } from '@/lib/schemas'
 import { toast } from 'sonner'
+import { EmailInput } from '@/components/email-input'
 
 interface ReservaFormProps {
   palestra: {
@@ -138,15 +139,13 @@ export function ReservaForm({ palestra }: ReservaFormProps) {
         <label htmlFor="email" className="text-sm font-medium text-foreground">
           E-mail <span aria-hidden="true">*</span>
         </label>
-        <input
+        <EmailInput
           id="email"
           name="email"
-          type="email"
-          defaultValue=""
           autoComplete="email"
-          onBlur={(e) => validateField('email', e.target.value)}
-          aria-invalid={!!fieldErrors.email}
-          aria-describedby={fieldErrors.email ? getErrorId('email') : undefined}
+          onBlur={(v) => validateField('email', v)}
+          error={fieldErrors.email}
+          errorId={getErrorId('email')}
           className={inputClass('email')}
         />
         {fieldErrors.email && (
