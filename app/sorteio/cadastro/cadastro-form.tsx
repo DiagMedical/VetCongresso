@@ -85,7 +85,6 @@ export function CadastroSorteio({ vendedores = [] }: { vendedores?: string[] }) 
 
       {vendedores.length > 0 && (
         <div className="space-y-2">
-          <label className="text-xs text-muted">Vendedor</label>
           <div className="flex flex-wrap gap-2">
             {vendedores.map((nome) => (
               <button
