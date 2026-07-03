@@ -79,7 +79,7 @@ export default async function LeadsPage() {
 
   leads.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
 
-  const totalCount = (count ?? 0) + (sorteioLeads?.length ?? 0)
+  const totalCount = leads.length
   const limiteAtingido = (count ?? 0) > 1000
 
   let vendedores: string[] = []
