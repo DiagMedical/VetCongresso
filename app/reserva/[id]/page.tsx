@@ -3,6 +3,7 @@ import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
 import { ReservaForm } from '@/components/reserva-form'
 import { formatTime } from '@/lib/utils'
+import { listarVendedores } from '@/lib/actions/admin'
 import { ArrowLeft } from 'lucide-react'
 
 export default async function ReservaPage(props: {
@@ -36,6 +37,9 @@ export default async function ReservaPage(props: {
 
   if (!palestra) notFound()
 
+  let vendedores: string[] = []
+  try { vendedores = await listarVendedores() } catch {}
+
   const palestraComVagas = {
     ...palestra,
     vagas_restantes: vagas?.vagas_restantes ?? palestra.vagas_totais,
@@ -61,7 +65,7 @@ export default async function ReservaPage(props: {
           </p>
         </div>
 
-        <ReservaForm palestra={palestraComVagas} />
+        <ReservaForm palestra={palestraComVagas} vendedores={vendedores} />
       </div>
     </div>
   )

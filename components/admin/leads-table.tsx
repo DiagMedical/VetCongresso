@@ -14,6 +14,7 @@ export type LeadRow = {
   nome: string
   email: string
   telefone: string
+  vendedor?: string
   created_at: string
   origem: string
   status: StatusInscricao | 'sorteio'
@@ -27,6 +28,7 @@ interface LeadsTableProps {
   palestras: { id: string; tema: string }[]
   totalCount: number
   limiteAtingido: boolean
+  vendedores?: string[]
 }
 
 function SetaIcon({ ordem, col }: { ordem: { col: string; dir: string }; col: string }) {
@@ -36,11 +38,12 @@ function SetaIcon({ ordem, col }: { ordem: { col: string; dir: string }; col: st
     : <ArrowDown className="ml-1 inline size-3 text-primary" />
 }
 
-export function LeadsTable({ leads, palestras, totalCount, limiteAtingido }: LeadsTableProps) {
+export function LeadsTable({ leads, palestras, totalCount, limiteAtingido, vendedores = [] }: LeadsTableProps) {
   const router = useRouter()
   const [busca, setBusca] = useState('')
   const [filtroStatus, setFiltroStatus] = useState<string>('')
   const [filtroPalestra, setFiltroPalestra] = useState('')
+  const [filtroVendedor, setFiltroVendedor] = useState('')
   const [ordem, setOrdem] = useState<{ col: string; dir: 'asc' | 'desc' }>({ col: 'created_at', dir: 'desc' })
   const [currentPage, setCurrentPage] = useState(1)
   const pageSize = 15
@@ -73,6 +76,7 @@ export function LeadsTable({ leads, palestras, totalCount, limiteAtingido }: Lea
       }
       if (filtroStatus && i.status !== filtroStatus) return false
       if (filtroPalestra && i.palestra_id !== filtroPalestra) return false
+      if (filtroVendedor && i.vendedor !== filtroVendedor) return false
       return true
     })
 
@@ -99,7 +103,7 @@ export function LeadsTable({ leads, palestras, totalCount, limiteAtingido }: Lea
     })
 
     return lista
-  }, [leads, busca, filtroStatus, filtroPalestra, ordem])
+  }, [leads, busca, filtroStatus, filtroPalestra, filtroVendedor, ordem])
 
   const totalPages = Math.max(1, Math.ceil(filtrados.length / pageSize))
   const paginaAtual = Math.min(currentPage, totalPages)
@@ -185,6 +189,20 @@ export function LeadsTable({ leads, palestras, totalCount, limiteAtingido }: Lea
             ))}
           </select>
 
+          {vendedores.length > 0 && (
+            <select
+              value={filtroVendedor}
+              onChange={(e) => setFiltroVendedor(e.target.value)}
+              aria-label="Filtrar por vendedor"
+              className="h-11 w-full rounded-xl border border-border bg-background px-3 text-sm text-foreground xl:w-auto"
+            >
+              <option value="">Todos os vendedores</option>
+              {vendedores.map((v) => (
+                <option key={v} value={v}>{v}</option>
+              ))}
+            </select>
+          )}
+
           <div className="flex flex-wrap gap-2">
             <button
               onClick={() => handleExport('xlsx')}
@@ -247,6 +265,7 @@ export function LeadsTable({ leads, palestras, totalCount, limiteAtingido }: Lea
                       </button>
                     </th>
                     <th scope="col" className="px-4 py-3 font-medium">Telefone</th>
+                    <th scope="col" className="px-4 py-3 font-medium">Vendedor</th>
                     <th scope="col" className="px-4 py-3 font-medium">Palestra</th>
                     <th scope="col" className="px-4 py-3 font-medium">
                       <button onClick={() => toggleOrdem('status')} className="flex items-center gap-1 transition-colors hover:text-foreground">
@@ -272,6 +291,7 @@ export function LeadsTable({ leads, palestras, totalCount, limiteAtingido }: Lea
                       <td className="px-4 py-3 font-medium text-foreground">{i.nome}</td>
                       <td className="px-4 py-3 text-muted">{i.email}</td>
                       <td className="px-4 py-3 text-muted">{i.telefone}</td>
+                      <td className="px-4 py-3 text-muted">{i.vendedor || '—'}</td>
                       <td className="px-4 py-3 text-foreground">
                         {i.palestra?.tema ?? (i.source === 'sorteio' ? 'Sorteio Powerbank' : '—')}
                       </td>
@@ -324,6 +344,13 @@ export function LeadsTable({ leads, palestras, totalCount, limiteAtingido }: Lea
                     <span>{i.telefone}</span>
                   </div>
                 </div>
+                {/* Vendedor */}
+                {i.vendedor && (
+                  <div className="flex items-center gap-2 text-sm text-muted">
+                    <span className="font-medium">Vendedor:</span>
+                    <span>{i.vendedor}</span>
+                  </div>
+                )}
                 {/* Palestra + Origem */}
                 <div className="flex items-center gap-2 flex-wrap">
                   <span className="text-sm text-foreground">

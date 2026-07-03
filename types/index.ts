@@ -24,6 +24,7 @@ export interface Inscrito {
   telefone: string
   status: StatusInscricao
   origem: OrigemInscricao
+  vendedor?: string | null
   checkin_at: string | null
   cancelado_at: string | null
   created_at: string
@@ -53,4 +54,5 @@ export interface ReservaFormData {
   email: string
   telefone: string
   aceite_lgpd: boolean
+  vendedor?: string
 }

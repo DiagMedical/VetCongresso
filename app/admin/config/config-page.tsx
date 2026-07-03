@@ -1,15 +1,17 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Mail, RefreshCw } from 'lucide-react'
+import { Mail, RefreshCw, X, UserPlus, Users } from 'lucide-react'
 import { getConfiguracoes, salvarConfiguracao } from '@/lib/actions/admin'
 import { EMAIL_CONFIG_KEYS, getEmailConfig } from '@/lib/email/config'
 import { AdminSectionCard } from '@/components/admin/section-card'
+import { toast } from 'sonner'
 
 export function ConfigPage() {
   const [config, setConfig] = useState<Record<string, string>>({})
   const [loading, setLoading] = useState(true)
   const [salvando, setSalvando] = useState<string | null>(null)
+  const [novoVendedor, setNovoVendedor] = useState('')
 
   useEffect(() => {
     load()
@@ -29,7 +31,38 @@ export function ConfigPage() {
     setSalvando(null)
   }
 
+  function getVendedores(): string[] {
+    try {
+      const raw = config['vendedores']
+      if (!raw) return []
+      const parsed = JSON.parse(raw)
+      return Array.isArray(parsed) ? parsed : []
+    } catch {
+      return []
+    }
+  }
+
+  async function adicionarVendedor() {
+    const nome = novoVendedor.trim()
+    if (!nome) return
+    const atual = getVendedores()
+    if (atual.includes(nome)) {
+      toast.error('Vendedor já cadastrado')
+      return
+    }
+    await handleSave('vendedores', JSON.stringify([...atual, nome]))
+    setNovoVendedor('')
+    toast.success('Vendedor adicionado!')
+  }
+
+  async function removerVendedor(nome: string) {
+    const atual = getVendedores()
+    await handleSave('vendedores', JSON.stringify(atual.filter((v) => v !== nome)))
+    toast.success('Vendedor removido!')
+  }
+
   const emailConfig = getEmailConfig(config)
+  const vendedores = getVendedores()
 
   if (loading) {
     return (
@@ -92,6 +125,55 @@ export function ConfigPage() {
               </div>
             </div>
           ))}
+        </div>
+      </AdminSectionCard>
+
+      <AdminSectionCard
+        title="Vendedores"
+        description="Gerencie a lista de vendedores que aparecerá como opção nos formulários de cadastro."
+        icon={<Users className="size-4" aria-hidden="true" />}
+      >
+        <div className="space-y-4">
+          <div className="flex flex-col gap-2 md:flex-row">
+            <input
+              type="text"
+              value={novoVendedor}
+              onChange={(e) => setNovoVendedor(e.target.value)}
+              onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); adicionarVendedor() } }}
+              className="h-11 min-w-0 flex-1 rounded-xl border border-border bg-background px-3 text-sm text-foreground"
+              placeholder="Nome do vendedor"
+            />
+            <button
+              onClick={adicionarVendedor}
+              disabled={!novoVendedor.trim() || salvando === 'vendedores'}
+              className="inline-flex h-11 items-center justify-center gap-1 rounded-xl bg-primary px-4 text-xs text-primary-foreground transition-all hover:brightness-110 disabled:opacity-50"
+            >
+              <UserPlus className="size-4" aria-hidden="true" />
+              Adicionar
+            </button>
+          </div>
+
+          {vendedores.length > 0 ? (
+            <div className="flex flex-wrap gap-2">
+              {vendedores.map((nome) => (
+                <div
+                  key={nome}
+                  className="inline-flex items-center gap-1.5 rounded-full bg-card px-3 py-1.5 text-sm font-medium text-foreground ring-1 ring-border"
+                >
+                  {nome}
+                  <button
+                    onClick={() => removerVendedor(nome)}
+                    className="rounded-full p-0.5 text-muted transition-colors hover:bg-danger/10 hover:text-danger"
+                    aria-label={`Remover ${nome}`}
+                  >
+                    <X className="size-3.5" />
+                  </button>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p className="text-sm text-muted">Nenhum vendedor cadastrado.</p>
+          )}
         </div>
       </AdminSectionCard>
 

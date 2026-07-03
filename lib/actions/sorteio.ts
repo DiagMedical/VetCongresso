@@ -9,10 +9,11 @@ export interface SorteioLead {
   nome: string
   whatsapp: string
   email: string
+  vendedor?: string | null
   created_at: string
 }
 
-export async function inscreverSorteio(data: { nome: string; whatsapp: string; email: string }) {
+export async function inscreverSorteio(data: { nome: string; whatsapp: string; email: string; vendedor?: string }) {
   const parsed = sorteioSchema.safeParse(data)
   if (!parsed.success) {
     const msgs = parsed.error.issues.map((i) => i.message).join('; ')
@@ -33,6 +34,7 @@ export async function inscreverSorteio(data: { nome: string; whatsapp: string; e
     nome,
     whatsapp,
     email,
+    vendedor: data.vendedor ?? null,
   })
 
   if (errLead) {
@@ -64,7 +66,7 @@ export async function removerSorteioLead(id: string) {
   if (error) throw new Error(error.message)
 }
 
-export async function exportarSorteioLeads(): Promise<{ nome: string; whatsapp: string; email: string; data: string }[]> {
+export async function exportarSorteioLeads(): Promise<{ nome: string; whatsapp: string; email: string; vendedor: string; data: string }[]> {
   const supabase = await createClient()
 
   const { data } = await supabase
@@ -76,6 +78,7 @@ export async function exportarSorteioLeads(): Promise<{ nome: string; whatsapp: 
     nome: i.nome,
     whatsapp: i.whatsapp,
     email: i.email,
+    vendedor: i.vendedor ?? '',
     data: new Date(i.created_at).toLocaleString('pt-BR'),
   }))
 }

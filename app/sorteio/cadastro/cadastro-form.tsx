@@ -5,10 +5,11 @@ import { Gift, CheckCircle2 } from 'lucide-react'
 import { inscreverSorteio } from '@/lib/actions/sorteio'
 import { EmailInput } from '@/components/email-input'
 
-export function CadastroSorteio() {
+export function CadastroSorteio({ vendedores = [] }: { vendedores?: string[] }) {
   const [step, setStep] = useState<'form' | 'success'>('form')
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
+  const [vendedor, setVendedor] = useState('')
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
@@ -20,6 +21,7 @@ export function CadastroSorteio() {
       nome: (form.elements.namedItem('nome') as HTMLInputElement).value,
       whatsapp: (form.elements.namedItem('whatsapp') as HTMLInputElement).value,
       email: (form.elements.namedItem('email') as HTMLInputElement).value,
+      vendedor: vendedor || undefined,
     }
 
     try {
@@ -80,6 +82,28 @@ export function CadastroSorteio() {
           className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground"
         />
       </div>
+
+      {vendedores.length > 0 && (
+        <div className="space-y-2">
+          <label className="text-xs text-muted">Vendedor</label>
+          <div className="flex flex-wrap gap-2">
+            {vendedores.map((nome) => (
+              <button
+                key={nome}
+                type="button"
+                onClick={() => setVendedor(vendedor === nome ? '' : nome)}
+                className={`rounded-full px-3 py-1.5 text-xs font-medium transition-all ${
+                  vendedor === nome
+                    ? 'bg-primary text-primary-foreground shadow-sm'
+                    : 'bg-card text-muted ring-1 ring-border hover:ring-primary/40'
+                }`}
+              >
+                {nome}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
 
       {error && (
         <p className="rounded-md bg-danger/10 p-3 text-sm text-danger" role="alert">{error}</p>

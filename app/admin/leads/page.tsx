@@ -3,6 +3,7 @@ import { LeadsTable, type LeadRow } from '@/components/admin/leads-table'
 import { AdminPageHeader } from '@/components/admin/page-header'
 import { BackToTop } from '@/components/back-to-top'
 import { listarSorteioLeads } from '@/lib/actions/sorteio'
+import { listarVendedores } from '@/lib/actions/admin'
 import type { Inscrito } from '@/types'
 
 export default async function LeadsPage() {
@@ -32,35 +33,57 @@ export default async function LeadsPage() {
     return <div className="space-y-6"><p className="text-muted">Erro ao carregar leads. Tente novamente.</p></div>
   }
 
-  const leads: LeadRow[] = [
-    ...((inscritos ?? []) as Inscrito[]).map((i) => ({
-      id: i.id,
-      nome: i.nome,
-      email: i.email,
-      telefone: i.telefone,
-      created_at: i.created_at,
-      origem: i.origem,
-      status: i.status,
-      palestra_id: i.palestra_id,
-      palestra: i.palestra ? { id: i.palestra.id, tema: i.palestra.tema } : null,
-      source: 'inscrito' as const,
-    })),
-    ...((sorteioLeads ?? []).map((l) => ({
-      id: l.id,
-      nome: l.nome,
-      email: l.email,
-      telefone: l.whatsapp,
-      created_at: l.created_at,
-      origem: 'sorteio',
-      status: 'sorteio' as const,
-      palestra_id: null,
-      palestra: null,
-      source: 'sorteio' as const,
-    }))),
-  ].sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+  // Dedup: agrupar por email, preferir inscritos sobre sorteio
+  const seen = new Set<string>()
+  const leads: LeadRow[] = []
+
+  for (const i of (inscritos ?? []) as Inscrito[]) {
+    const key = i.email.toLowerCase()
+    if (!seen.has(key)) {
+      seen.add(key)
+      leads.push({
+        id: i.id,
+        nome: i.nome,
+        email: i.email,
+        telefone: i.telefone,
+        vendedor: i.vendedor ?? '',
+        created_at: i.created_at,
+        origem: i.origem,
+        status: i.status,
+        palestra_id: i.palestra_id,
+        palestra: i.palestra ? { id: i.palestra.id, tema: i.palestra.tema } : null,
+        source: 'inscrito' as const,
+      })
+    }
+  }
+
+  for (const l of sorteioLeads ?? []) {
+    const key = l.email.toLowerCase()
+    if (!seen.has(key)) {
+      seen.add(key)
+      leads.push({
+        id: l.id,
+        nome: l.nome,
+        email: l.email,
+        telefone: l.whatsapp,
+        vendedor: l.vendedor ?? '',
+        created_at: l.created_at,
+        origem: 'sorteio',
+        status: 'sorteio' as const,
+        palestra_id: null,
+        palestra: null,
+        source: 'sorteio' as const,
+      })
+    }
+  }
+
+  leads.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
 
   const totalCount = (count ?? 0) + (sorteioLeads?.length ?? 0)
   const limiteAtingido = (count ?? 0) > 1000
+
+  let vendedores: string[] = []
+  try { vendedores = await listarVendedores() } catch {}
 
   return (
     <div className="space-y-6">
@@ -73,6 +96,7 @@ export default async function LeadsPage() {
         palestras={palestras ?? []}
         totalCount={totalCount}
         limiteAtingido={limiteAtingido}
+        vendedores={vendedores}
       />
       <BackToTop />
     </div>

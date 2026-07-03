@@ -1,6 +1,10 @@
 import { CadastroSorteio } from './cadastro-form'
+import { listarVendedores } from '@/lib/actions/admin'
 
-export default function CadastroPage() {
+export default async function CadastroPage() {
+  let vendedores: string[] = []
+  try { vendedores = await listarVendedores() } catch {}
+
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-background px-4">
       <div className="w-full max-w-sm rounded-xl border border-border bg-card p-6 shadow-sm">
@@ -10,7 +14,7 @@ export default function CadastroPage() {
         <p className="mb-6 text-center text-sm text-muted">
           Preencha seus dados para concorrer.
         </p>
-        <CadastroSorteio />
+        <CadastroSorteio vendedores={vendedores} />
       </div>
     </div>
   )

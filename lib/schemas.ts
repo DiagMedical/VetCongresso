@@ -18,6 +18,7 @@ export const reservaSchema = z.object({
   aceite_lgpd: z
     .boolean()
     .refine((v) => v === true, 'Aceite da LGPD é obrigatório'),
+  vendedor: z.string().max(60, 'Nome do vendedor muito longo').optional(),
 })
 
 export const adicionarParticipanteSchema = z.object({
@@ -35,6 +36,7 @@ export const adicionarParticipanteSchema = z.object({
     .min(10, 'Telefone deve ter no mínimo 10 dígitos')
     .max(20, 'Telefone muito longo')
     .regex(/^[\d\s()+-]+$/, 'Telefone inválido'),
+  vendedor: z.string().max(60, 'Nome do vendedor muito longo').optional(),
 })
 
 export const sorteioSchema = z.object({
@@ -50,6 +52,7 @@ export const sorteioSchema = z.object({
     .string()
     .email('E-mail inválido')
     .max(255, 'E-mail muito longo'),
+  vendedor: z.string().max(60, 'Nome do vendedor muito longo').optional(),
 })
 
 export type ReservaFormDataValidated = z.infer<typeof reservaSchema>

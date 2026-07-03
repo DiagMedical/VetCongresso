@@ -71,6 +71,7 @@ export async function criarReserva(data: ReservaFormData) {
     telefone: parsed.data.telefone,
     aceite_lgpd: parsed.data.aceite_lgpd,
     status: temVaga ? 'confirmado' : 'espera',
+    vendedor: parsed.data.vendedor ?? null,
   })
 
   if (error) throw new Error(error.message)
@@ -99,6 +100,7 @@ export async function criarReserva(data: ReservaFormData) {
       nome: parsed.data.nome,
       whatsapp: parsed.data.telefone,
       email: parsed.data.email.toLowerCase(),
+      vendedor: parsed.data.vendedor ?? null,
     })
     .then(({ error }) => {
       // Ignora erro de UNIQUE (23505) — lead já existe no sorteio

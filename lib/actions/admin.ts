@@ -1,6 +1,6 @@
 'use server'
 
-import { createClient } from '@/lib/supabase/server'
+import { createClient, createServiceClient } from '@/lib/supabase/server'
 import type { Inscrito } from '@/types'
 import { adicionarParticipanteSchema } from '@/lib/schemas'
 import { sendWhatsApp } from '@/lib/whatsapp/send'
@@ -363,6 +363,7 @@ export async function adicionarParticipante(data: {
   nome: string
   email: string
   telefone: string
+  vendedor?: string
 }) {
   const parsed = adicionarParticipanteSchema.safeParse(data)
   if (!parsed.success) {
@@ -391,6 +392,7 @@ export async function adicionarParticipante(data: {
       telefone: parsed.data.telefone,
       origem: 'manual',
       aceite_lgpd: false,
+      vendedor: parsed.data.vendedor ?? null,
     })
     .select('id')
     .single()
@@ -430,6 +432,7 @@ export interface LeadExport {
   palestra: string
   status: string
   origem?: string
+  vendedor: string
   data: string
 }
 
@@ -783,6 +786,7 @@ export async function exportarLeads(): Promise<LeadExport[]> {
       telefone: String(i.telefone ?? ''),
       palestra: palestra?.tema ?? '—',
       status: String(i.status ?? ''),
+      vendedor: String(i.vendedor ?? ''),
       data: new Date(String(i.created_at)).toLocaleString('pt-BR'),
     }
   })
@@ -809,6 +813,7 @@ export async function exportarLeadsConsolidados(): Promise<LeadExport[]> {
         palestra: palestra?.tema ?? '—',
         status: String(i.status ?? ''),
         origem: String(i.origem ?? ''),
+        vendedor: String(i.vendedor ?? ''),
         data: new Date(String(i.created_at)).toLocaleString('pt-BR'),
       }
     })),
@@ -819,6 +824,7 @@ export async function exportarLeadsConsolidados(): Promise<LeadExport[]> {
       palestra: 'Sorteio Powerbank',
       status: 'sorteio',
       origem: 'sorteio',
+      vendedor: i.vendedor ?? '',
       data: new Date(i.created_at).toLocaleString('pt-BR'),
     }))),
   ]
@@ -924,6 +930,22 @@ export async function listarCertificados(): Promise<CertificadoData[]> {
     horario_fim: i.palestra?.horario_fim ?? '',
     checkin_at: i.checkin_at ?? '',
   }))
+}
+
+export async function listarVendedores(): Promise<string[]> {
+  try {
+    const supabase = createServiceClient()
+    const { data } = await supabase
+      .from('configuracoes')
+      .select('valor')
+      .eq('chave', 'vendedores')
+      .single()
+    if (!data?.valor) return []
+    const parsed = JSON.parse(data.valor)
+    return Array.isArray(parsed) ? parsed : []
+  } catch {
+    return []
+  }
 }
 
 export async function gerarResumoDashboard(data: DashboardData): Promise<string> {

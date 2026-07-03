@@ -14,15 +14,17 @@ interface ReservaFormProps {
     vagas_restantes: number
     vagas_totais: number
   }
+  vendedores?: string[]
 }
 
-export function ReservaForm({ palestra }: ReservaFormProps) {
+export function ReservaForm({ palestra, vendedores = [] }: ReservaFormProps) {
   const router = useRouter()
   const uid = useId()
   const formRef = useRef<HTMLFormElement>(null)
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({})
   const [enviando, setEnviando] = useState(false)
   const [aceite, setAceite] = useState(false)
+  const [vendedor, setVendedor] = useState('')
   const nomeRef = useRef<HTMLInputElement>(null)
   const vagas = palestra.vagas_restantes ?? palestra.vagas_totais
 
@@ -93,7 +95,7 @@ export function ReservaForm({ palestra }: ReservaFormProps) {
 
     try {
       const { criarReserva } = await import('@/lib/actions/reserva')
-      const inscrito = await criarReserva(data)
+      const inscrito = await criarReserva({ ...data, vendedor })
       toast.success('Reserva confirmada!')
       router.push(`/ticket/${inscrito.id}`)
     } catch (err) {
@@ -195,6 +197,30 @@ export function ReservaForm({ palestra }: ReservaFormProps) {
           </p>
         )}
       </div>
+
+      {vendedores.length > 0 && (
+        <div className="space-y-2">
+          <label className="text-sm font-medium text-foreground">
+            Vendedor
+          </label>
+          <div className="flex flex-wrap gap-2">
+            {vendedores.map((nome) => (
+              <button
+                key={nome}
+                type="button"
+                onClick={() => setVendedor(vendedor === nome ? '' : nome)}
+                className={`rounded-full px-3 py-1.5 text-sm font-medium transition-all ${
+                  vendedor === nome
+                    ? 'bg-primary text-primary-foreground shadow-sm'
+                    : 'bg-card text-muted ring-1 ring-border hover:ring-primary/40'
+                }`}
+              >
+                {nome}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
 
       <div className="rounded-lg bg-card p-3 text-sm text-muted" aria-live="polite">
         <p><strong>Vagas disponíveis:</strong> {vagas}</p>

@@ -18,6 +18,13 @@ export function DashboardActions({ palestras }: DashboardActionsProps) {
   const [showLiberar, setShowLiberar] = useState(false)
   const [showAdicionar, setShowAdicionar] = useState(false)
   const [inscritos, setInscritos] = useState<Inscrito[]>([])
+  const [vendedores, setVendedores] = useState<string[]>([])
+
+  async function openAdicionar() {
+    setShowAdicionar(true)
+    const { listarVendedores } = await import('@/lib/actions/admin')
+    listarVendedores().then(setVendedores).catch(() => {})
+  }
 
   async function openLiberarVaga() {
     const { listarInscritos } = await import('@/lib/actions/admin')
@@ -70,7 +77,7 @@ export function DashboardActions({ palestras }: DashboardActionsProps) {
           </button>
 
           <button
-            onClick={() => setShowAdicionar(true)}
+            onClick={openAdicionar}
             className="flex min-h-[44px] items-center gap-3 rounded-xl bg-success/10 p-3 text-left text-success transition-colors hover:bg-success/20"
           >
             <UserPlus className="size-5" aria-hidden="true" />
@@ -93,6 +100,7 @@ export function DashboardActions({ palestras }: DashboardActionsProps) {
         open={showAdicionar}
         onClose={() => { setShowAdicionar(false); router.refresh() }}
         palestras={palestras}
+        vendedores={vendedores}
         onAdicionar={handleAdicionar}
       />
     </>

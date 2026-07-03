@@ -17,14 +17,16 @@ interface AdicionarParticipanteDialogProps {
   open: boolean
   onClose: () => void
   palestras: Palestra[]
-  onAdicionar: (data: { palestra_id: string; nome: string; email: string; telefone: string }) => Promise<void>
+  vendedores?: string[]
+  onAdicionar: (data: { palestra_id: string; nome: string; email: string; telefone: string; vendedor?: string }) => Promise<void>
 }
 
-export function AdicionarParticipanteDialog({ open, onClose, palestras, onAdicionar }: AdicionarParticipanteDialogProps) {
+export function AdicionarParticipanteDialog({ open, onClose, palestras, vendedores = [], onAdicionar }: AdicionarParticipanteDialogProps) {
   const uid = useId()
   const [palestraId, setPalestraId] = useState(palestras[0]?.id ?? '')
   const [enviando, setEnviando] = useState(false)
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({})
+  const [vendedor, setVendedor] = useState('')
 
   function getErrorId(field: string) {
     return `${uid}-${field}-error`
@@ -56,9 +58,10 @@ export function AdicionarParticipanteDialog({ open, onClose, palestras, onAdicio
     }
 
     try {
-      await onAdicionar(data)
+      await onAdicionar({ ...data, vendedor: vendedor || undefined })
       toast.success('Participante adicionado com sucesso!')
       e.currentTarget.reset()
+      setVendedor('')
     } catch (err) {
       toast.error(err instanceof Error ? err.message : 'Erro ao adicionar')
     } finally {
@@ -142,6 +145,28 @@ export function AdicionarParticipanteDialog({ open, onClose, palestras, onAdicio
             />
             {fieldErrors.telefone && <p id={getErrorId('telefone')} role="alert" className="text-xs text-destructive">{fieldErrors.telefone}</p>}
           </div>
+
+          {vendedores.length > 0 && (
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-foreground">Vendedor</label>
+              <div className="flex flex-wrap gap-2">
+                {vendedores.map((nome) => (
+                  <button
+                    key={nome}
+                    type="button"
+                    onClick={() => setVendedor(vendedor === nome ? '' : nome)}
+                    className={`rounded-full px-3 py-1.5 text-xs font-medium transition-all ${
+                      vendedor === nome
+                        ? 'bg-primary text-primary-foreground shadow-sm'
+                        : 'bg-card text-muted ring-1 ring-border hover:ring-primary/40'
+                    }`}
+                  >
+                    {nome}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
 
           <div className="flex gap-2">
             <Button type="button" variant="outline" onClick={onClose} className="flex-1">

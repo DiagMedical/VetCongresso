@@ -46,6 +46,7 @@ CREATE TABLE IF NOT EXISTS inscritos (
     status TEXT DEFAULT 'confirmado' CHECK (status IN ('confirmado', 'check-in', 'cancelado_por_falta', 'espera')),
     origem TEXT DEFAULT 'site',
     aceite_lgpd BOOLEAN DEFAULT FALSE,
+    vendedor TEXT DEFAULT '',
     checkin_at TIMESTAMPTZ,
     cancelado_at TIMESTAMPTZ,
     created_at TIMESTAMPTZ DEFAULT NOW()
@@ -187,6 +188,7 @@ CREATE TABLE IF NOT EXISTS sorteio_leads (
     nome TEXT NOT NULL,
     whatsapp TEXT NOT NULL,
     email TEXT NOT NULL UNIQUE,
+    vendedor TEXT DEFAULT '',
     created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
