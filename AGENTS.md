@@ -758,3 +758,26 @@ This version has breaking changes — APIs, conventions, and file structure may 
 
 **⚠️ Necessário:** Rodar `scripts/add-vendedor.sql` no Supabase SQL Editor e configurar `SUPABASE_SERVICE_ROLE_KEY` na Vercel.
 <!-- END:opencode-session -->
+
+<!-- BEGIN:opencode-session -->
+## Session — 03/07/2026 (2)
+
+### Leads Table Responsiva para Notebook
+
+**Problema:** Tabela de leads com 9 colunas (Nome, Email, Telefone, Vendedor, Palestra, Status, Origem, Data, Ações) e `min-w-[980px]` não cabia em notebook com sidebar admin — precisava diminuir zoom.
+
+**Soluções:**
+
+1. **`min-w-[980px]` → `min-w-[760px]`** — tabela mais estreita
+2. **Padding reduzido**: `px-4 py-3` → `px-3 py-2.5` em todas as células
+3. **Coluna "Vendedor"** → `hidden lg:table-cell` (some em < 1024px)
+4. **Coluna "Origem"** → `hidden xl:table-cell` (some em < 1280px)
+5. **Textos longos truncados**: Nome (160px), Email (180px), Palestra (160px), Vendedor/Origem (100px) com `truncate`
+6. **Telefone, Status, Data** com `whitespace-nowrap`
+
+**Arquivos alterados:**
+- `components/admin/leads-table.tsx` — min-w, padding, responsive visibility, truncate
+
+**Commits:**
+- Pendente
+<!-- END:opencode-session -->

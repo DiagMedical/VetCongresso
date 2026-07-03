@@ -250,62 +250,62 @@ export function LeadsTable({ leads, palestras, totalCount, limiteAtingido, vende
           {/* Desktop: tabela */}
           <div className="hidden md:block overflow-hidden rounded-2xl">
             <div className="overflow-x-auto">
-              <table className="w-full min-w-[980px] text-sm" aria-label="Lista de leads">
+              <table className="w-full min-w-[760px] text-sm" aria-label="Lista de leads">
                 <caption className="sr-only">Lista de leads cadastrados</caption>
                 <thead className="bg-card">
                   <tr className="text-left text-muted">
-                    <th scope="col" className="px-4 py-3 font-medium">
+                    <th scope="col" className="px-3 py-2.5 font-medium">
                       <button onClick={() => toggleOrdem('nome')} className="flex items-center gap-1 transition-colors hover:text-foreground">
                         Nome <SetaIcon ordem={ordem} col="nome" />
                       </button>
                     </th>
-                    <th scope="col" className="px-4 py-3 font-medium">
+                    <th scope="col" className="px-3 py-2.5 font-medium">
                       <button onClick={() => toggleOrdem('email')} className="flex items-center gap-1 transition-colors hover:text-foreground">
                         Email <SetaIcon ordem={ordem} col="email" />
                       </button>
                     </th>
-                    <th scope="col" className="px-4 py-3 font-medium">Telefone</th>
-                    <th scope="col" className="px-4 py-3 font-medium">Vendedor</th>
-                    <th scope="col" className="px-4 py-3 font-medium">Palestra</th>
-                    <th scope="col" className="px-4 py-3 font-medium">
+                    <th scope="col" className="px-3 py-2.5 font-medium">Telefone</th>
+                    <th scope="col" className="hidden lg:table-cell px-3 py-2.5 font-medium">Vendedor</th>
+                    <th scope="col" className="px-3 py-2.5 font-medium">Palestra</th>
+                    <th scope="col" className="px-3 py-2.5 font-medium">
                       <button onClick={() => toggleOrdem('status')} className="flex items-center gap-1 transition-colors hover:text-foreground">
                         Status <SetaIcon ordem={ordem} col="status" />
                       </button>
                     </th>
-                    <th scope="col" className="px-4 py-3 font-medium">
+                    <th scope="col" className="hidden xl:table-cell px-3 py-2.5 font-medium">
                       <button onClick={() => toggleOrdem('origem')} className="flex items-center gap-1 transition-colors hover:text-foreground">
                         Origem <SetaIcon ordem={ordem} col="origem" />
                       </button>
                     </th>
-                    <th scope="col" className="px-4 py-3 font-medium">
+                    <th scope="col" className="px-3 py-2.5 font-medium">
                       <button onClick={() => toggleOrdem('created_at')} className="flex items-center gap-1 transition-colors hover:text-foreground">
                         Data <SetaIcon ordem={ordem} col="created_at" />
                       </button>
                     </th>
-                    <th scope="col" className="sr-only px-4 py-3 font-medium">Ações</th>
+                    <th scope="col" className="sr-only px-3 py-2.5 font-medium">Ações</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-border">
                   {visiveis.map((i) => (
                     <tr key={i.id} className="bg-background transition-colors hover:bg-card/50">
-                      <td className="px-4 py-3 font-medium text-foreground">{i.nome}</td>
-                      <td className="px-4 py-3 text-muted">{i.email}</td>
-                      <td className="px-4 py-3 text-muted">{i.telefone}</td>
-                      <td className="px-4 py-3 text-muted">{i.vendedor || '—'}</td>
-                      <td className="px-4 py-3 text-foreground">
+                      <td className="px-3 py-2.5 font-medium text-foreground truncate max-w-[160px]">{i.nome}</td>
+                      <td className="px-3 py-2.5 text-muted truncate max-w-[180px]">{i.email}</td>
+                      <td className="px-3 py-2.5 text-muted whitespace-nowrap">{i.telefone}</td>
+                      <td className="hidden lg:table-cell px-3 py-2.5 text-muted truncate max-w-[100px]">{i.vendedor || '—'}</td>
+                      <td className="px-3 py-2.5 text-foreground truncate max-w-[160px]">
                         {i.palestra?.tema ?? (i.source === 'sorteio' ? 'Sorteio Powerbank' : '—')}
                       </td>
-                      <td className="px-4 py-3">
+                      <td className="px-3 py-2.5 whitespace-nowrap">
                         <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${statusColors[i.status] ?? 'bg-muted/30 text-muted'}`}>
                           {statusLabels[i.status] ?? i.status}
                         </span>
-                        <span className="ml-2 rounded-full bg-card px-2 py-0.5 text-xs font-medium text-muted">
+                        <span className="ml-1.5 rounded-full bg-card px-2 py-0.5 text-xs font-medium text-muted">
                           {i.source === 'sorteio' ? 'Sorteio' : 'Reserva'}
                         </span>
                       </td>
-                      <td className="px-4 py-3 text-muted">{i.origem}</td>
-                      <td className="px-4 py-3 text-xs text-muted">{formatDate(i.created_at)}</td>
-                      <td className="px-4 py-3 text-right">
+                      <td className="hidden xl:table-cell px-3 py-2.5 text-muted truncate max-w-[100px]">{i.origem}</td>
+                      <td className="px-3 py-2.5 text-xs text-muted whitespace-nowrap">{formatDate(i.created_at)}</td>
+                      <td className="px-3 py-2.5 text-right">
                         <button
                           onClick={() => handleDelete(i.id, i.nome)}
                           className="rounded-md p-1.5 text-muted transition-colors hover:bg-danger/10 hover:text-danger"

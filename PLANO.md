@@ -209,5 +209,6 @@ Tudo pronto pro evento! Último deploy consolidado no Vercel.
 | 42 | Admin > Config — gerenciar vendedores | `app/admin/config/config-page.tsx` |
 | 43 | Coluna + filtro vendedor na tabela de leads | `components/admin/leads-table.tsx` |
 | 44 | Export inclui vendedor | `lib/actions/admin.ts`, `lib/actions/sorteio.ts` |
+| 45 | Leads table responsiva para notebook | `components/admin/leads-table.tsx` |
 
 > 🔴 Alta = essencial pro evento, 🟡 Média = bom ter, 🟢 Baixa = legal, ⏳ Pendente = depois
