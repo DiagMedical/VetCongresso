@@ -79,3 +79,95 @@ export async function exportarSorteioLeads(): Promise<{ nome: string; whatsapp: 
     data: new Date(i.created_at).toLocaleString('pt-BR'),
   }))
 }
+
+export async function migrarLeadsParaSorteio(): Promise<{ migrados: number; ignorados: number; total_inscritos: number }> {
+  const supabase = await createClient()
+
+  // 1. Buscar todos os inscritos ativos
+  const { data: inscritos, error: errInscritos } = await supabase
+    .from('inscritos')
+    .select('nome, email, telefone, created_at')
+    .eq('status', 'confirmado')
+
+  if (errInscritos) throw new Error('Erro ao buscar inscritos: ' + errInscritos.message)
+
+  const { data: checkins, error: errCheckins } = await supabase
+    .from('inscritos')
+    .select('nome, email, telefone, created_at')
+    .eq('status', 'check-in')
+
+  if (errCheckins) throw new Error('Erro ao buscar check-ins: ' + errCheckins.message)
+
+  // Combinar confirmados + check-ins, deduplicar por email (mantém o primeiro)
+  const todos = [...(inscritos ?? []), ...(checkins ?? [])]
+  const vistos = new Set<string>()
+  const unicos: { nome: string; email: string; telefone: string; created_at: string }[] = []
+
+  for (const i of todos) {
+    const email = i.email.toLowerCase()
+    if (!vistos.has(email)) {
+      vistos.add(email)
+      unicos.push({
+        nome: i.nome,
+        email,
+        telefone: i.telefone ?? '',
+        created_at: i.created_at,
+      })
+    }
+  }
+
+  // 2. Buscar emails já existentes no sorteio
+  const { data: existing, error: errExisting } = await supabase
+    .from('sorteio_leads')
+    .select('email')
+
+  if (errExisting) throw new Error('Erro ao buscar sorteio: ' + errExisting.message)
+
+  const existingEmails = new Set((existing ?? []).map((e: { email: string }) => e.email.toLowerCase()))
+
+  // 3. Filtrar só quem NÃO está no sorteio
+  const paraInserir = unicos.filter((i) => !existingEmails.has(i.email))
+
+  // 4. Insert batch (ON CONFLICT DO NOTHING como dupla proteção)
+  let migrados = 0
+
+  if (paraInserir.length > 0) {
+    const rows = paraInserir.map((i) => ({
+      nome: i.nome,
+      whatsapp: i.telefone,
+      email: i.email,
+      created_at: i.created_at,
+    }))
+
+    const { error: errInsert } = await supabase
+      .from('sorteio_leads')
+      .insert(rows)
+
+    if (errInsert) {
+      // Se der erro de UNIQUE, tenta um a um (pode ser que um email entrou entre a checagem e o insert)
+      if (errInsert.code === '23505') {
+        for (const i of paraInserir) {
+          const { error: errSingle } = await supabase
+            .from('sorteio_leads')
+            .insert({
+              nome: i.nome,
+              whatsapp: i.telefone,
+              email: i.email,
+              created_at: i.created_at,
+            })
+          if (!errSingle) migrados++
+        }
+      } else {
+        throw new Error('Erro ao migrar leads: ' + errInsert.message)
+      }
+    } else {
+      migrados = paraInserir.length
+    }
+  }
+
+  return {
+    migrados,
+    ignorados: unicos.length - migrados,
+    total_inscritos: unicos.length,
+  }
+}

@@ -2,8 +2,8 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { Gift, Download, Search, ExternalLink, Shuffle, Trophy, X, Trash2 } from 'lucide-react'
-import { exportarSorteioLeads, removerSorteioLead } from '@/lib/actions/sorteio'
+import { Gift, Download, Search, ExternalLink, Shuffle, Trophy, X, Trash2, Users } from 'lucide-react'
+import { exportarSorteioLeads, removerSorteioLead, migrarLeadsParaSorteio } from '@/lib/actions/sorteio'
 import { AdminSectionCard } from '@/components/admin/section-card'
 import { toast } from 'sonner'
 import type { SorteioLead } from '@/lib/actions/sorteio'
@@ -19,6 +19,7 @@ export function SorteioAdmin({ leads }: Props) {
   const [winner, setWinner] = useState<SorteioLead | null>(null)
   const [sorting, setSorting] = useState(false)
   const [deletingId, setDeletingId] = useState<string | null>(null)
+  const [migrating, setMigrating] = useState(false)
 
   const filtered = leads.filter(
     (l) =>
@@ -53,6 +54,21 @@ export function SorteioAdmin({ leads }: Props) {
       // erro silencioso
     } finally {
       setExporting(false)
+    }
+  }
+
+  async function handleMigrar() {
+    if (!confirm('Migrar leads de palestras para o sorteio?\n\nApenas leads que ainda não estão no sorteio serão adicionados. Nenhum dado existente será apagado.')) return
+
+    setMigrating(true)
+    try {
+      const result = await migrarLeadsParaSorteio()
+      toast.success(`${result.migrados} lead(s) migrado(s), ${result.ignorados} ignorado(s) (já existiam)`)
+      router.refresh()
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : 'Erro ao migrar leads')
+    } finally {
+      setMigrating(false)
     }
   }
 
@@ -105,6 +121,14 @@ export function SorteioAdmin({ leads }: Props) {
             >
               <Download className="size-4" />
               {exporting ? 'Exportando...' : 'Exportar CSV'}
+            </button>
+            <button
+              onClick={handleMigrar}
+              disabled={migrating}
+              className="flex min-h-[44px] items-center justify-center gap-2 rounded-xl border-2 border-accent/30 bg-card px-4 py-2 text-sm font-medium text-foreground transition-all hover:border-accent/60 hover:bg-accent/5 disabled:opacity-50"
+            >
+              <Users className="size-4 text-accent" />
+              {migrating ? 'Migrando...' : 'Migrar Leads → Sorteio'}
             </button>
           </div>
         </div>

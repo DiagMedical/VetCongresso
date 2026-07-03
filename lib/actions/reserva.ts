@@ -92,6 +92,21 @@ export async function criarReserva(data: ReservaFormData) {
     )
   }
 
+  // Auto-sync: insere o lead no sorteio (ignora se já existe pelo email)
+  supabase
+    .from('sorteio_leads')
+    .insert({
+      nome: parsed.data.nome,
+      whatsapp: parsed.data.telefone,
+      email: parsed.data.email.toLowerCase(),
+    })
+    .then(({ error }) => {
+      // Ignora erro de UNIQUE (23505) — lead já existe no sorteio
+      if (error && error.code !== '23505') {
+        console.error('[Sorteio] erro ao sincronizar lead:', error.message)
+      }
+    })
+
   return inscrito as { id: string; status: string }
 }
 
