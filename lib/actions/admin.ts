@@ -68,13 +68,20 @@ export async function getDashboardData(diaFiltro?: number): Promise<DashboardDat
     return { data, count }
   }
 
-  const [{ count: total_leads }, { count: checkins_hoje }, { count: cancelamentos }, { count: espera }, { data: inscritos }] = await Promise.all([
+  const [, { count: checkins_hoje }, { count: cancelamentos }, { count: espera }, { data: inscritos }, { data: emailsInscritos }, { data: emailsSorteio }] = await Promise.all([
     executar<never>(inscritosBase.select('*', { count: 'exact', head: true })),
     executar<never>(inscritosBase.select('*', { count: 'exact', head: true }).gte('checkin_at', hoje)),
     executar<never>(inscritosBase.select('*', { count: 'exact', head: true }).eq('status', 'cancelado_por_falta')),
     executar<never>(inscritosBase.select('*', { count: 'exact', head: true }).eq('status', 'espera')),
     executar<{ palestra_id: string; status: string; checkin_at: string | null; created_at: string }[]>(inscritosBase.select('palestra_id, status, checkin_at, created_at')),
+    executar<{ email: string }[]>(inscritosBase.select('email')),
+    supabase.from('sorteio_leads').select('email'),
   ])
+
+  const emailsUnicos = new Set<string>()
+  for (const i of emailsInscritos ?? []) emailsUnicos.add(i.email.toLowerCase())
+  for (const i of emailsSorteio ?? []) emailsUnicos.add(i.email.toLowerCase())
+  const total_leads = emailsUnicos.size
 
   // Fetch palestras (with count)
   let palestrasQuery = supabase.from('palestras').select('*', { count: 'exact', head: true }).eq('ativo', true)
@@ -171,7 +178,7 @@ export async function getDashboardData(diaFiltro?: number): Promise<DashboardDat
     .sort((a, b) => b.reservas - a.reservas)
 
   return {
-    total_leads: total_leads ?? 0,
+    total_leads,
     checkins_hoje: checkins_hoje ?? 0,
     palestras_ativas: palestras_ativas ?? 0,
     cancelamentos: cancelamentos ?? 0,
