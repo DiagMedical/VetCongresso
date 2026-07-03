@@ -712,3 +712,49 @@ This version has breaking changes — APIs, conventions, and file structure may 
 - `app/admin/palestras/palestras-client.tsx` — timeZone no toLocaleTimeString
 - `lib/__tests__/utils.test.ts` — novo caso testando UTC → BRT
 <!-- END:opencode-session -->
+
+<!-- BEGIN:opencode-session -->
+## Session — 03/07/2026
+
+### Leads: Dedup + Vendedor (chips de seleção)
+
+**Problemas resolvidos:**
+
+1. **Duplicidade na página de leads** — Pessoas que reservavam palestra (vão pra `inscritos`) e também eram cadastradas no sorteio (`sorteio_leads`) apareciam 2x na lista. O merge era concatenação bruta sem dedup.
+
+2. **Sem rastreio de vendedor** — Não era possível saber qual vendedor capturou cada lead/sorteio.
+
+**Soluções:**
+
+1. **Dedup por email** — No merge em `app/admin/leads/page.tsx`, agrupa por email (lowercased). Se o mesmo email existe em `inscritos` e `sorteio_leads`, mostra apenas o `inscritos` (com palestra, status real). Quem está só no sorteio aparece normal. Zero alteração no banco — filtro puramente visual.
+
+2. **Coluna `vendedor`** — `ALTER TABLE ADD COLUMN vendedor TEXT DEFAULT ''` em `inscritos` e `sorteio_leads`. Zero risco de perda de dados.
+
+3. **Chips de seleção direta** — Botões `[ Igor ] [ Juliano ] [ Wellington ]` em vez de dropdown. Clique seleciona/desseleciona. Sem label — só os chips soltos.
+
+4. **Admin > Config** — Seção "Vendedores" com input + botão "Adicionar" + tags com "X" pra remover. Salva como config `vendedores` (JSON array).
+
+5. **Coluna + filtro na tabela de leads** — Coluna "Vendedor" na tabela desktop e card view mobile. Filtro por vendedor ao lado dos filtros existentes.
+
+**Arquivos alterados/novos:**
+- `scripts/add-vendedor.sql` (novo) — migration segura
+- `scripts/schema.sql` — vendedor nas duas tabelas
+- `scripts/apply-schema.mjs` — idem
+- `types/index.ts` — vendedor em Inscrito, ReservaFormData
+- `lib/schemas.ts` — vendedor opcional nos schemas
+- `lib/supabase/server.ts` — createServiceClient()
+- `lib/actions/admin.ts` — listarVendedores(), adicionarParticipante com vendedor, export com vendedor
+- `lib/actions/reserva.ts` — criarReserva com vendedor + auto-sync
+- `lib/actions/sorteio.ts` — inscreverSorteio com vendedor, SorteioLead com vendedor
+- `components/reserva-form.tsx` — chips de vendedor
+- `app/sorteio/cadastro/cadastro-form.tsx` — chips de vendedor
+- `app/sorteio/cadastro/page.tsx` — async, busca vendedores
+- `app/reserva/[id]/page.tsx` — busca vendedores
+- `components/admin/adicionar-participante-dialog.tsx` — chips de vendedor
+- `components/admin/dashboard-actions.tsx` — fetch vendedores ao abrir modal
+- `app/admin/leads/page.tsx` — dedup + vendedor no merge + totalCount deduplicado
+- `components/admin/leads-table.tsx` — coluna vendedor + filtro
+- `app/admin/config/config-page.tsx` — seção gerenciar vendedores
+
+**⚠️ Necessário:** Rodar `scripts/add-vendedor.sql` no Supabase SQL Editor e configurar `SUPABASE_SERVICE_ROLE_KEY` na Vercel.
+<!-- END:opencode-session -->

@@ -199,4 +199,15 @@ Tudo pronto pro evento! Último deploy consolidado no Vercel.
 |---|--------|-------|
 | 1 | Email (Resend) — ativar | Precisa de acesso DNS para verificar domínio |
 
+## ✅ Concluído (Sprint Pós-evento — Leads + Vendedor)
+
+| # | Tarefa | Arquivos |
+|---|--------|----------|
+| 39 | Dedup de leads por email (inscritos > sorteio) | `app/admin/leads/page.tsx` |
+| 40 | Coluna vendedor em inscritos + sorteio_leads | `scripts/add-vendedor.sql`, `scripts/schema.sql`, `scripts/apply-schema.mjs` |
+| 41 | Chips de seleção de vendedor (3 formulários) | `components/reserva-form.tsx`, `app/sorteio/cadastro/cadastro-form.tsx`, `components/admin/adicionar-participante-dialog.tsx` |
+| 42 | Admin > Config — gerenciar vendedores | `app/admin/config/config-page.tsx` |
+| 43 | Coluna + filtro vendedor na tabela de leads | `components/admin/leads-table.tsx` |
+| 44 | Export inclui vendedor | `lib/actions/admin.ts`, `lib/actions/sorteio.ts` |
+
 > 🔴 Alta = essencial pro evento, 🟡 Média = bom ter, 🟢 Baixa = legal, ⏳ Pendente = depois
