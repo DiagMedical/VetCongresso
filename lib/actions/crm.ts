@@ -615,3 +615,40 @@ export async function importarLeadsCSV(
 
   return { total: linhas.length - 1, sucesso, erros }
 }
+
+// ============================================================
+// Duplicar Leads entre Eventos
+// ============================================================
+
+export async function duplicarLeadsEntreEventos(
+  origemEvento: string,
+  destinoEvento: string,
+  empresa?: string
+): Promise<{ total: number }> {
+  const supabase = createServiceClient()
+
+  let query = supabase.from('contacts').select('*').eq('evento', origemEvento)
+  if (empresa) query = query.eq('empresa', empresa)
+
+  const { data: leads } = await query
+  if (!leads || leads.length === 0) throw new Error('Nenhum lead encontrado para o evento de origem')
+
+  const novos = leads.map(l => ({
+    nome: l.nome,
+    email: l.email,
+    telefone: l.telefone,
+    origem: 'manual',
+    vendedor: l.vendedor,
+    empresa: l.empresa,
+    evento: destinoEvento,
+    observacoes: l.observacoes,
+    interesses_vet: l.interesses_vet ?? [],
+    interesses_humano: l.interesses_humano ?? [],
+    tags: l.tags ?? [],
+  }))
+
+  const { error } = await supabase.from('contacts').insert(novos)
+  if (error) throw new Error('Erro ao duplicar leads: ' + error.message)
+
+  return { total: novos.length }
+}
