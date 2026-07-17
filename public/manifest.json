@@ -1,7 +1,7 @@
 {
-  "name": "ABRAVEQ 2026 — VetCongresso",
-  "short_name": "VetCongresso",
-  "description": "Reserve sua vaga nas palestras do congresso ABRAVEQ 2026",
+  "name": "DiagnosticCRM",
+  "short_name": "DiagnosticCRM",
+  "description": "CRM para gestão de contatos, pipeline de vendas e atividades. Diagnostic Vet.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#0d0a1a",

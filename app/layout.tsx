@@ -15,8 +15,8 @@ const geistMono = Geist_Mono({
 })
 
 export const metadata: Metadata = {
-  title: 'ABRAVEQ 2026 — Silent Booking | Diagnostic Vet',
-  description: 'Reserve sua vaga nas palestras silenciosas da XXVI Conferência Anual ABRAVEQ 2026. Patrocínio Diagnostic Vet.',
+  title: 'DiagnosticCRM — Gestão de Relacionamento com Clientes',
+  description: 'CRM completo para gestão de contatos, pipeline de vendas, atividades e comunicação. Diagnostic Vet.',
   manifest: '/manifest.json',
   icons: {
     icon: [
