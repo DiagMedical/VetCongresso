@@ -19,7 +19,7 @@ import { Sheet, SheetTrigger, SheetContent, SheetClose } from '@/components/ui/s
 
 const links = [
   { href: '/admin', label: 'Dashboard', icon: LayoutDashboard },
-  { href: '/admin/contacts', label: 'Contatos', icon: Users },
+  { href: '/admin/contacts', label: 'Leads', icon: Users },
   { href: '/admin/deals', label: 'Pipeline', icon: Kanban },
   { href: '/admin/activities', label: 'Atividades', icon: PhoneCall },
   { href: '/admin/whatsapp', label: 'WhatsApp', icon: MessageSquare },

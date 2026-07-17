@@ -24,6 +24,8 @@ export interface Contact {
   tags: string[]
   interesses_vet: string[]
   interesses_humano: string[]
+  empresa: string | null
+  evento: string | null
   created_at: string
   updated_at: string
 }

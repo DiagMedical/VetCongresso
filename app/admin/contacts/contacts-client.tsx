@@ -2,7 +2,7 @@
 
 import { useState, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
-import { Search, Plus, Trash2, Edit3, Inbox, Mail, Phone, Stethoscope, Syringe } from 'lucide-react'
+import { Search, Plus, Trash2, Edit3, Inbox, Mail, Phone, Stethoscope, Syringe, Building2 } from 'lucide-react'
 import { toast } from 'sonner'
 import { AdminPagination } from '@/components/admin/pagination'
 import { AdminSectionCard } from '@/components/admin/section-card'
@@ -38,6 +38,7 @@ export function ContactsClient({ contacts: initialContacts }: ContactsClientProp
   const [aba, setAba] = useState<AbaType>('todos')
   const [busca, setBusca] = useState('')
   const [filtroVendedor, setFiltroVendedor] = useState('')
+  const [filtroEmpresa, setFiltroEmpresa] = useState('')
   const [currentPage, setCurrentPage] = useState(1)
   const [editContact, setEditContact] = useState<Contact | null>(null)
   const [showForm, setShowForm] = useState(false)
@@ -72,8 +73,11 @@ export function ContactsClient({ contacts: initialContacts }: ContactsClientProp
     if (filtroVendedor) {
       result = result.filter(c => c.vendedor === filtroVendedor)
     }
+    if (filtroEmpresa) {
+      result = result.filter(c => c.empresa === filtroEmpresa)
+    }
     return result
-  }, [contacts, aba, busca, filtroVendedor])
+  }, [contacts, aba, busca, filtroVendedor, filtroEmpresa])
 
   const totalPages = Math.ceil(filtrados.length / pageSize)
   const paginados = filtrados.slice((currentPage - 1) * pageSize, currentPage * pageSize)
@@ -90,6 +94,8 @@ export function ContactsClient({ contacts: initialContacts }: ContactsClientProp
         tags: [],
         interesses_vet: formData.getAll('interesses_vet') as string[],
         interesses_humano: formData.getAll('interesses_humano') as string[],
+        empresa: formData.get('empresa') as string,
+        evento: formData.get('evento') as string,
       })
       setContacts(prev => [contact, ...prev])
       setShowForm(false)
@@ -111,6 +117,8 @@ export function ContactsClient({ contacts: initialContacts }: ContactsClientProp
         tags: [],
         interesses_vet: formData.getAll('interesses_vet') as string[],
         interesses_humano: formData.getAll('interesses_humano') as string[],
+        empresa: formData.get('empresa') as string,
+        evento: formData.get('evento') as string,
       })
       setContacts(prev => prev.map(c => c.id === id ? updated : c))
       setEditContact(null)
@@ -182,6 +190,16 @@ export function ContactsClient({ contacts: initialContacts }: ContactsClientProp
             ))}
           </select>
         )}
+        <select
+          value={filtroEmpresa}
+          onChange={e => { setFiltroEmpresa(e.target.value); setCurrentPage(1) }}
+          className="h-10 rounded-md border border-border bg-card px-3 text-sm text-foreground"
+          aria-label="Filtrar por empresa"
+        >
+          <option value="">Todas empresas</option>
+          <option value="vet">Diagnostic Vet</option>
+          <option value="humana">Diagnostic Medical</option>
+        </select>
         <Dialog open={showForm} onOpenChange={setShowForm}>
           <DialogTrigger render={<Button className="gap-2"><Plus className="size-4" />Novo Contato</Button>} />
           <ContactFormDialog
@@ -216,6 +234,7 @@ export function ContactsClient({ contacts: initialContacts }: ContactsClientProp
                   <th className="px-3 py-2.5 text-left font-medium text-muted hidden sm:table-cell">Email</th>
                   <th className="px-3 py-2.5 text-left font-medium text-muted hidden md:table-cell">Telefone</th>
                   <th className="px-3 py-2.5 text-left font-medium text-muted hidden lg:table-cell">Vendedor</th>
+                  <th className="px-3 py-2.5 text-left font-medium text-muted hidden lg:table-cell">Empresa</th>
                   <th className="px-3 py-2.5 text-left font-medium text-muted hidden lg:table-cell">Origem</th>
                   <th className="px-3 py-2.5 text-left font-medium text-muted hidden xl:table-cell">Interesses</th>
                   <th className="px-3 py-2.5 text-left font-medium text-muted">Data</th>
@@ -244,8 +263,16 @@ export function ContactsClient({ contacts: initialContacts }: ContactsClientProp
                         </span>
                       ) : <span className="text-muted/40">—</span>}
                     </td>
-                    <td className="px-3 py-2.5 text-muted truncate max-w-[100px] hidden lg:table-cell">
-                      {contact.vendedor || <span className="text-muted/40">—</span>}
+                    <td className="px-3 py-2.5 truncate max-w-[100px] hidden lg:table-cell">
+                      {contact.empresa ? (
+                        <span className={`rounded-full px-2 py-0.5 text-[10px] font-medium ${
+                          contact.empresa === 'vet'
+                            ? 'bg-primary/10 text-primary'
+                            : 'bg-accent/10 text-accent'
+                        }`}>
+                          {contact.empresa === 'vet' ? 'Vet' : 'Humana'}
+                        </span>
+                      ) : <span className="text-muted/40">—</span>}
                     </td>
                     <td className="px-3 py-2.5 text-muted hidden lg:table-cell">
                       {contact.origem || <span className="text-muted/40">—</span>}
@@ -339,6 +366,7 @@ function ContactFormDialog({
 }) {
   const [selVet, setSelVet] = useState<string[]>(contact?.interesses_vet ?? [])
   const [selHumano, setSelHumano] = useState<string[]>(contact?.interesses_humano ?? [])
+  const [empresa, setEmpresa] = useState(contact?.empresa ?? '')
 
   function toggleVet(item: string) {
     setSelVet(prev => prev.includes(item) ? prev.filter(i => i !== item) : [...prev, item])
@@ -362,6 +390,38 @@ function ContactFormDialog({
         <DialogDescription>Preencha os dados do contato.</DialogDescription>
       </DialogHeader>
       <form action={handleSubmit} className="space-y-4 max-h-[70vh] overflow-y-auto pr-1">
+        {/* Empresa (toggle) */}
+        <div className="space-y-2">
+          <label className="text-sm font-medium text-foreground">Empresa *</label>
+          <div className="flex gap-2">
+            <button
+              type="button"
+              onClick={() => setEmpresa('vet')}
+              className={`flex-1 rounded-xl border-2 px-4 py-3 text-sm font-medium transition-all ${
+                empresa === 'vet'
+                  ? 'border-primary bg-primary/10 text-primary'
+                  : 'border-border text-muted hover:border-foreground/30'
+              }`}
+            >
+              <Building2 className="size-4 mb-1 mx-auto" />
+              Diagnostic Vet
+            </button>
+            <button
+              type="button"
+              onClick={() => setEmpresa('humana')}
+              className={`flex-1 rounded-xl border-2 px-4 py-3 text-sm font-medium transition-all ${
+                empresa === 'humana'
+                  ? 'border-accent bg-accent/10 text-accent'
+                  : 'border-border text-muted hover:border-foreground/30'
+              }`}
+            >
+              <Building2 className="size-4 mb-1 mx-auto" />
+              Diagnostic Medical
+            </button>
+          </div>
+          <input type="hidden" name="empresa" value={empresa} />
+        </div>
+
         <div className="space-y-2">
           <label htmlFor="nome" className="text-sm font-medium text-foreground">Nome *</label>
           <Input id="nome" name="nome" defaultValue={contact?.nome ?? ''} required minLength={3} />
@@ -380,54 +440,61 @@ function ContactFormDialog({
           <label htmlFor="vendedor" className="text-sm font-medium text-foreground">Vendedor</label>
           <Input id="vendedor" name="vendedor" defaultValue={contact?.vendedor ?? ''} />
         </div>
-
-        {/* Interesses — Área Veterinária */}
         <div className="space-y-2">
-          <div className="flex items-center gap-2">
-            <Stethoscope className="size-4 text-primary" />
-            <span className="text-sm font-medium text-foreground">Interesses — Veterinária</span>
-          </div>
-          <div className="flex flex-wrap gap-2">
-            {INTERESSES_VET_PADRAO.map(item => (
-              <button
-                key={item}
-                type="button"
-                onClick={() => toggleVet(item)}
-                className={`rounded-full border px-3 py-1 text-xs font-medium transition-all ${
-                  selVet.includes(item)
-                    ? 'border-primary bg-primary text-primary-foreground shadow-sm'
-                    : 'border-border text-muted hover:border-foreground/30 hover:text-foreground'
-                }`}
-              >
-                {item}
-              </button>
-            ))}
-          </div>
+          <label htmlFor="evento" className="text-sm font-medium text-foreground">Evento</label>
+          <Input id="evento" name="evento" defaultValue={contact?.evento ?? ''} placeholder="Ex: ABRAVEQ 2026, Congresso Médico..." />
         </div>
 
-        {/* Interesses — Área Humana */}
-        <div className="space-y-2">
-          <div className="flex items-center gap-2">
-            <Syringe className="size-4 text-accent" />
-            <span className="text-sm font-medium text-foreground">Interesses — Humana</span>
+        {/* Interesses conforme empresa selecionada */}
+        {empresa === 'vet' && (
+          <div className="space-y-2">
+            <div className="flex items-center gap-2">
+              <Stethoscope className="size-4 text-primary" />
+              <span className="text-sm font-medium text-foreground">Interesses — Veterinária</span>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              {INTERESSES_VET_PADRAO.map(item => (
+                <button
+                  key={item}
+                  type="button"
+                  onClick={() => toggleVet(item)}
+                  className={`rounded-full border px-3 py-1 text-xs font-medium transition-all ${
+                    selVet.includes(item)
+                      ? 'border-primary bg-primary text-primary-foreground shadow-sm'
+                      : 'border-border text-muted hover:border-foreground/30 hover:text-foreground'
+                  }`}
+                >
+                  {item}
+                </button>
+              ))}
+            </div>
           </div>
-          <div className="flex flex-wrap gap-2">
-            {INTERESSES_HUMANO_PADRAO.map(item => (
-              <button
-                key={item}
-                type="button"
-                onClick={() => toggleHumano(item)}
-                className={`rounded-full border px-3 py-1 text-xs font-medium transition-all ${
-                  selHumano.includes(item)
-                    ? 'border-accent bg-accent text-accent-foreground shadow-sm'
-                    : 'border-border text-muted hover:border-foreground/30 hover:text-foreground'
-                }`}
-              >
-                {item}
-              </button>
-            ))}
+        )}
+
+        {empresa === 'humana' && (
+          <div className="space-y-2">
+            <div className="flex items-center gap-2">
+              <Syringe className="size-4 text-accent" />
+              <span className="text-sm font-medium text-foreground">Interesses — Humana</span>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              {INTERESSES_HUMANO_PADRAO.map(item => (
+                <button
+                  key={item}
+                  type="button"
+                  onClick={() => toggleHumano(item)}
+                  className={`rounded-full border px-3 py-1 text-xs font-medium transition-all ${
+                    selHumano.includes(item)
+                      ? 'border-accent bg-accent text-accent-foreground shadow-sm'
+                      : 'border-border text-muted hover:border-foreground/30 hover:text-foreground'
+                  }`}
+                >
+                  {item}
+                </button>
+              ))}
+            </div>
           </div>
-        </div>
+        )}
 
         <div className="space-y-2">
           <label htmlFor="observacoes" className="text-sm font-medium text-foreground">Observações</label>

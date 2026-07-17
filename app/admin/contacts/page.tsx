@@ -27,8 +27,8 @@ export default async function ContactsPage() {
   return (
     <div className="space-y-6">
       <AdminPageHeader
-        title="Contatos"
-        description={`${total} contato${total !== 1 ? 's' : ''} cadastrado${total !== 1 ? 's' : ''}`}
+        title="Leads"
+        description={`${total} lead${total !== 1 ? 's' : ''} cadastrado${total !== 1 ? 's' : ''}`}
       />
       <ContactsClient contacts={data} totalCount={total} />
     </div>
