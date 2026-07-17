@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { Search, Plus, Trash2, Edit3, Inbox, Mail, Phone, Stethoscope, Syringe, Building2, MessageSquare, Send, Loader2 } from 'lucide-react'
 import { toast } from 'sonner'
@@ -43,6 +43,18 @@ export function ContactsClient({ contacts: initialContacts }: ContactsClientProp
   const [currentPage, setCurrentPage] = useState(1)
   const [editContact, setEditContact] = useState<Contact | null>(null)
   const [showForm, setShowForm] = useState(false)
+
+  // Ctrl+K para focar na busca
+  useEffect(() => {
+    function handleKeyDown(e: KeyboardEvent) {
+      if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+        e.preventDefault()
+        document.querySelector<HTMLInputElement>('input[placeholder*="Buscar"]')?.focus()
+      }
+    }
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [])
   const [whatsappContact, setWhatsappContact] = useState<Contact | null>(null)
   const [whatsappMsg, setWhatsappMsg] = useState('')
   const [whatsappEnviando, setWhatsappEnviando] = useState(false)
@@ -212,7 +224,7 @@ export function ContactsClient({ contacts: initialContacts }: ContactsClientProp
         <div className="relative flex-1 min-w-[200px] max-w-md">
           <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted" />
           <Input
-            placeholder="Buscar por nome, email ou telefone..."
+            placeholder="Buscar por nome, email ou telefone... (Ctrl+K)"
             value={busca}
             onChange={e => { setBusca(e.target.value); setCurrentPage(1) }}
             className="pl-9"
@@ -447,6 +459,7 @@ export function ContactsClient({ contacts: initialContacts }: ContactsClientProp
                           onClick={() => setEditContact(contact)}
                           className="rounded-md p-2 text-muted hover:text-foreground hover:bg-white/5 transition-colors"
                           aria-label={`Editar ${contact.nome}`}
+                          title={`Editar ${contact.nome}`}
                         >
                           <Edit3 className="size-4" />
                         </button>
@@ -455,6 +468,7 @@ export function ContactsClient({ contacts: initialContacts }: ContactsClientProp
                             onClick={() => { setWhatsappContact(contact); setWhatsappMsg('') }}
                             className="rounded-md p-2 text-muted hover:text-green-400 hover:bg-green-500/10 transition-colors"
                             aria-label={`WhatsApp ${contact.nome}`}
+                            title={`Enviar WhatsApp para ${contact.nome}`}
                           >
                             <MessageSquare className="size-4" />
                           </button>
@@ -463,6 +477,7 @@ export function ContactsClient({ contacts: initialContacts }: ContactsClientProp
                           onClick={() => handleDelete(contact.id, contact.nome)}
                           className="rounded-md p-2 text-muted hover:text-red-400 hover:bg-red-500/10 transition-colors"
                           aria-label={`Excluir ${contact.nome}`}
+                          title={`Excluir ${contact.nome}`}
                         >
                           <Trash2 className="size-4" />
                         </button>

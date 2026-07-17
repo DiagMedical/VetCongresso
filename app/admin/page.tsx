@@ -1,4 +1,5 @@
-import { Users, Kanban, DollarSign, TrendingUp, Target, Award, BarChart3 } from 'lucide-react'
+import { Users, Kanban, DollarSign, TrendingUp, Target, Award, BarChart3, ExternalLink } from 'lucide-react'
+import Link from 'next/link'
 import { AnimatedKpi } from '@/components/admin/animated-kpi'
 import { AdminPageHeader } from '@/components/admin/page-header'
 import { BackToTop } from '@/components/back-to-top'
@@ -198,9 +199,9 @@ export default async function AdminDashboard() {
           ) : (
             <div className="space-y-3">
               {data.leads_sem_followup.map(lead => (
-                <div key={lead.id} className="flex items-start gap-3 rounded-xl border border-border bg-card p-3">
+                <Link key={lead.id} href="/admin/contacts" className="flex items-start gap-3 rounded-xl border border-border bg-card p-3 hover:ring-1 hover:ring-accent/20 transition-all group">
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-foreground">{lead.nome}</p>
+                    <p className="text-sm font-medium text-foreground group-hover:text-accent transition-colors">{lead.nome}</p>
                     <p className="text-xs text-muted truncate">{lead.email ?? lead.telefone ?? '—'}</p>
                     <div className="flex items-center gap-2 mt-1">
                       {lead.empresa && (
@@ -211,7 +212,8 @@ export default async function AdminDashboard() {
                       {lead.evento && <span className="text-[10px] text-muted">{lead.evento}</span>}
                     </div>
                   </div>
-                </div>
+                  <ExternalLink className="size-3 text-muted/30 group-hover:text-accent transition-colors shrink-0 mt-0.5" />
+                </Link>
               ))}
             </div>
           )}
@@ -228,9 +230,9 @@ export default async function AdminDashboard() {
           ) : (
             <div className="space-y-3">
               {data.deals_parados.map(deal => (
-                <div key={deal.id} className="flex items-start gap-3 rounded-xl border border-border bg-card p-3">
+                <Link key={deal.id} href="/admin/deals" className="flex items-start gap-3 rounded-xl border border-border bg-card p-3 hover:ring-1 hover:ring-accent/20 transition-all group">
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-foreground">{deal.titulo}</p>
+                    <p className="text-sm font-medium text-foreground group-hover:text-accent transition-colors">{deal.titulo}</p>
                     <p className="text-xs text-muted">{deal.contact?.nome ?? 'Sem contato'}</p>
                     <div className="flex items-center gap-2 mt-1">
                       <span className="rounded-full bg-primary/10 px-2 py-0.5 text-[10px] font-medium text-primary">
@@ -244,7 +246,8 @@ export default async function AdminDashboard() {
                       )}
                     </div>
                   </div>
-                </div>
+                  <ExternalLink className="size-3 text-muted/30 group-hover:text-accent transition-colors shrink-0 mt-0.5" />
+                </Link>
               ))}
             </div>
           )}
