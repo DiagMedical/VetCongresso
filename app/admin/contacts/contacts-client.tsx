@@ -26,9 +26,15 @@ interface ContactsClientProps {
   totalCount: number
 }
 
+type AbaType = 'todos' | 'leads' | 'manuais'
+
+const ORIGENS_LEADS = ['site', 'sorteio']
+const ORIGENS_MANUAIS = ['manual', '']
+
 export function ContactsClient({ contacts: initialContacts }: ContactsClientProps) {
   const router = useRouter()
   const [contacts, setContacts] = useState(initialContacts)
+  const [aba, setAba] = useState<AbaType>('todos')
   const [busca, setBusca] = useState('')
   const [filtroVendedor, setFiltroVendedor] = useState('')
   const [currentPage, setCurrentPage] = useState(1)
@@ -36,9 +42,24 @@ export function ContactsClient({ contacts: initialContacts }: ContactsClientProp
   const [showForm, setShowForm] = useState(false)
   const pageSize = 20
 
-  // Filtro + ordenação
+  // Contagens por aba
+  const totais = useMemo(() => ({
+    todos: contacts.length,
+    leads: contacts.filter(c => ORIGENS_LEADS.includes(c.origem)).length,
+    manuais: contacts.filter(c => ORIGENS_MANUAIS.includes(c.origem)).length,
+  }), [contacts])
+
+  // Filtro (aba + busca + vendedor)
   const filtrados = useMemo(() => {
     let result = [...contacts]
+
+    // Filtro por aba
+    if (aba === 'leads') {
+      result = result.filter(c => ORIGENS_LEADS.includes(c.origem))
+    } else if (aba === 'manuais') {
+      result = result.filter(c => ORIGENS_MANUAIS.includes(c.origem))
+    }
+
     if (busca) {
       const q = busca.toLowerCase()
       result = result.filter(c =>
@@ -51,7 +72,7 @@ export function ContactsClient({ contacts: initialContacts }: ContactsClientProp
       result = result.filter(c => c.vendedor === filtroVendedor)
     }
     return result
-  }, [contacts, busca, filtroVendedor])
+  }, [contacts, aba, busca, filtroVendedor])
 
   const totalPages = Math.ceil(filtrados.length / pageSize)
   const paginados = filtrados.slice((currentPage - 1) * pageSize, currentPage * pageSize)
@@ -114,6 +135,24 @@ export function ContactsClient({ contacts: initialContacts }: ContactsClientProp
 
   return (
     <div className="space-y-4">
+      {/* Abas: Todos / Leads / Manuais */}
+      <div className="flex gap-1 rounded-lg border border-border p-1 w-fit">
+        {([{ key: 'todos', label: 'Todos' }, { key: 'leads', label: 'Leads' }, { key: 'manuais', label: 'Manuais' }] as const).map(tab => (
+          <button
+            key={tab.key}
+            onClick={() => { setAba(tab.key); setCurrentPage(1) }}
+            className={`rounded-md px-4 py-1.5 text-xs font-medium transition-colors ${
+              aba === tab.key
+                ? 'bg-primary text-primary-foreground shadow-sm'
+                : 'text-muted hover:text-foreground'
+            }`}
+          >
+            {tab.label}
+            <span className="ml-1.5 opacity-60">({totais[tab.key]})</span>
+          </button>
+        ))}
+      </div>
+
       {/* Busca e filtros */}
       <div className="flex flex-wrap items-center gap-3">
         <div className="relative flex-1 min-w-[200px] max-w-md">
@@ -154,7 +193,13 @@ export function ContactsClient({ contacts: initialContacts }: ContactsClientProp
           <div className="flex flex-col items-center gap-3 py-12 text-center">
             <Inbox className="size-12 text-muted/40" />
             <p className="text-sm text-muted">
-              {busca ? 'Nenhum contato encontrado para esta busca.' : 'Nenhum contato cadastrado.'}
+              {busca
+                ? 'Nenhum contato encontrado para esta busca.'
+                : aba === 'leads'
+                  ? 'Nenhum lead encontrado. Leads vêm do site ou sorteio.'
+                  : aba === 'manuais'
+                    ? 'Nenhum contato manual. Crie um novo contato com o botão acima.'
+                    : 'Nenhum contato cadastrado.'}
             </p>
           </div>
         ) : (
