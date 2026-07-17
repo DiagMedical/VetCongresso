@@ -5,6 +5,44 @@ This version has breaking changes — APIs, conventions, and file structure may 
 <!-- END:nextjs-agent-rules -->
 
 <!-- BEGIN:opencode-session -->
+## Session — 17/07/2026 (3)
+
+### Leads: Empresa + Evento + Filtros Refatorados
+
+**Problemas resolvidos:**
+- Leads de Diagnostic Vet (veterinária) e Diagnostic Medical (humana) estavam misturadas sem distinção
+- Não havia campo de evento para saber em qual campanha/evento a lead foi capturada
+- Filtro por evento como abas não escalava com muitos eventos
+- Leads existentes precisavam ser migradas para ABRAVEQ 2026
+
+**Soluções:**
+
+1. **Colunas `empresa` + `evento`** em contacts — `empresa` = 'vet' | 'humana', `evento` = texto livre. Migration em `scripts/add-empresa-evento.sql`.
+
+2. **Migração** — Leads existentes → `empresa=vet, evento=ABRAVEQ 2026`.
+
+3. **Toggle Empresa no formulário** — Botões lado a lado "Diagnostic Vet" / "Diagnostic Medical" com destaque visual (azul/cyan). Interesses aparecem conforme a empresa selecionada.
+
+4. **Filtros refatorados** — Select de evento (escalável), abas Todos/Leads/Manuais, select de empresa, busca por nome/email/telefone, select de vendedor. Todos combinam entre si.
+
+5. **Nav** — "Contatos" renomeado para "Leads".
+
+**Arquivos alterados/novos:**
+- `scripts/add-empresa-evento.sql` (novo)
+- `types/index.ts` — empresa, evento em Contact
+- `lib/schemas.ts` — campos nos schemas
+- `lib/actions/crm.ts` — persistência
+- `components/admin/nav.tsx` — Contatos → Leads
+- `app/admin/contacts/contacts-client.tsx` — refatorado (filtros + form + tabela)
+- `app/admin/contacts/page.tsx` — título Leads
+- `scripts/crm-schema.sql` — colunas no CREATE TABLE
+
+**Commits:**
+- `b5825b1` — "Leads: empresa (vet/humana) + evento + toggle no form + filtro + coluna + migration"
+- `669b3c7` — "Leads: adiciona coluna Evento na tabela"
+- `06e9b44` — "Leads: filtro de Evento como abas principal"
+- `445acdf` — "Leads: refatora filtros - evento em select + abas tipo + empresa + busca"
+
 ## Session — 17/07/2026 (2)
 
 ### Contatos: Abas Todos/Leads/Manuais + Interesses Vet/Humano
