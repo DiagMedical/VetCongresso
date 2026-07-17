@@ -5,18 +5,21 @@ import type { ReactNode } from 'react'
 
 interface AnimatedKpiProps {
   title: string
-  value: number
+  value: number | string
   icon: ReactNode
   suffix?: string
   className?: string
 }
 
 export function AnimatedKpi({ title, value, icon, suffix, className }: AnimatedKpiProps) {
-  const [display, setDisplay] = useState(0)
+  const isStringVal = typeof value === 'string'
+  const numericVal = isStringVal ? 0 : value
+  const [display, setDisplay] = useState(isStringVal ? 0 : 0)
   const ref = useRef<HTMLDivElement>(null)
   const counted = useRef(false)
 
   useEffect(() => {
+    if (isStringVal) return
     const el = ref.current
     if (!el || counted.current) return
 
@@ -26,12 +29,12 @@ export function AnimatedKpi({ title, value, icon, suffix, className }: AnimatedK
           counted.current = true
           const duration = 600
           const steps = 30
-          const increment = value / steps
+          const increment = numericVal / steps
           let current = 0
           const timer = setInterval(() => {
             current += increment
-            if (current >= value) {
-              setDisplay(value)
+            if (current >= numericVal) {
+              setDisplay(numericVal)
               clearInterval(timer)
             } else {
               setDisplay(Math.round(current))
@@ -44,7 +47,7 @@ export function AnimatedKpi({ title, value, icon, suffix, className }: AnimatedK
 
     observer.observe(el)
     return () => observer.disconnect()
-  }, [value])
+  }, [isStringVal, numericVal])
 
   return (
     <div ref={ref} className={`flex items-center gap-4 rounded-lg border border-border bg-card p-4 animate-fade-in hover:ring-accent/20 hover:shadow-[0_0_8px_hsl(var(--accent)/0.1)] transition-all duration-300 ${className ?? ''}`}>
@@ -52,7 +55,7 @@ export function AnimatedKpi({ title, value, icon, suffix, className }: AnimatedK
       <div>
         <p className="text-sm text-muted">{title}</p>
         <p className="text-2xl font-bold text-foreground tabular-nums">
-          {display}{suffix ?? ''}
+          {isStringVal ? value : `${display}${suffix ?? ''}`}
         </p>
       </div>
     </div>
