@@ -5,6 +5,51 @@ This version has breaking changes — APIs, conventions, and file structure may 
 <!-- END:nextjs-agent-rules -->
 
 <!-- BEGIN:opencode-session -->
+## Session — 17/07/2026
+
+### Transformação VetCongresso → DiagnosticCRM
+
+**Problema resolvido:**
+- App de reservas do congresso ABRAVEQ (evento já realizado) precisava se transformar em CRM SaaS
+- DNS/IPv6 impedia conexão direta ao PostgreSQL (Tailscale MagicDNS + IPv6-only)
+- Pooler do Supabase não reconhecia o projeto (plano sem pooler)
+
+**Soluções:**
+
+1. **Fase 1 — Schema CRM** — `scripts/crm-schema.sql` com 4 tabelas (contacts, pipeline_stages, deals, activities). Migração de dados existentes (inscritos → contacts, sorteio_leads → contacts). Seed de 7 estágios do pipeline. Types (Contact, Deal, PipelineStage, Activity), Zod schemas e server actions completas em `lib/actions/crm.ts`.
+
+2. **Fase 2 — Navegação** — Root redirect (`/` → `/admin`), header sem link "Site", nav atualizada (removidos Palestras/Scanner/Sorteio/Certificados; adicionados Contatos/Pipeline/Atividades).
+
+3. **Fase 3 — Páginas CRM** — Contatos (CRUD com busca/filtros), Pipeline (Kanban + tabela com drag & drop/select), Atividades (timeline com filtro por tipo), Dashboard (KPIs: contatos, deals, pipeline, conversão).
+
+4. **Fase 5 — Legado oculto** — Código intacto, apenas removido da navegação.
+
+5. **Fase 6 — Branding** — Meta tags e manifest atualizados para "DiagnosticCRM".
+
+**Arquivos criados/modificados:**
+- `scripts/crm-schema.sql`, `scripts/apply-crm.mjs` (novo)
+- `types/index.ts` — Contact, Deal, PipelineStage, Activity, CrmDashboardData
+- `lib/schemas.ts` — contactSchema, dealSchema, pipelineStageSchema, activitySchema
+- `lib/actions/crm.ts` (novo)
+- `app/page.tsx` — redirect → /admin
+- `components/admin/nav.tsx` — links do CRM
+- `components/admin/header.tsx` — sem link "Site"
+- `app/admin/contacts/` (novo) — CRUD contatos
+- `app/admin/deals/` (novo) — Pipeline Kanban
+- `app/admin/activities/` (novo) — Timeline
+- `app/admin/page.tsx` — Dashboard CRM
+- `app/layout.tsx` — meta tags DiagnosticCRM
+- `public/manifest.json` — DiagnosticCRM
+- `PLANO-TRANSFORMACAO-CRM.md` — status atualizado
+- `README.md` — documentação do CRM
+- `components/admin/animated-kpi.tsx` — suporte a string values
+
+**Commits:**
+- `6f58238` — "Fase 1 — Schema CRM + Types + Zod + Server Actions"
+- `38407ff` — "Fase 2 — Navegação e Estrutura (CRM)"
+- `f5d7aa9` — "Fase 3 — Páginas do CRM"
+- `ec16ed1` — "Fase 6 — Branding: DiagnosticCRM (meta tags + manifest)"
+
 ## Session — 25/06/2026
 
 ### QR Code + RLS + Admin Management + Login

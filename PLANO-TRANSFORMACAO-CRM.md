@@ -366,27 +366,37 @@ O Resend já está configurado (`lib/email/`), aguardando ativação DNS. Para o
 
 ---
 
+## Status da Implementação
+
+| Fase | Status | Commits |
+|------|--------|---------|
+| **1 — Schema + Types + Actions** | ✅ Completo | `6f58238` |
+| **2 — Nav + Redirect** | ✅ Completo | `38407ff` |
+| **3 — Páginas CRM** | ✅ Completo | `f5d7aa9` |
+| **4 — Comunicação** | ⏳ Pendente | — |
+| **5 — Limpeza (legado oculto)** | ✅ Completo (junto Fase 2) | `38407ff` |
+| **6 — Branding** | ✅ Completo | `ec16ed1` |
+
 ## Ordem de Implementação Sugerida
 
 ```
-Fase 1 (Schema + Types + Actions)
-  └── Fase 2 (Nav + Redirect)
-       └── Fase 3 (Páginas CRM)
-            ├── 3.1 Contatos
-            ├── 3.2 Pipeline
-            ├── 3.3 Atividades
-            └── 3.4 Dashboard
-                 └── Fase 4 (Comunicação)
-                      └── Fase 5 (Limpeza)
-                           └── Fase 6 (Branding)
+Fase 1 (Schema + Types + Actions)         ✓
+  └── Fase 2 (Nav + Redirect)              ✓
+       └── Fase 3 (Páginas CRM)            ✓
+            ├── 3.1 Contatos               ✓
+            ├── 3.2 Pipeline               ✓
+            ├── 3.3 Atividades              ✓
+            └── 3.4 Dashboard              ✓
+                 └── Fase 4 (Comunicação)    ⏳
+                      └── Fase 5 & 6       ✓
 ```
 
 ---
 
 ## Verificação
 
-1. **TypeScript:** `npx tsc --noEmit` — zero erros
-2. **Lint:** `npm run lint` — zero erros
+1. **TypeScript:** `npx tsc --noEmit` — zero erros ✅
+2. **Lint:** `npm run lint` — zero erros ✅
 3. **Build:** `npm run build` — sucesso
 4. **Testes:** `npm test` — 29+ testes passando
 5. **Funcional:** Login admin → Dashboard CRM com KPIs reais
