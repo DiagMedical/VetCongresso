@@ -70,6 +70,8 @@ export interface CrmDashboardData {
   ranking_vendedores: { vendedor: string; total_deals: number; valor_total: number }[]
   deals_recentes: (Deal & { contact?: Contact | null; stage?: PipelineStage | null })[]
   atividades_recentes: Activity[]
+  leads_sem_followup: (Contact & { ultima_atividade?: string | null })[]
+  deals_parados: (Deal & { contact?: Contact | null; stage?: PipelineStage | null; dias_parado: number })[]
 }
 
 // ============================================================

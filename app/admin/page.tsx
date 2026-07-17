@@ -21,6 +21,8 @@ export default async function AdminDashboard() {
       ranking_vendedores: [],
       deals_recentes: [],
       atividades_recentes: [],
+      leads_sem_followup: [],
+      deals_parados: [],
     }
   }
 
@@ -160,6 +162,72 @@ export default async function AdminDashboard() {
           </div>
         )}
       </section>
+
+      {/* Ações Rápidas */}
+      <div className="grid gap-6 lg:grid-cols-2">
+        {/* Leads sem Follow-up */}
+        <section className="rounded-2xl border border-border bg-card/80 p-5 shadow-[0_0_0_1px_hsl(var(--border))] backdrop-blur-sm">
+          <h3 className="mb-4 text-sm font-semibold text-foreground flex items-center gap-2">
+            <span className="size-2 rounded-full bg-red-500 animate-pulse" />
+            Leads sem Follow-up
+          </h3>
+          {data.leads_sem_followup.length === 0 ? (
+            <p className="text-sm text-muted/60 py-4 text-center">Todas as leads tiveram contato!</p>
+          ) : (
+            <div className="space-y-3">
+              {data.leads_sem_followup.map(lead => (
+                <div key={lead.id} className="flex items-start gap-3 rounded-xl border border-border bg-card p-3">
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium text-foreground">{lead.nome}</p>
+                    <p className="text-xs text-muted truncate">{lead.email ?? lead.telefone ?? '—'}</p>
+                    <div className="flex items-center gap-2 mt-1">
+                      {lead.empresa && (
+                        <span className={`rounded-full px-2 py-0.5 text-[10px] font-medium ${
+                          lead.empresa === 'vet' ? 'bg-primary/10 text-primary' : 'bg-accent/10 text-accent'
+                        }`}>{lead.empresa === 'vet' ? 'Vet' : 'Humana'}</span>
+                      )}
+                      {lead.evento && <span className="text-[10px] text-muted">{lead.evento}</span>}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </section>
+
+        {/* Deals Parados */}
+        <section className="rounded-2xl border border-border bg-card/80 p-5 shadow-[0_0_0_1px_hsl(var(--border))] backdrop-blur-sm">
+          <h3 className="mb-4 text-sm font-semibold text-foreground flex items-center gap-2">
+            <span className="size-2 rounded-full bg-yellow-500 animate-pulse" />
+            Deals Parados
+          </h3>
+          {data.deals_parados.length === 0 ? (
+            <p className="text-sm text-muted/60 py-4 text-center">Nenhum deal parado!</p>
+          ) : (
+            <div className="space-y-3">
+              {data.deals_parados.map(deal => (
+                <div key={deal.id} className="flex items-start gap-3 rounded-xl border border-border bg-card p-3">
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium text-foreground">{deal.titulo}</p>
+                    <p className="text-xs text-muted">{deal.contact?.nome ?? 'Sem contato'}</p>
+                    <div className="flex items-center gap-2 mt-1">
+                      <span className="rounded-full bg-primary/10 px-2 py-0.5 text-[10px] font-medium text-primary">
+                        {deal.stage?.nome ?? '—'}
+                      </span>
+                      <span className="text-[10px] text-yellow-400 font-medium">
+                        {deal.dias_parado}d parado
+                      </span>
+                      {deal.valor > 0 && (
+                        <span className="text-[10px] text-muted">{fmt(deal.valor)}</span>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </section>
+      </div>
 
       {/* Atividades Recentes */}
       <section className="rounded-2xl border border-border bg-card/80 p-5 shadow-[0_0_0_1px_hsl(var(--border))] backdrop-blur-sm">

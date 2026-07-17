@@ -383,6 +383,8 @@ export async function getCrmDashboardData(): Promise<CrmDashboardData> {
     dealsPorStageRes,
     dealsCompletosRes,
     atividadesRecentesRes,
+    contactIdsComAtividadeRes,
+    leadsSemFollowupRes,
   ] = await Promise.all([
     supabase.from('contacts').select('*', { count: 'exact', head: true }),
     stageIdsAbertos.length > 0
@@ -397,6 +399,10 @@ export async function getCrmDashboardData(): Promise<CrmDashboardData> {
       .order('created_at', { ascending: false })
       .limit(5),
     supabase.from('activities').select('*').order('data_atividade', { ascending: false }).limit(10),
+    // IDs de contatos que têm atividades
+    supabase.from('activities').select('contact_id').not('contact_id', 'is', null),
+    // Contatos sem nenhuma atividade (leads sem follow-up)
+    supabase.from('contacts').select('*').order('created_at', { ascending: false }).limit(100),
   ])
 
   const totalContatos = totalContatosRes.count
@@ -405,6 +411,23 @@ export async function getCrmDashboardData(): Promise<CrmDashboardData> {
   const dealsPorStage = 'data' in dealsPorStageRes ? (dealsPorStageRes.data ?? []) : []
   const dealsCompletos = 'data' in dealsCompletosRes ? (dealsCompletosRes.data ?? []) : []
   const atividadesRecentes = 'data' in atividadesRecentesRes ? (atividadesRecentesRes.data ?? []) : []
+  const contactIdsComAtividade = 'data' in contactIdsComAtividadeRes ? (contactIdsComAtividadeRes.data ?? []).map(a => a.contact_id).filter(Boolean) : []
+  const todosContatos = 'data' in leadsSemFollowupRes ? (leadsSemFollowupRes.data ?? []) : []
+
+  // Leads sem follow-up (contatos sem nenhuma atividade vinculada)
+  const leadsSemFollowup = todosContatos
+    .filter(c => !contactIdsComAtividade.includes(c.id))
+    .slice(0, 5) as CrmDashboardData['leads_sem_followup']
+
+  // Deals parados (abertos, não movidos há mais tempo)
+  const dealsParados = (dealsCompletos as (Deal & { contact?: Contact | null; stage?: PipelineStage | null })[])
+    .filter(d => d.stage_id && !stageIdsFechados.includes(d.stage_id) && stageIdsAbertos.includes(d.stage_id))
+    .sort((a, b) => new Date(a.updated_at ?? a.created_at).getTime() - new Date(b.updated_at ?? b.created_at).getTime())
+    .slice(0, 5)
+    .map(d => ({
+      ...d,
+      dias_parado: Math.floor((Date.now() - new Date(d.updated_at ?? d.created_at).getTime()) / (1000 * 60 * 60 * 24)),
+    })) as CrmDashboardData['deals_parados']
 
   // Valor total do pipeline
   const valorPipeline = dealsPorStage
@@ -459,5 +482,7 @@ export async function getCrmDashboardData(): Promise<CrmDashboardData> {
       .sort((a, b) => b.valor_total - a.valor_total),
     deals_recentes: dealsCompletos as CrmDashboardData['deals_recentes'],
     atividades_recentes: (atividadesRecentes ?? []) as Activity[],
+    leads_sem_followup: leadsSemFollowup,
+    deals_parados: dealsParados,
   }
 }
