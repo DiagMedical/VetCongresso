@@ -1060,9 +1060,18 @@ This version has breaking changes — APIs, conventions, and file structure may 
 - `app/admin/contacts/loading.tsx` — Contatos → Leads
 - `components/admin/nav.tsx` — +Certificados
 
+**Arquivos alterados (17/07/2026 — continuação):**
+- `public/icon.svg` — cavalo → letra "D" (Diagnostic) com gradiente indigo-cyan
+- `public/icon-192.png` (regenerado)
+- `public/icon-512.png` (regenerado)
+- `app/admin/login/page.tsx` — `router.replace()` → `window.location.href` + aguarda sessão
+
 **Commits:**
 - `bf31be5` — "PWA completo: service worker com cache offline + offline fallback page + viewport fit"
 - `ef6dfd8` — "Dashboard: Deals Recentes com cards mobile (md:hidden)"
 - `5a6d161` — "Loading scanner + fix Contatos→Leads no skeleton"
 - `d01d62d` — "Kanban mobile + Certificados nav + AGENTS.md"
+- `f1cbf6e` — "MELHORIAS.md: plano de melhorias pós-auditoria"
+- `39ca489` — "Ícone PWA: cavalo → letra D (Diagnostic) com gradiente indigo-cyan"
+- `5628bd6` — "Fix login: wait for session cookie + window.location.href (server-side nav)"
 <!-- END:opencode-session -->
