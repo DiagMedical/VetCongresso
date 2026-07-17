@@ -8,7 +8,7 @@ export default async function EventosPage() {
 
   const { data: eventos, error } = await supabase
     .from('eventos')
-    .select('*, total_contacts:contacts(count)')
+    .select('*')
     .order('nome')
 
   if (error) {
@@ -22,9 +22,23 @@ export default async function EventosPage() {
     )
   }
 
+  // Contar quantos contacts têm cada evento (texto)
+  const { data: contagens } = await supabase
+    .from('contacts')
+    .select('evento')
+
+  const countMap = new Map<string, number>()
+  if (contagens) {
+    for (const c of contagens) {
+      if (c.evento) {
+        countMap.set(c.evento, (countMap.get(c.evento) ?? 0) + 1)
+      }
+    }
+  }
+
   const eventosComContagem = (eventos ?? []).map((e) => ({
     ...e,
-    total_contacts: (e as unknown as { total_contacts: { count: number }[] }).total_contacts?.[0]?.count ?? 0,
+    total_contacts: countMap.get(e.nome) ?? 0,
   })) as (Evento & { total_contacts: number })[]
 
   return (
