@@ -61,11 +61,12 @@ export interface CrmDashboardData {
   total_contatos: number
   deals_abertos: number
   valor_pipeline: number
+  valor_pipeline_ponderado: number
   taxa_conversao: number
   deals_fechados_mes: number
-  contatos_por_vendedor: { vendedor: string; total: number }[]
-  deals_por_stage: { stage_id: string; stage_nome: string; total: number; valor: number }[]
-  leads_por_origem: { origem: string; total: number }[]
+  deals_por_stage: { stage_id: string; stage_nome: string; total: number; valor: number; probabilidade: number }[]
+  ranking_vendedores: { vendedor: string; total_deals: number; valor_total: number }[]
+  deals_recentes: (Deal & { contact?: Contact | null; stage?: PipelineStage | null })[]
   atividades_recentes: Activity[]
 }
 

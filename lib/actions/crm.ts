@@ -359,7 +359,7 @@ export async function getCrmDashboardData(): Promise<CrmDashboardData> {
   // Busca stages primeiro para usar nas queries
   const { data: allStages } = await supabase
     .from('pipeline_stages')
-    .select('id, nome')
+    .select('id, nome, probabilidade')
 
   const stageNomesFechados = ['Fechado']
   const stageIdsFechados = (allStages ?? [])
@@ -370,50 +370,49 @@ export async function getCrmDashboardData(): Promise<CrmDashboardData> {
     .filter(s => !['Fechado', 'Perdido'].includes(s.nome))
     .map(s => s.id)
 
+  const stageProbabilidade = new Map((allStages ?? []).map(s => [s.id, s.probabilidade]))
+
   const [
     totalContatosRes,
     dealsAbertosRes,
-    dealsDataRes,
     closedDealsRes,
-    contatosPorVendedorRes,
     dealsPorStageRes,
-    leadsPorOrigemRes,
+    dealsCompletosRes,
     atividadesRecentesRes,
   ] = await Promise.all([
     supabase.from('contacts').select('*', { count: 'exact', head: true }),
     stageIdsAbertos.length > 0
       ? supabase.from('deals').select('*', { count: 'exact', head: true }).in('stage_id', stageIdsAbertos)
       : { count: 0 },
-    supabase.from('deals').select('valor, stage_id'),
     stageIdsFechados.length > 0
       ? supabase.from('deals').select('id', { count: 'exact', head: true }).in('stage_id', stageIdsFechados)
       : { count: 0 },
-    supabase.from('contacts').select('vendedor').not('vendedor', 'eq', ''),
     supabase.from('deals').select('stage_id, valor'),
-    supabase.from('contacts').select('origem'),
+    supabase.from('deals')
+      .select('*, contact:contacts(*), stage:pipeline_stages(*)')
+      .order('created_at', { ascending: false })
+      .limit(5),
     supabase.from('activities').select('*').order('data_atividade', { ascending: false }).limit(10),
   ])
 
   const totalContatos = totalContatosRes.count
   const dealsAbertos = dealsAbertosRes.count
   const closedDealsCount = 'count' in closedDealsRes ? (closedDealsRes.count ?? 0) : 0
-  void dealsDataRes // used for future date-based filtering
-
-  const contatosPorVendedor = 'data' in contatosPorVendedorRes ? (contatosPorVendedorRes.data ?? []) : []
   const dealsPorStage = 'data' in dealsPorStageRes ? (dealsPorStageRes.data ?? []) : []
-  const leadsPorOrigem = 'data' in leadsPorOrigemRes ? (leadsPorOrigemRes.data ?? []) : []
+  const dealsCompletos = 'data' in dealsCompletosRes ? (dealsCompletosRes.data ?? []) : []
   const atividadesRecentes = 'data' in atividadesRecentesRes ? (atividadesRecentesRes.data ?? []) : []
 
+  // Valor total do pipeline
   const valorPipeline = dealsPorStage
     .filter(d => d.stage_id)
     .reduce((acc, d) => acc + Number(d.valor ?? 0), 0)
 
-  const contatosPorVendedorAgrupados = contatosPorVendedor.reduce<Record<string, number>>((acc, c) => {
-    const v = c.vendedor || 'Sem vendedor'
-    acc[v] = (acc[v] || 0) + 1
-    return acc
-  }, {})
+  // Valor ponderado (valor * probabilidade do estágio / 100)
+  const valorPipelinePonderado = dealsPorStage
+    .filter(d => d.stage_id)
+    .reduce((acc, d) => acc + (Number(d.valor ?? 0) * (stageProbabilidade.get(d.stage_id) ?? 0) / 100), 0)
 
+  // Agrupa deals por estágio (funil)
   const dealsPorStageAgrupados = dealsPorStage.reduce<Record<string, { total: number; valor: number }>>((acc, d) => {
     const s = d.stage_id
     if (!acc[s]) acc[s] = { total: 0, valor: 0 }
@@ -423,11 +422,12 @@ export async function getCrmDashboardData(): Promise<CrmDashboardData> {
   }, {})
 
   const stages = await listarPipelineStages()
-  const stageMap = new Map(stages.map(s => [s.id, s.nome]))
-
-  const leadsPorOrigemAgrupados = leadsPorOrigem.reduce<Record<string, number>>((acc, c) => {
-    const o = c.origem || 'manual'
-    acc[o] = (acc[o] || 0) + 1
+  // Ranking de vendedores (agrega por vendedor com valor total)
+  const rankingVendedores = dealsCompletos.reduce<Record<string, { total_deals: number; valor_total: number }>>((acc, d) => {
+    const v = d.vendedor || 'Sem vendedor'
+    if (!acc[v]) acc[v] = { total_deals: 0, valor_total: 0 }
+    acc[v].total_deals++
+    acc[v].valor_total += Number(d.valor ?? 0)
     return acc
   }, {})
 
@@ -435,22 +435,25 @@ export async function getCrmDashboardData(): Promise<CrmDashboardData> {
     total_contatos: totalContatos ?? 0,
     deals_abertos: dealsAbertos ?? 0,
     valor_pipeline: valorPipeline,
+    valor_pipeline_ponderado: Math.round(valorPipelinePonderado * 100) / 100,
     taxa_conversao: Math.round((closedDealsCount / (totalContatos ?? 1)) * 100),
     deals_fechados_mes: closedDealsCount,
-    contatos_por_vendedor: Object.entries(contatosPorVendedorAgrupados)
-      .map(([vendedor, total]) => ({ vendedor, total }))
-      .sort((a, b) => b.total - a.total),
     deals_por_stage: Object.entries(dealsPorStageAgrupados)
-      .map(([stage_id, { total, valor }]) => ({
-        stage_id,
-        stage_nome: stageMap.get(stage_id) ?? 'Desconhecido',
-        total,
-        valor,
-      }))
+      .map(([stage_id, { total, valor }]) => {
+        const stage = stages.find(s => s.id === stage_id)
+        return {
+          stage_id,
+          stage_nome: stage?.nome ?? 'Desconhecido',
+          total,
+          valor,
+          probabilidade: stage?.probabilidade ?? 0,
+        }
+      })
       .sort((a, b) => (stages.find(s => s.id === a.stage_id)?.ordem ?? 0) - (stages.find(s => s.id === b.stage_id)?.ordem ?? 0)),
-    leads_por_origem: Object.entries(leadsPorOrigemAgrupados)
-      .map(([origem, total]) => ({ origem, total }))
-      .sort((a, b) => b.total - a.total),
+    ranking_vendedores: Object.entries(rankingVendedores)
+      .map(([vendedor, { total_deals, valor_total }]) => ({ vendedor, total_deals, valor_total: Math.round(valor_total * 100) / 100 }))
+      .sort((a, b) => b.valor_total - a.valor_total),
+    deals_recentes: dealsCompletos as CrmDashboardData['deals_recentes'],
     atividades_recentes: (atividadesRecentes ?? []) as Activity[],
   }
 }
