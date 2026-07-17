@@ -540,3 +540,57 @@ export async function sendWhatsAppToContact(
   if (!result.sucesso) throw new Error(result.erro || 'Erro ao enviar WhatsApp')
   return { sucesso: true }
 }
+
+// ============================================================
+// Importação CSV
+// ============================================================
+
+export async function importarLeadsCSV(
+  csvText: string,
+  mapeamento: Record<string, string>
+): Promise<{ total: number; sucesso: number; erros: string[] }> {
+  const supabase = createServiceClient()
+  const linhas = csvText.split('\n').filter(Boolean)
+  const erros: string[] = []
+  let sucesso = 0
+
+  // Pula cabeçalho (primeira linha)
+  for (let i = 1; i < linhas.length; i++) {
+    try {
+      const cols = linhas[i].split(',').map(c => c.trim().replace(/^["']|["']$/g, ''))
+      const dados: Record<string, string> = {}
+      for (const [header, colIdx] of Object.entries(mapeamento)) {
+        dados[header] = cols[Number(colIdx)] || ''
+      }
+
+      if (!dados.nome || dados.nome.length < 3) {
+        erros.push(`Linha ${i + 1}: Nome inválido`)
+        continue
+      }
+
+      const { error } = await supabase.from('contacts').insert({
+        nome: dados.nome,
+        email: dados.email || null,
+        telefone: dados.telefone || null,
+        origem: 'manual',
+        vendedor: dados.vendedor || null,
+        empresa: dados.empresa || 'vet',
+        evento: dados.evento || null,
+        observacoes: dados.observacoes || null,
+        interesses_vet: dados.interesses_vet ? dados.interesses_vet.split(';').map(s => s.trim()).filter(Boolean) : [],
+        interesses_humano: dados.interesses_humano ? dados.interesses_humano.split(';').map(s => s.trim()).filter(Boolean) : [],
+        tags: [],
+      })
+
+      if (error) {
+        erros.push(`Linha ${i + 1}: ${error.message}`)
+      } else {
+        sucesso++
+      }
+    } catch {
+      erros.push(`Linha ${i + 1}: Erro inesperado`)
+    }
+  }
+
+  return { total: linhas.length - 1, sucesso, erros }
+}
