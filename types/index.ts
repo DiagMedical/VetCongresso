@@ -42,6 +42,7 @@ export interface Deal {
   descricao: string | null
   data_fechamento: string | null
   motivo_perda: string | null
+  stage_moved_at: string | null
   created_at: string
   updated_at: string
 }
@@ -72,6 +73,7 @@ export interface CrmDashboardData {
   atividades_recentes: Activity[]
   leads_sem_followup: (Contact & { ultima_atividade?: string | null })[]
   deals_parados: (Deal & { contact?: Contact | null; stage?: PipelineStage | null; dias_parado: number })[]
+  tempo_medio_por_stage: { stage_id: string; stage_nome: string; total_deals: number; dias_medio: number }[]
 }
 
 // ============================================================

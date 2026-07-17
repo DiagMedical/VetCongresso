@@ -23,6 +23,7 @@ export default async function AdminDashboard() {
       atividades_recentes: [],
       leads_sem_followup: [],
       deals_parados: [],
+      tempo_medio_por_stage: [],
     }
   }
 
@@ -164,6 +165,27 @@ export default async function AdminDashboard() {
       </section>
 
       {/* Ações Rápidas */}
+      {/* Tempo Médio no Pipeline */}
+      <section className="rounded-2xl border border-border bg-card/80 p-5 shadow-[0_0_0_1px_hsl(var(--border))] backdrop-blur-sm">
+        <h3 className="mb-4 text-sm font-semibold text-foreground">⏱️ Tempo Médio no Pipeline</h3>
+        {data.tempo_medio_por_stage.length === 0 ? (
+          <p className="text-sm text-muted/60 py-4 text-center">Sem dados suficientes.</p>
+        ) : (
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            {data.tempo_medio_por_stage.map(stage => (
+              <div key={stage.stage_id} className="rounded-xl border border-border bg-card p-4">
+                <p className="text-xs text-muted">{stage.stage_nome}</p>
+                <p className="mt-1 text-2xl font-bold text-foreground tabular-nums">
+                  {stage.dias_medio}
+                  <span className="text-sm font-normal text-muted ml-1">dias</span>
+                </p>
+                <p className="text-xs text-muted/60 mt-1">{stage.total_deals} deals</p>
+              </div>
+            ))}
+          </div>
+        )}
+      </section>
+
       <div className="grid gap-6 lg:grid-cols-2">
         {/* Leads sem Follow-up */}
         <section className="rounded-2xl border border-border bg-card/80 p-5 shadow-[0_0_0_1px_hsl(var(--border))] backdrop-blur-sm">

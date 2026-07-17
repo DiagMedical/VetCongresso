@@ -279,6 +279,7 @@ export async function moveDealStage(id: string, stageId: string): Promise<Deal> 
     .from('deals')
     .update({
       stage_id: stageId,
+      stage_moved_at: new Date().toISOString(),
       data_fechamento: isClosed ? new Date().toISOString() : null,
       updated_at: new Date().toISOString(),
     })
@@ -423,11 +424,11 @@ export async function getCrmDashboardData(): Promise<CrmDashboardData> {
   // Deals parados (abertos, não movidos há mais tempo)
   const dealsParados = (dealsCompletos as (Deal & { contact?: Contact | null; stage?: PipelineStage | null })[])
     .filter(d => d.stage_id && !stageIdsFechados.includes(d.stage_id) && stageIdsAbertos.includes(d.stage_id))
-    .sort((a, b) => new Date(a.updated_at ?? a.created_at).getTime() - new Date(b.updated_at ?? b.created_at).getTime())
+    .sort((a, b) => new Date(a.stage_moved_at ?? a.created_at).getTime() - new Date(b.stage_moved_at ?? b.created_at).getTime())
     .slice(0, 5)
     .map(d => ({
       ...d,
-      dias_parado: Math.floor((Date.now() - new Date(d.updated_at ?? d.created_at).getTime()) / (1000 * 60 * 60 * 24)),
+      dias_parado: Math.floor((Date.now() - new Date(d.stage_moved_at ?? d.created_at).getTime()) / (1000 * 60 * 60 * 24)),
     })) as CrmDashboardData['deals_parados']
 
   // Valor total do pipeline
@@ -450,6 +451,24 @@ export async function getCrmDashboardData(): Promise<CrmDashboardData> {
   }, {})
 
   const stages = await listarPipelineStages()
+
+  // Tempo médio (dias) em cada estágio
+  const tempoMedioPorStage = stages.map(stage => {
+    const dealsNoStage = (dealsCompletos as (Deal & { contact?: Contact | null; stage?: PipelineStage | null })[])
+      .filter(d => d.stage_id === stage.id)
+    const totalDias = dealsNoStage.reduce((acc, d) => {
+      const inicio = d.stage_moved_at ?? d.created_at
+      const fim = stageIdsFechados.includes(stage.id) ? (d.updated_at) : new Date().toISOString()
+      return acc + Math.max(0, (new Date(fim).getTime() - new Date(inicio).getTime()) / (1000 * 60 * 60 * 24))
+    }, 0)
+    return {
+      stage_id: stage.id,
+      stage_nome: stage.nome,
+      total_deals: dealsNoStage.length,
+      dias_medio: dealsNoStage.length > 0 ? Math.round(totalDias / dealsNoStage.length) : 0,
+    }
+  })
+
   // Ranking de vendedores (agrega por vendedor com valor total)
   const rankingVendedores = dealsCompletos.reduce<Record<string, { total_deals: number; valor_total: number }>>((acc, d) => {
     const v = d.vendedor || 'Sem vendedor'
@@ -485,6 +504,7 @@ export async function getCrmDashboardData(): Promise<CrmDashboardData> {
     atividades_recentes: (atividadesRecentes ?? []) as Activity[],
     leads_sem_followup: leadsSemFollowup,
     deals_parados: dealsParados,
+    tempo_medio_por_stage: tempoMedioPorStage,
   }
 }
 
