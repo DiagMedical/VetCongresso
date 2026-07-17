@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Mail, RefreshCw, X, UserPlus, Users, Stethoscope, Syringe } from 'lucide-react'
+import { Mail, RefreshCw, X, UserPlus, Users, Stethoscope, Syringe, Eye, EyeOff } from 'lucide-react'
 import { getConfiguracoes, salvarConfiguracao } from '@/lib/actions/admin'
 import { EMAIL_CONFIG_KEYS, getEmailConfig } from '@/lib/email/config'
 import { INTERESSES_VET_PADRAO, INTERESSES_HUMANO_PADRAO } from '@/lib/interesses'
@@ -323,6 +323,36 @@ export function ConfigPage() {
             </div>
           )}
         </div>
+      </AdminSectionCard>
+
+      {/* Dashboard Config */}
+      <AdminSectionCard
+        title="Dashboard"
+        description="Escolha quais seções aparecem no Dashboard."
+        icon={<Eye className="size-4" aria-hidden="true" />}
+      >
+        {(['funil_conversao', 'ranking_vendedores', 'deals_recentes', 'tempo_pipeline', 'leads_followup', 'deals_parados', 'atividades_recentes'] as const).map(s => {
+          const ativas = getLista('dashboard_sections')
+          const ativa = ativas.length === 0 || ativas.includes(s)
+          return (
+            <label key={s} className="flex items-center gap-3 py-2 cursor-pointer">
+              <button
+                onClick={async () => {
+                  const atual = ativas.length > 0 ? ativas : ['funil_conversao', 'ranking_vendedores', 'deals_recentes', 'tempo_pipeline', 'leads_followup', 'deals_parados', 'atividades_recentes']
+                  const nova = atual.includes(s) ? atual.filter((i: string) => i !== s) : [...atual, s]
+                  await handleSave('dashboard_sections', JSON.stringify(nova))
+                }}
+                className={`flex size-5 items-center justify-center rounded border transition-colors ${
+                  ativa ? 'bg-primary border-primary text-primary-foreground' : 'border-border'
+                }`}
+              >
+                {ativa && <span className="text-[10px]">✓</span>}
+              </button>
+              <span className="text-sm text-foreground flex-1 capitalize">{s.replace(/_/g, ' ')}</span>
+              {ativa ? <Eye className="size-3 text-primary" /> : <EyeOff className="size-3 text-muted" />}
+            </label>
+          )
+        })}
       </AdminSectionCard>
 
       <div className="flex justify-end">
