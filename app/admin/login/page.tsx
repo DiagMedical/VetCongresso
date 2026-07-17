@@ -1,7 +1,6 @@
 'use client'
 
 import { useState } from 'react'
-import { useRouter } from 'next/navigation'
 import { Loader2 } from 'lucide-react'
 import { toast } from 'sonner'
 
@@ -10,7 +9,6 @@ export default function LoginPage() {
   const [senha, setSenha] = useState('')
   const [erro, setErro] = useState('')
   const [carregando, setCarregando] = useState(false)
-  const router = useRouter()
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -33,9 +31,22 @@ export default function LoginPage() {
         return
       }
 
-      await supabase.auth.getUser()
+      // Aguarda a sessão ser estabelecida e cookies sincronizados
+      const { data: { session } } = await supabase.auth.getSession()
+      if (!session) {
+        // Tenta mais uma vez após breve pausa
+        await new Promise(r => setTimeout(r, 300))
+        const { data: { session: s2 } } = await supabase.auth.getSession()
+        if (!s2) {
+          setErro('Erro ao estabelecer sessão. Tente novamente.')
+          toast.error('Erro ao estabelecer sessão')
+          return
+        }
+      }
+
       toast.success('Login realizado!')
-      router.replace('/admin')
+      // Navegação completa (server-side) para middleware reconhecer o cookie
+      window.location.href = '/admin'
     } catch (err) {
       console.error('Unexpected error:', err)
       setErro('Erro inesperado')
