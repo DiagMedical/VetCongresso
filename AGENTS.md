@@ -5,6 +5,87 @@ This version has breaking changes — APIs, conventions, and file structure may 
 <!-- END:nextjs-agent-rules -->
 
 <!-- BEGIN:opencode-session -->
+## Session — 17/07/2026 (7)
+
+### Ajustes Finais UI/UX + Pipeline Avançado
+
+**Problemas resolvidos:**
+- Dashboard sem links clicáveis para leads/deals
+- Botões sem tooltips (acessibilidade)
+- Sem atalho de teclado para busca
+- Pipeline sem tempo médio por estágio
+
+**Soluções:**
+
+1. **Links clicáveis** — Leads sem follow-up e deals parados no dashboard agora são links para `/admin/contacts` e `/admin/deals` com ícone ExternalLink.
+
+2. **Tooltips** — `title` adicionado em todos os botões de ação (editar, WhatsApp, excluir).
+
+3. **Ctrl+K** — Atalho de teclado para focar na busca de leads.
+
+4. **Tempo médio no pipeline** — Coluna `stage_moved_at` em deals. Dashboard exibe quantos dias em média cada estágio leva.
+
+**Arquivos alterados:**
+- `app/admin/page.tsx` — links clicaveis + tempo médio pipeline
+- `app/admin/contacts/contacts-client.tsx` — Ctrl+K, tooltips
+- `lib/actions/crm.ts` — tempoMedioPorStage, stage_moved_at
+- `types/index.ts` — stage_moved_at, tempo_medio_por_stage
+- `scripts/add-stage-moved-at.sql` (novo)
+
+**Commits:**
+- `fcd7e2a` — "Pipeline avançado: stage_moved_at, tempo médio por estágio, dias parado"
+- `67e59c8` — "UI/UX: links clicaveis, tooltips, Ctrl+K"
+
+## Session — 17/07/2026 (6)
+
+### WhatsApp Integrado + Notificações
+
+**Soluções:**
+
+1. **WhatsApp no CRM** — Botão 💬 nas ações de cada lead (tabela + cards mobile). Dialog para digitar mensagem. Envia via Z-API e registra como atividade (tipo 'whatsapp') automaticamente.
+
+2. **Notificações** — `NotificationBadge` componente que conta leads sem follow-up + deals parados. Badge vermelho no link do Dashboard na nav. Atualiza a cada 60s.
+
+**Arquivos alterados/novos:**
+- `lib/actions/crm.ts` — sendWhatsAppToContact()
+- `app/admin/contacts/contacts-client.tsx` — botão WhatsApp + dialog
+- `components/admin/notification-badge.tsx` (novo)
+- `components/admin/nav.tsx` — badge no Dashboard
+
+**Commits:**
+- `3a09537` — "WhatsApp integrado ao CRM"
+- `b7b07fc` — "Notificações: badge na nav"
+
+## Session — 17/07/2026 (5)
+
+### Cards Mobile para Leads
+
+**Solução:** Visualização em cards para telas < md (mobile). Cards exibem nome, email, telefone, badges (empresa/origem/vendedor), evento, data e interesses. Tabela fica oculta em mobile e vice-versa.
+
+**Arquivo alterado:**
+- `app/admin/contacts/contacts-client.tsx` — cards mobile + hidden table
+
+**Commit:**
+- `df3ae2c` — "Leads: cards mobile (< md)"
+
+## Session — 17/07/2026 (4)
+
+### Dashboard: Pipeline Ponderado + Ranking + Deals Recentes
+
+**Soluções:**
+- Pipeline Ponderado (valor * probabilidade) como KPI
+- Funil de Conversão com barras por estágio
+- Ranking de Vendedores com top 3 (medalhas)
+- Deals Recentes (tabela com últimos 5)
+- Removido Contatos/Vendedor e Leads/Origem (não eram mais úteis)
+- Leads sem follow-up + Deals parados (ações rápidas)
+
+**Arquivos alterados:**
+- `types/index.ts`, `lib/actions/crm.ts`, `app/admin/page.tsx`
+
+**Commit:**
+- `f8b7b85` — "Dashboard: Pipeline Ponderado + Ranking + Deals Recentes + Funil + Ações Rápidas"
+
 ## Session — 17/07/2026 (3)
 
 ### Leads: Empresa + Evento + Filtros Refatorados
