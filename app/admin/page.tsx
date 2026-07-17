@@ -130,38 +130,66 @@ export default async function AdminDashboard() {
         {data.deals_recentes.length === 0 ? (
           <p className="text-sm text-muted/60 py-4 text-center">Nenhum deal cadastrado ainda.</p>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="min-w-[600px] w-full text-sm">
-              <thead>
-                <tr className="border-b border-border">
-                  <th className="px-3 py-2.5 text-left font-medium text-muted">Título</th>
-                  <th className="px-3 py-2.5 text-left font-medium text-muted hidden sm:table-cell">Contato</th>
-                  <th className="px-3 py-2.5 text-left font-medium text-muted">Estágio</th>
-                  <th className="px-3 py-2.5 text-left font-medium text-muted hidden md:table-cell">Valor</th>
-                  <th className="px-3 py-2.5 text-left font-medium text-muted">Data</th>
-                </tr>
-              </thead>
-              <tbody>
-                {data.deals_recentes.map(deal => (
-                  <tr key={deal.id} className="border-b border-border hover:ring-1 hover:ring-accent/10 transition-colors">
-                    <td className="px-3 py-2.5 font-medium text-foreground truncate max-w-[200px]">{deal.titulo}</td>
-                    <td className="px-3 py-2.5 text-muted truncate max-w-[150px] hidden sm:table-cell">
-                      {deal.contact?.nome ?? <span className="text-muted/40">—</span>}
-                    </td>
-                    <td className="px-3 py-2.5">
-                      <span className="rounded-full bg-primary/10 px-2 py-0.5 text-[10px] font-medium text-primary">
-                        {deal.stage?.nome ?? '—'}
-                      </span>
-                    </td>
-                    <td className="px-3 py-2.5 text-foreground font-medium hidden md:table-cell">
-                      {deal.valor > 0 ? fmt(deal.valor) : <span className="text-muted/40">—</span>}
-                    </td>
-                    <td className="px-3 py-2.5 text-muted whitespace-nowrap">{formatDate(deal.created_at)}</td>
+          <>
+            {/* Desktop: tabela */}
+            <div className="hidden md:block overflow-x-auto">
+              <table className="min-w-[600px] w-full text-sm">
+                <thead>
+                  <tr className="border-b border-border">
+                    <th className="px-3 py-2.5 text-left font-medium text-muted">Título</th>
+                    <th className="px-3 py-2.5 text-left font-medium text-muted hidden sm:table-cell">Contato</th>
+                    <th className="px-3 py-2.5 text-left font-medium text-muted">Estágio</th>
+                    <th className="px-3 py-2.5 text-left font-medium text-muted hidden md:table-cell">Valor</th>
+                    <th className="px-3 py-2.5 text-left font-medium text-muted">Data</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                </thead>
+                <tbody>
+                  {data.deals_recentes.map(deal => (
+                    <tr key={deal.id} className="border-b border-border hover:ring-1 hover:ring-accent/10 transition-colors">
+                      <td className="px-3 py-2.5 font-medium text-foreground truncate max-w-[200px]">{deal.titulo}</td>
+                      <td className="px-3 py-2.5 text-muted truncate max-w-[150px] hidden sm:table-cell">
+                        {deal.contact?.nome ?? <span className="text-muted/40">—</span>}
+                      </td>
+                      <td className="px-3 py-2.5">
+                        <span className="rounded-full bg-primary/10 px-2 py-0.5 text-[10px] font-medium text-primary">
+                          {deal.stage?.nome ?? '—'}
+                        </span>
+                      </td>
+                      <td className="px-3 py-2.5 text-foreground font-medium hidden md:table-cell">
+                        {deal.valor > 0 ? fmt(deal.valor) : <span className="text-muted/40">—</span>}
+                      </td>
+                      <td className="px-3 py-2.5 text-muted whitespace-nowrap">{formatDate(deal.created_at)}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Mobile: cards */}
+            <div className="md:hidden space-y-3">
+              {data.deals_recentes.map(deal => (
+                <div key={deal.id} className="rounded-xl border border-border bg-card p-4 space-y-2">
+                  <div className="flex items-start justify-between gap-2">
+                    <p className="text-sm font-semibold text-foreground truncate flex-1">{deal.titulo}</p>
+                    {deal.valor > 0 && (
+                      <span className="text-sm font-semibold text-foreground shrink-0">{fmt(deal.valor)}</span>
+                    )}
+                  </div>
+                  <div className="flex items-center gap-2 text-xs text-muted">
+                    <span className="rounded-full bg-primary/10 px-2 py-0.5 text-[10px] font-medium text-primary">
+                      {deal.stage?.nome ?? '—'}
+                    </span>
+                    {deal.contact?.nome && (
+                      <span>{deal.contact.nome}</span>
+                    )}
+                  </div>
+                  <div className="text-xs text-muted">
+                    {formatDate(deal.created_at)}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </>
         )}
       </section>
 
