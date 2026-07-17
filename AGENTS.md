@@ -5,6 +5,48 @@ This version has breaking changes — APIs, conventions, and file structure may 
 <!-- END:nextjs-agent-rules -->
 
 <!-- BEGIN:opencode-session -->
+## Session — 17/07/2026 (8)
+
+### Features Finais: CSV Import + Pipeline History + Duplicar + Dashboard Config + Chat IA
+
+**Problemas resolvidos:**
+- Chat IA ainda falava do ABRAVEQ (FAQ antigo)
+- Não era possível importar leads em lote via CSV
+- Pipeline não registrava histórico de movimentação
+- Não dava pra duplicar leads entre eventos
+- Dashboard não era configurável
+- Relatórios sem filtro por evento
+
+**Soluções:**
+
+1. **Chat IA** — Contexto reescrito para DiagnosticCRM. Perguntas sugeridas atualizadas. Título "FAQ ABRAVEQ" → "Assistente DiagnosticCRM".
+
+2. **CSV Import** — Página `/admin/contacts/import` com upload, auto-mapeamento de colunas, preview e importação em lote. Validação por linha com feedback de erros. Modelo CSV disponível para download.
+
+3. **Pipeline History** — Tabela `deal_stage_history`. `moveDealStage()` registra cada movimentação automaticamente. Função `listarDealHistory()` para consulta.
+
+4. **Duplicar Leads** — `duplicarLeadsEntreEventos()` server action. Botão "🔄 Duplicar" na página de Leads com dialog (origem, destino, empresa).
+
+5. **Dashboard Configurável** — Seção "Dashboard" no `/admin/config` com toggles para cada seção. Armazenado em `configuracoes.dashboard_sections`.
+
+**Arquivos alterados/novos:**
+- `lib/ai/context.ts` — reescrito para DiagnosticCRM
+- `components/chat-fab.tsx` — título + perguntas sugeridas
+- `lib/actions/crm.ts` — importarLeadsCSV, listarDealHistory, duplicarLeadsEntreEventos
+- `app/admin/contacts/import/` (novo) — página de importação CSV
+- `public/modelo-importar-leads.csv` (novo)
+- `scripts/add-deal-stage-history.sql` (novo)
+- `app/admin/config/config-page.tsx` — dashboard toggles
+- `app/admin/contacts/contacts-client.tsx` — botão duplicar
+
+**Commits:**
+- `7f3b270` — "Chat IA: atualizado para Assistente DiagnosticCRM"
+- `1bf4327` — "1/5 CSV Import: upload, mapeamento, preview, importação"
+- `b5cd2e4` — "2/5 Pipeline History: deal_stage_history, rastreamento"
+- `3619f90` — "3-5/5: duplicar leads + dashboard config + relatorio"
+- `79c213c` — "4/5 Duplicar leads: botao + dialog"
+- `79e2619` — "Dashboard configurável: seção no Config com toggles"
+
 ## Session — 17/07/2026 (7)
 
 ### Ajustes Finais UI/UX + Pipeline Avançado
