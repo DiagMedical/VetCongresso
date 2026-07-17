@@ -232,7 +232,94 @@ export function ContactsClient({ contacts: initialContacts }: ContactsClientProp
         </Dialog>
       </div>
 
-      {/* Tabela */}
+      {/* Cards Mobile (< md) */}
+      <div className="space-y-3 md:hidden">
+        {paginados.length === 0 ? (
+          <AdminSectionCard>
+            <div className="flex flex-col items-center gap-3 py-8 text-center">
+              <Inbox className="size-10 text-muted/40" />
+              <p className="text-sm text-muted">
+                {busca
+                  ? 'Nenhum lead encontrado.'
+                  : filtroEvento
+                    ? `Nenhum lead para "${filtroEvento}".`
+                    : 'Nenhum lead cadastrado.'}
+              </p>
+            </div>
+          </AdminSectionCard>
+        ) : (
+          paginados.map(contact => (
+            <div key={contact.id} className="rounded-2xl border border-border bg-card p-4 space-y-3 shadow-sm">
+              {/* Topo: nome + ações */}
+              <div className="flex items-start justify-between gap-2">
+                <div className="min-w-0 flex-1">
+                  <p className="text-sm font-semibold text-foreground truncate">{contact.nome}</p>
+                  {contact.email && (
+                    <p className="text-xs text-muted truncate flex items-center gap-1 mt-0.5">
+                      <Mail className="size-3 shrink-0" />
+                      {contact.email}
+                    </p>
+                  )}
+                  {contact.telefone && (
+                    <p className="text-xs text-muted flex items-center gap-1">
+                      <Phone className="size-3 shrink-0" />
+                      {contact.telefone}
+                    </p>
+                  )}
+                </div>
+                <div className="flex items-center gap-1 shrink-0">
+                  <button onClick={() => setEditContact(contact)} className="rounded-md p-2 text-muted hover:text-foreground transition-colors" aria-label={`Editar ${contact.nome}`}>
+                    <Edit3 className="size-4" />
+                  </button>
+                  <button onClick={() => handleDelete(contact.id, contact.nome)} className="rounded-md p-2 text-muted hover:text-red-400 transition-colors" aria-label={`Excluir ${contact.nome}`}>
+                    <Trash2 className="size-4" />
+                  </button>
+                </div>
+              </div>
+
+              {/* Tags: badges */}
+              <div className="flex flex-wrap items-center gap-1.5">
+                {contact.empresa && (
+                  <span className={`rounded-full px-2 py-0.5 text-[10px] font-medium ${
+                    contact.empresa === 'vet' ? 'bg-primary/10 text-primary' : 'bg-accent/10 text-accent'
+                  }`}>
+                    {contact.empresa === 'vet' ? 'Diagnostic Vet' : 'Diagnostic Medical'}
+                  </span>
+                )}
+                <span className="rounded-full bg-border/50 px-2 py-0.5 text-[10px] text-muted">
+                  {contact.origem || 'manual'}
+                </span>
+                {contact.vendedor && (
+                  <span className="rounded-full bg-border/50 px-2 py-0.5 text-[10px] text-muted">
+                    {contact.vendedor}
+                  </span>
+                )}
+              </div>
+
+              {/* Evento + Data */}
+              <div className="flex items-center justify-between text-xs text-muted">
+                <span>{contact.evento || 'Sem evento'}</span>
+                <span>{formatDate(contact.created_at)}</span>
+              </div>
+
+              {/* Interesses */}
+              {[...(contact.interesses_vet ?? []), ...(contact.interesses_humano ?? [])].length > 0 && (
+                <div className="flex flex-wrap gap-1">
+                  {(contact.interesses_vet ?? []).map(i => (
+                    <span key={i} className="rounded-full bg-primary/10 px-2 py-0.5 text-[10px] text-primary font-medium truncate max-w-[130px]">{i}</span>
+                  ))}
+                  {(contact.interesses_humano ?? []).map(i => (
+                    <span key={i} className="rounded-full bg-accent/10 px-2 py-0.5 text-[10px] text-accent font-medium truncate max-w-[130px]">{i}</span>
+                  ))}
+                </div>
+              )}
+            </div>
+          ))
+        )}
+      </div>
+
+      {/* Tabela (md+) */}
+      <div className="hidden md:block">
       <AdminSectionCard>
         {paginados.length === 0 ? (
           <div className="flex flex-col items-center gap-3 py-12 text-center">
@@ -364,6 +451,7 @@ export function ContactsClient({ contacts: initialContacts }: ContactsClientProp
         pageSize={pageSize}
         label="leads"
       />
+      </div>
 
       {/* Dialog de edição */}
       <Dialog open={!!editContact} onOpenChange={open => { if (!open) setEditContact(null) }}>
