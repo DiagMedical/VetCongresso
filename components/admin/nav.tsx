@@ -16,6 +16,7 @@ import {
   ChartBar,
 } from 'lucide-react'
 import { Sheet, SheetTrigger, SheetContent, SheetClose } from '@/components/ui/sheet'
+import { NotificationBadge } from '@/components/admin/notification-badge'
 
 const links = [
   { href: '/admin', label: 'Dashboard', icon: LayoutDashboard },
@@ -47,6 +48,7 @@ function NavLinks() {
         >
           <Icon className="size-4" aria-hidden="true" />
           {label}
+          {href === '/admin' && <NotificationBadge />}
         </Link>
       ))}
     </>
