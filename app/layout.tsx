@@ -1,8 +1,16 @@
-import type { Metadata } from 'next'
+import type { Metadata, Viewport } from 'next'
 import { Plus_Jakarta_Sans, Geist_Mono } from 'next/font/google'
 import { ThemeProvider } from '@/app/providers'
 import { ChatFab } from '@/components/chat-fab'
+import { SwRegister } from '@/components/sw-register'
 import './globals.css'
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  themeColor: '#0d0a1a',
+  viewportFit: 'cover',
+}
 
 const jakarta = Plus_Jakarta_Sans({
   variable: '--font-jakarta',
@@ -52,6 +60,7 @@ export default function RootLayout({
         <ThemeProvider>
           <main id="main-content" className="flex flex-1 flex-col">{children}</main>
           <ChatFab />
+          <SwRegister />
         </ThemeProvider>
       </body>
     </html>
