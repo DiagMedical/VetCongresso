@@ -52,11 +52,14 @@ export function ContactsClient({ contacts: initialContacts }: ContactsClientProp
     manuais: contacts.filter(c => ORIGENS_MANUAIS.includes(c.origem)).length,
   }), [contacts])
 
-  // Filtro (aba + busca + vendedor)
+  // Filtro (evento + aba + busca + vendedor + empresa)
   const filtrados = useMemo(() => {
     let result = [...contacts]
 
-    // Filtro por aba
+    if (filtroEvento) {
+      result = result.filter(c => c.evento === filtroEvento)
+    }
+
     if (aba === 'leads') {
       result = result.filter(c => ORIGENS_LEADS.includes(c.origem))
     } else if (aba === 'manuais') {
@@ -77,11 +80,8 @@ export function ContactsClient({ contacts: initialContacts }: ContactsClientProp
     if (filtroEmpresa) {
       result = result.filter(c => c.empresa === filtroEmpresa)
     }
-    if (filtroEvento) {
-      result = result.filter(c => c.evento === filtroEvento)
-    }
     return result
-  }, [contacts, aba, busca, filtroVendedor, filtroEmpresa, filtroEvento])
+  }, [contacts, filtroEvento, aba, busca, filtroVendedor, filtroEmpresa])
 
   const totalPages = Math.ceil(filtrados.length / pageSize)
   const paginados = filtrados.slice((currentPage - 1) * pageSize, currentPage * pageSize)
@@ -103,10 +103,10 @@ export function ContactsClient({ contacts: initialContacts }: ContactsClientProp
       })
       setContacts(prev => [contact, ...prev])
       setShowForm(false)
-      toast.success('Contato criado com sucesso!')
+      toast.success('Lead criado com sucesso!')
       router.refresh()
     } catch (e) {
-      toast.error(e instanceof Error ? e.message : 'Erro ao criar contato')
+      toast.error(e instanceof Error ? e.message : 'Erro ao criar lead')
     }
   }
 
@@ -126,10 +126,10 @@ export function ContactsClient({ contacts: initialContacts }: ContactsClientProp
       })
       setContacts(prev => prev.map(c => c.id === id ? updated : c))
       setEditContact(null)
-      toast.success('Contato atualizado!')
+      toast.success('Lead atualizado!')
       router.refresh()
     } catch (e) {
-      toast.error(e instanceof Error ? e.message : 'Erro ao atualizar contato')
+      toast.error(e instanceof Error ? e.message : 'Erro ao atualizar lead')
     }
   }
 
@@ -138,10 +138,10 @@ export function ContactsClient({ contacts: initialContacts }: ContactsClientProp
     try {
       await deleteContact(id)
       setContacts(prev => prev.filter(c => c.id !== id))
-      toast.success('Contato excluído!')
+      toast.success('Lead excluído!')
       router.refresh()
     } catch (e) {
-      toast.error(e instanceof Error ? e.message : 'Erro ao excluir contato')
+      toast.error(e instanceof Error ? e.message : 'Erro ao excluir lead')
     }
   }
 
@@ -157,56 +157,39 @@ export function ContactsClient({ contacts: initialContacts }: ContactsClientProp
 
   return (
     <div className="space-y-4">
-      {/* Abas: Evento */}
-      <div className="flex flex-wrap gap-3 items-center">
-        <span className="text-xs font-medium text-muted shrink-0">Evento:</span>
-        <div className="flex gap-1 rounded-lg border border-border p-1 overflow-x-auto">
-          <button
-            onClick={() => { setFiltroEvento(''); setCurrentPage(1) }}
-            className={`rounded-md px-4 py-1.5 text-xs font-medium whitespace-nowrap transition-colors ${
-              !filtroEvento
-                ? 'bg-primary text-primary-foreground shadow-sm'
-                : 'text-muted hover:text-foreground'
-            }`}
-          >
-            Todos
-          </button>
+      {/* Filtros */}
+      <div className="flex flex-wrap items-center gap-3">
+        {/* Evento */}
+        <select
+          value={filtroEvento}
+          onChange={e => { setFiltroEvento(e.target.value); setCurrentPage(1) }}
+          className="h-10 rounded-md border border-border bg-card px-3 text-sm text-foreground min-w-[160px]"
+          aria-label="Filtrar por evento"
+        >
+          <option value="">Todos os eventos</option>
           {eventosUnicos.map(ev => (
+            <option key={ev} value={ev}>{ev}</option>
+          ))}
+        </select>
+
+        {/* Tipo */}
+        <div className="flex gap-1 rounded-lg border border-border p-1">
+          {([{ key: 'todos', label: 'Todos' }, { key: 'leads', label: 'Leads' }, { key: 'manuais', label: 'Manuais' }] as const).map(tab => (
             <button
-              key={ev}
-              onClick={() => { setFiltroEvento(ev); setCurrentPage(1) }}
-              className={`rounded-md px-4 py-1.5 text-xs font-medium whitespace-nowrap transition-colors ${
-                filtroEvento === ev
+              key={tab.key}
+              onClick={() => { setAba(tab.key); setCurrentPage(1) }}
+              className={`rounded-md px-3 py-1.5 text-xs font-medium transition-colors ${
+                aba === tab.key
                   ? 'bg-primary text-primary-foreground shadow-sm'
                   : 'text-muted hover:text-foreground'
               }`}
             >
-              {ev}
+              {tab.label}
+              <span className="ml-1 opacity-60">({totais[tab.key]})</span>
             </button>
           ))}
         </div>
-      </div>
 
-      {/* Abas: Todos / Leads / Manuais */}
-      <div className="flex gap-1 rounded-lg border border-border p-1 w-fit">
-        {([{ key: 'todos', label: 'Todos' }, { key: 'leads', label: 'Leads' }, { key: 'manuais', label: 'Manuais' }] as const).map(tab => (
-          <button
-            key={tab.key}
-            onClick={() => { setAba(tab.key); setCurrentPage(1) }}
-            className={`rounded-md px-4 py-1.5 text-xs font-medium transition-colors ${
-              aba === tab.key
-                ? 'bg-primary text-primary-foreground shadow-sm'
-                : 'text-muted hover:text-foreground'
-            }`}
-          >
-            {tab.label}
-            <span className="ml-1.5 opacity-60">({totais[tab.key]})</span>
-          </button>
-        ))}
-      </div>
-
-      {/* Busca e filtros */}
-      <div className="flex flex-wrap items-center gap-3">
         <div className="relative flex-1 min-w-[200px] max-w-md">
           <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted" />
           <Input
@@ -240,9 +223,9 @@ export function ContactsClient({ contacts: initialContacts }: ContactsClientProp
           <option value="humana">Diagnostic Medical</option>
         </select>
         <Dialog open={showForm} onOpenChange={setShowForm}>
-          <DialogTrigger render={<Button className="gap-2"><Plus className="size-4" />Novo Contato</Button>} />
+          <DialogTrigger render={<Button className="gap-2"><Plus className="size-4" />Novo Lead</Button>} />
           <ContactFormDialog
-            title="Novo Contato"
+            title="Novo Lead"
             onSubmit={handleCreate}
             onClose={() => setShowForm(false)}
           />
@@ -304,6 +287,9 @@ export function ContactsClient({ contacts: initialContacts }: ContactsClientProp
                           {contact.telefone}
                         </span>
                       ) : <span className="text-muted/40">—</span>}
+                    </td>
+                    <td className="px-3 py-2.5 text-muted truncate max-w-[100px] hidden lg:table-cell">
+                      {contact.vendedor || <span className="text-muted/40">—</span>}
                     </td>
                     <td className="px-3 py-2.5 truncate max-w-[100px] hidden lg:table-cell">
                       {contact.empresa ? (
@@ -376,14 +362,14 @@ export function ContactsClient({ contacts: initialContacts }: ContactsClientProp
         onPageChange={setCurrentPage}
         totalItems={filtrados.length}
         pageSize={pageSize}
-        label="contatos"
+        label="leads"
       />
 
       {/* Dialog de edição */}
       <Dialog open={!!editContact} onOpenChange={open => { if (!open) setEditContact(null) }}>
         {editContact && (
           <ContactFormDialog
-            title="Editar Contato"
+            title="Editar Lead"
             contact={editContact}
             onSubmit={(formData) => handleUpdate(editContact.id, formData)}
             onClose={() => setEditContact(null)}
@@ -422,7 +408,6 @@ function ContactFormDialog({
   }
 
   async function handleSubmit(formData: FormData) {
-    // Adiciona os interesses selecionados ao formData
     selVet.forEach(item => formData.append('interesses_vet', item))
     selHumano.forEach(item => formData.append('interesses_humano', item))
     await onSubmit(formData)
@@ -432,7 +417,7 @@ function ContactFormDialog({
     <DialogContent className="sm:max-w-lg">
       <DialogHeader>
         <DialogTitle>{title}</DialogTitle>
-        <DialogDescription>Preencha os dados do contato.</DialogDescription>
+        <DialogDescription>Preencha os dados do lead.</DialogDescription>
       </DialogHeader>
       <form action={handleSubmit} className="space-y-4 max-h-[70vh] overflow-y-auto pr-1">
         {/* Empresa (toggle) */}
