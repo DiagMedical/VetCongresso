@@ -1,3 +1,76 @@
+// ============================================================
+// Tipos do CRM
+// ============================================================
+
+export type DealStageType = 'novo_lead' | 'contatado' | 'qualificado' | 'proposta' | 'negociacao' | 'fechado' | 'perdido'
+
+export interface PipelineStage {
+  id: string
+  nome: string
+  ordem: number
+  cor: string
+  probabilidade: number
+  created_at: string
+}
+
+export interface Contact {
+  id: string
+  nome: string
+  email: string | null
+  telefone: string | null
+  origem: string
+  vendedor: string | null
+  observacoes: string | null
+  tags: string[]
+  created_at: string
+  updated_at: string
+}
+
+export interface Deal {
+  id: string
+  titulo: string
+  contact_id: string
+  contact?: Contact
+  valor: number
+  stage_id: string
+  stage?: PipelineStage
+  vendedor: string | null
+  descricao: string | null
+  data_fechamento: string | null
+  motivo_perda: string | null
+  created_at: string
+  updated_at: string
+}
+
+export type ActivityTipo = 'nota' | 'call' | 'email' | 'whatsapp' | 'meeting' | 'task'
+
+export interface Activity {
+  id: string
+  contact_id: string | null
+  deal_id: string | null
+  tipo: ActivityTipo
+  descricao: string | null
+  responsavel: string | null
+  data_atividade: string
+  concluido: boolean
+}
+
+export interface CrmDashboardData {
+  total_contatos: number
+  deals_abertos: number
+  valor_pipeline: number
+  taxa_conversao: number
+  deals_fechados_mes: number
+  contatos_por_vendedor: { vendedor: string; total: number }[]
+  deals_por_stage: { stage_id: string; stage_nome: string; total: number; valor: number }[]
+  leads_por_origem: { origem: string; total: number }[]
+  atividades_recentes: Activity[]
+}
+
+// ============================================================
+// Tipos Legados (VetCongresso)
+// ============================================================
+
 export type StatusInscricao = 'confirmado' | 'check-in' | 'cancelado_por_falta' | 'espera'
 export type OrigemInscricao = 'site' | 'manual'
 export type DiaEvento = 1 | 2 | 3
