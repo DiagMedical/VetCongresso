@@ -15,6 +15,7 @@ import {
   PhoneCall,
   Kanban,
   ChartBar,
+  CalendarRange,
 } from 'lucide-react'
 import { Sheet, SheetTrigger, SheetContent, SheetClose } from '@/components/ui/sheet'
 import { NotificationBadge } from '@/components/admin/notification-badge'
@@ -22,6 +23,7 @@ import { NotificationBadge } from '@/components/admin/notification-badge'
 const links = [
   { href: '/admin', label: 'Dashboard', icon: LayoutDashboard },
   { href: '/admin/contacts', label: 'Leads', icon: Users },
+  { href: '/admin/eventos', label: 'Eventos', icon: CalendarRange },
   { href: '/admin/deals', label: 'Pipeline', icon: Kanban },
   { href: '/admin/activities', label: 'Atividades', icon: PhoneCall },
   { href: '/admin/whatsapp', label: 'WhatsApp', icon: MessageSquare },

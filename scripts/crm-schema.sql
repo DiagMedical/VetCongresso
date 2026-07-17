@@ -20,6 +20,16 @@ CREATE TABLE IF NOT EXISTS contacts (
     updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
+-- 1b. EVENTOS (eventos/campanhas gerenciados pelo admin)
+CREATE TABLE IF NOT EXISTS eventos (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    nome TEXT NOT NULL UNIQUE,
+    empresa TEXT NOT NULL CHECK (empresa IN ('vet', 'humana')),
+    ativo BOOLEAN DEFAULT TRUE,
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
 -- 2. PIPELINE STAGES (configurável pelo admin)
 CREATE TABLE IF NOT EXISTS pipeline_stages (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -103,6 +113,7 @@ ALTER TABLE contacts ENABLE ROW LEVEL SECURITY;
 ALTER TABLE pipeline_stages ENABLE ROW LEVEL SECURITY;
 ALTER TABLE deals ENABLE ROW LEVEL SECURITY;
 ALTER TABLE activities ENABLE ROW LEVEL SECURITY;
+ALTER TABLE eventos ENABLE ROW LEVEL SECURITY;
 
 DROP POLICY IF EXISTS "admin_all_contacts" ON contacts;
 CREATE POLICY "admin_all_contacts" ON contacts
@@ -118,6 +129,10 @@ CREATE POLICY "admin_all_deals" ON deals
 
 DROP POLICY IF EXISTS "admin_all_activities" ON activities;
 CREATE POLICY "admin_all_activities" ON activities
+    FOR ALL USING (is_admin());
+
+DROP POLICY IF EXISTS "admin_all_eventos" ON eventos;
+CREATE POLICY "admin_all_eventos" ON eventos
     FOR ALL USING (is_admin());
 
 -- 8. Índices

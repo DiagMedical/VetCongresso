@@ -20,11 +20,12 @@ import {
 import { formatDate } from '@/lib/utils'
 import { INTERESSES_VET_PADRAO, INTERESSES_HUMANO_PADRAO } from '@/lib/interesses'
 import { createContact, updateContact, deleteContact, sendWhatsAppToContact, duplicarLeadsEntreEventos } from '@/lib/actions/crm'
-import type { Contact } from '@/types'
+import type { Contact, Evento } from '@/types'
 
 interface ContactsClientProps {
   contacts: Contact[]
   totalCount: number
+  eventos: Evento[]
 }
 
 type AbaType = 'todos' | 'leads' | 'manuais'
@@ -32,7 +33,7 @@ type AbaType = 'todos' | 'leads' | 'manuais'
 const ORIGENS_LEADS = ['site', 'sorteio']
 const ORIGENS_MANUAIS = ['manual', '']
 
-export function ContactsClient({ contacts: initialContacts }: ContactsClientProps) {
+export function ContactsClient({ contacts: initialContacts, eventos: initialEventos }: ContactsClientProps) {
   const router = useRouter()
   const [contacts, setContacts] = useState(initialContacts)
   const [aba, setAba] = useState<AbaType>('todos')
@@ -187,8 +188,9 @@ export function ContactsClient({ contacts: initialContacts }: ContactsClientProp
 
   const eventosUnicos = useMemo(() => {
     const set = new Set(contacts.map(c => c.evento).filter(Boolean) as string[])
+    initialEventos.forEach(ev => set.add(ev.nome))
     return Array.from(set).sort()
-  }, [contacts])
+  }, [contacts, initialEventos])
 
   return (
     <div className="space-y-4">
@@ -263,6 +265,7 @@ export function ContactsClient({ contacts: initialContacts }: ContactsClientProp
             title="Novo Lead"
             onSubmit={handleCreate}
             onClose={() => setShowForm(false)}
+            eventos={initialEventos}
           />
         </Dialog>
         <button
@@ -519,6 +522,7 @@ export function ContactsClient({ contacts: initialContacts }: ContactsClientProp
             contact={editContact}
             onSubmit={(formData) => handleUpdate(editContact.id, formData)}
             onClose={() => setEditContact(null)}
+            eventos={initialEventos}
           />
         )}
       </Dialog>
@@ -573,8 +577,19 @@ export function ContactsClient({ contacts: initialContacts }: ContactsClientProp
               </select>
             </div>
             <div className="space-y-2">
-              <label className="text-sm font-medium text-foreground">Novo evento (destino)</label>
-              <Input value={dupDestino} onChange={e => setDupDestino(e.target.value)} placeholder="Ex: Congresso Médico 2026" />
+              <label className="text-sm font-medium text-foreground">Evento de destino</label>
+              <div className="flex gap-2">
+                <select
+                  value={dupDestino}
+                  onChange={e => setDupDestino(e.target.value)}
+                  className="flex-1 h-10 rounded-md border border-border bg-background px-3 text-sm text-foreground"
+                >
+                  <option value="">Selecione um evento</option>
+                  {initialEventos.filter(e => e.ativo).map(ev => (
+                    <option key={ev.id} value={ev.nome} data-empresa={ev.empresa}>{ev.nome}</option>
+                  ))}
+                </select>
+              </div>
             </div>
             <div className="space-y-2">
               <label className="text-sm font-medium text-foreground">Empresa (opcional)</label>
@@ -622,15 +637,32 @@ function ContactFormDialog({
   contact,
   onSubmit,
   onClose,
+  eventos,
 }: {
   title: string
   contact?: Contact
   onSubmit: (data: FormData) => Promise<void>
   onClose: () => void
+  eventos: Evento[]
 }) {
   const [selVet, setSelVet] = useState<string[]>(contact?.interesses_vet ?? [])
   const [selHumano, setSelHumano] = useState<string[]>(contact?.interesses_humano ?? [])
   const [empresa, setEmpresa] = useState(contact?.empresa ?? '')
+  const [selectedEvento, setSelectedEvento] = useState<string>(
+    () => {
+      if (contact?.evento && eventos.find(ev => ev.nome === contact.evento)) return contact.evento!
+      return ''
+    }
+  )
+  const [showOutroField, setShowOutroField] = useState(
+    !!(contact && contact.evento && !eventos.find(ev => ev.nome === contact.evento))
+  )
+
+  // Filtrar eventos pela empresa selecionada
+  const eventosFiltrados = useMemo(
+    () => eventos.filter(ev => ev.ativo && (!empresa || ev.empresa === empresa)),
+    [eventos, empresa]
+  )
 
   function toggleVet(item: string) {
     setSelVet(prev => prev.includes(item) ? prev.filter(i => i !== item) : [...prev, item])
@@ -643,6 +675,18 @@ function ContactFormDialog({
   async function handleSubmit(formData: FormData) {
     selVet.forEach(item => formData.append('interesses_vet', item))
     selHumano.forEach(item => formData.append('interesses_humano', item))
+
+    // Resolver evento: select ou texto livre
+    const sel = formData.get('evento_select') as string
+    if (sel === '__outro__' || showOutroField) {
+      const outro = formData.get('evento_outro') as string
+      formData.set('evento', outro || '')
+    } else if (sel) {
+      formData.set('evento', sel)
+    } else {
+      formData.set('evento', '')
+    }
+
     await onSubmit(formData)
   }
 
@@ -659,7 +703,16 @@ function ContactFormDialog({
           <div className="flex gap-2">
             <button
               type="button"
-              onClick={() => setEmpresa('vet')}
+              onClick={() => {
+                setEmpresa('vet')
+                if (selectedEvento) {
+                  const ev = eventos.find(ev => ev.nome === selectedEvento)
+                  if (ev && ev.empresa !== 'vet') {
+                    setSelectedEvento('')
+                    setShowOutroField(false)
+                  }
+                }
+              }}
               className={`flex-1 rounded-xl border-2 px-4 py-3 text-sm font-medium transition-all ${
                 empresa === 'vet'
                   ? 'border-primary bg-primary/10 text-primary'
@@ -671,7 +724,16 @@ function ContactFormDialog({
             </button>
             <button
               type="button"
-              onClick={() => setEmpresa('humana')}
+              onClick={() => {
+                setEmpresa('humana')
+                if (selectedEvento) {
+                  const ev = eventos.find(ev => ev.nome === selectedEvento)
+                  if (ev && ev.empresa !== 'humana') {
+                    setSelectedEvento('')
+                    setShowOutroField(false)
+                  }
+                }
+              }}
               className={`flex-1 rounded-xl border-2 px-4 py-3 text-sm font-medium transition-all ${
                 empresa === 'humana'
                   ? 'border-accent bg-accent/10 text-accent'
@@ -703,9 +765,46 @@ function ContactFormDialog({
           <label htmlFor="vendedor" className="text-sm font-medium text-foreground">Vendedor</label>
           <Input id="vendedor" name="vendedor" defaultValue={contact?.vendedor ?? ''} />
         </div>
+        {/* Evento - select com fallback para texto livre */}
         <div className="space-y-2">
-          <label htmlFor="evento" className="text-sm font-medium text-foreground">Evento</label>
-          <Input id="evento" name="evento" defaultValue={contact?.evento ?? ''} placeholder="Ex: ABRAVEQ 2026, Congresso Médico..." />
+          <label htmlFor="evento_select" className="text-sm font-medium text-foreground">Evento</label>
+          <div className="space-y-2">
+            <select
+              id="evento_select"
+              name="evento_select"
+              value={showOutroField ? '__outro__' : selectedEvento}
+              onChange={e => {
+                const val = e.target.value
+                if (val === '__outro__') {
+                  setShowOutroField(true)
+                  setSelectedEvento('')
+                } else {
+                  setShowOutroField(false)
+                  setSelectedEvento(val)
+                  // Auto-set empresa se evento selecionado
+                  const ev = eventos.find(ev => ev.nome === val)
+                  if (ev && !empresa) setEmpresa(ev.empresa)
+                }
+              }}
+              className="w-full h-10 rounded-md border border-border bg-background px-3 text-sm text-foreground"
+            >
+              <option value="">Sem evento</option>
+              {eventosFiltrados.map(ev => (
+                <option key={ev.id} value={ev.nome}>{ev.nome}</option>
+              ))}
+              <option value="__outro__">Outro (digitar manualmente)</option>
+            </select>
+
+            {showOutroField && (
+              <Input
+                id="evento_outro"
+                name="evento_outro"
+                defaultValue={contact?.evento ?? ''}
+                placeholder="Digite o nome do evento..."
+                autoFocus
+              />
+            )}
+          </div>
         </div>
 
         {/* Interesses conforme empresa selecionada */}

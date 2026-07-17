@@ -2,9 +2,9 @@
 
 import { createServiceClient } from '@/lib/supabase/server'
 import { sendText } from '@/lib/whatsapp/client'
-import type { Contact, Deal, PipelineStage, Activity, CrmDashboardData } from '@/types'
-import { contactSchema, dealSchema, pipelineStageSchema, activitySchema } from '@/lib/schemas'
-import type { ContactFormData, DealFormData, PipelineStageFormData, ActivityFormData } from '@/lib/schemas'
+import type { Contact, Deal, PipelineStage, Activity, CrmDashboardData, Evento } from '@/types'
+import { contactSchema, dealSchema, pipelineStageSchema, activitySchema, eventoSchema } from '@/lib/schemas'
+import type { ContactFormData, DealFormData, PipelineStageFormData, ActivityFormData, EventoFormData } from '@/lib/schemas'
 
 // ============================================================
 // Contacts CRUD
@@ -652,3 +652,72 @@ export async function duplicarLeadsEntreEventos(
 
   return { total: novos.length }
 }
+
+// ============================================================
+// Eventos CRUD
+// ============================================================
+
+export async function listarEventos(params?: {
+  empresa?: string
+  ativo?: boolean
+}): Promise<Evento[]> {
+  const supabase = createServiceClient()
+  let query = supabase.from('eventos').select('*')
+
+  if (params?.empresa) query = query.eq('empresa', params.empresa)
+  if (params?.ativo !== undefined) query = query.eq('ativo', params.ativo)
+
+  const { data, error } = await query.order('nome')
+  if (error) throw new Error('Erro ao listar eventos: ' + error.message)
+  return (data ?? []) as Evento[]
+}
+
+export async function criarEvento(formData: EventoFormData): Promise<Evento> {
+  const parsed = eventoSchema.parse(formData)
+  const supabase = createServiceClient()
+
+  // Verificar se já existe com mesmo nome (case insensitive)
+  const { data: existente } = await supabase
+    .from('eventos')
+    .select('id')
+    .ilike('nome', parsed.nome)
+    .maybeSingle()
+
+  if (existente) throw new Error('Já existe um evento com este nome.')
+
+  const { data, error } = await supabase
+    .from('eventos')
+    .insert({ nome: parsed.nome, empresa: parsed.empresa, ativo: parsed.ativo })
+    .select()
+    .single()
+
+  if (error) throw new Error('Erro ao criar evento: ' + error.message)
+  return data as Evento
+}
+
+export async function atualizarEvento(id: string, formData: Partial<EventoFormData>): Promise<Evento> {
+  const parsed = eventoSchema.partial().parse(formData)
+  const supabase = createServiceClient()
+
+  const updateData: Record<string, unknown> = { updated_at: new Date().toISOString() }
+  if (parsed.nome !== undefined) updateData.nome = parsed.nome
+  if (parsed.empresa !== undefined) updateData.empresa = parsed.empresa
+  if (parsed.ativo !== undefined) updateData.ativo = parsed.ativo
+
+  const { data, error } = await supabase
+    .from('eventos')
+    .update(updateData)
+    .eq('id', id)
+    .select()
+    .single()
+
+  if (error) throw new Error('Erro ao atualizar evento: ' + error.message)
+  return data as Evento
+}
+
+export async function excluirEvento(id: string): Promise<void> {
+  const supabase = createServiceClient()
+  const { error } = await supabase.from('eventos').delete().eq('id', id)
+  if (error) throw new Error('Erro ao excluir evento: ' + error.message)
+}
+

@@ -1075,3 +1075,44 @@ This version has breaking changes — APIs, conventions, and file structure may 
 - `39ca489` — "Ícone PWA: cavalo → letra D (Diagnostic) com gradiente indigo-cyan"
 - `5628bd6` — "Fix login: wait for session cookie + window.location.href (server-side nav)"
 <!-- END:opencode-session -->
+
+<!-- BEGIN:opencode-session -->
+## Session — 18/07/2026
+
+### Eventos Gerenciáveis — Aba Eventos + Select no Lead
+
+**Problema resolvido:**
+- Campo `evento` era texto livre no formulário de leads, gerando inconsistências (digitação variada, sem padronização)
+- Não havia centralização — eventos eram apenas strings soltas na tabela `contacts`
+- Impossível gerenciar eventos ou vinculá-los à empresa (vet/humana)
+
+**Soluções:**
+
+1. **Tabela `eventos`** — `scripts/add-eventos.sql` com id, nome (UNIQUE), empresa (vet/humana), ativo. Seed automático dos eventos existentes nos contacts. RLS herdado do admin.
+
+2. **Página `/admin/eventos`** — CRUD completo com tabela, badges Vet (primary) / Humana (accent), toggle ativo/inativo, contagem de leads vinculados, botões editar/excluir.
+
+3. **Formulário de Lead** — Campo `evento` trocado de `<Input>` texto livre para `<select>` com eventos filtrados pela empresa selecionada. Opção "Outro" para digitar manualmente. Selecionar um evento auto-preenche a empresa.
+
+4. **Filtro** — Dropdown de eventos na página de Leads combina eventos da tabela + eventos legados dos contacts.
+
+5. **Duplicar** — Destino agora é select com eventos ativos da tabela.
+
+6. **Nav** — Link "Eventos" com ícone CalendarRange entre Leads e Pipeline.
+
+**Arquivos alterados/novos:**
+- `scripts/add-eventos.sql` (novo) — migration
+- `scripts/crm-schema.sql` — CREATE TABLE eventos + RLS
+- `types/index.ts` — interface Evento
+- `lib/schemas.ts` — eventoSchema (Zod)
+- `lib/actions/crm.ts` — CRUD de eventos (listarEventos, criarEvento, atualizarEvento, excluirEvento)
+- `app/admin/eventos/page.tsx` (novo) — server component
+- `app/admin/eventos/eventos-client.tsx` (novo) — CRUD client component
+- `app/admin/eventos/loading.tsx` (novo) — skeleton
+- `components/admin/nav.tsx` — +Eventos (CalendarRange)
+- `app/admin/contacts/page.tsx` — fetch eventos + passa como prop
+- `app/admin/contacts/contacts-client.tsx` — evento: text → select + filtro combinado + duplicar atualizado
+
+**Commits:**
+- Pendente
+<!-- END:opencode-session -->

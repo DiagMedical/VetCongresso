@@ -45,6 +45,14 @@ export const activitySchema = z.object({
   concluido: z.boolean().default(true),
 })
 
+export const eventoSchema = z.object({
+  nome: z.string().min(3, 'Nome deve ter no mínimo 3 caracteres').max(120, 'Nome muito longo'),
+  empresa: z.enum(['vet', 'humana']),
+  ativo: z.boolean().default(true),
+})
+
+export type EventoFormData = z.infer<typeof eventoSchema>
+
 export type ContactFormData = z.infer<typeof contactSchema>
 export type DealFormData = z.infer<typeof dealSchema>
 export type PipelineStageFormData = z.infer<typeof pipelineStageSchema>

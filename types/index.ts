@@ -13,6 +13,16 @@ export interface PipelineStage {
   created_at: string
 }
 
+export interface Evento {
+  id: string
+  nome: string
+  empresa: string
+  ativo: boolean
+  created_at: string
+  updated_at: string
+  total_contacts?: number
+}
+
 export interface Contact {
   id: string
   nome: string
