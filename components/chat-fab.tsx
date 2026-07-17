@@ -15,10 +15,10 @@ import { Input } from '@/components/ui/input'
 import { cn } from '@/lib/utils'
 
 const PERGUNTAS_SUGERIDAS = [
-  'Quais os horários das palestras?',
-  'Como faço para reservar?',
-  'Onde é o estande da Diagnostic Vet?',
-  'Tem sorteio?',
+  'Como cadastrar um novo lead?',
+  'Como criar um deal no pipeline?',
+  'O que significa pipeline ponderado?',
+  'Como enviar WhatsApp para um lead?',
 ]
 
 export function ChatFab() {
@@ -66,7 +66,7 @@ export function ChatFab() {
         <div className="flex items-center justify-between border-b border-border p-4">
           <div className="flex items-center gap-2">
             <Bot className="size-5 text-primary" />
-            <span className="text-sm font-medium">FAQ ABRAVEQ</span>
+            <span className="text-sm font-medium">Assistente DiagnosticCRM</span>
           </div>
           <SheetClose
             render={
