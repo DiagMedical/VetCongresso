@@ -3,34 +3,28 @@
 import { usePathname } from 'next/navigation'
 import Link from 'next/link'
 import {
-  BarChart3,
   LayoutDashboard,
-  QrCode,
   Users,
-  BookOpen,
   MessageSquare,
   Settings,
   TrendingUp,
-  Gift,
   Shield,
   Menu,
   X,
-  UserCheck,
-  Award,
+  PhoneCall,
+  Kanban,
+  ChartBar,
 } from 'lucide-react'
 import { Sheet, SheetTrigger, SheetContent, SheetClose } from '@/components/ui/sheet'
 
 const links = [
   { href: '/admin', label: 'Dashboard', icon: LayoutDashboard },
-  { href: '/admin/palestras', label: 'Palestras', icon: BookOpen },
-  { href: '/admin/leads', label: 'Leads', icon: Users },
-  { href: '/admin/scanner', label: 'Scanner', icon: QrCode },
-  { href: '/admin/scanner/manual', label: 'Check-in Manual', icon: UserCheck },
+  { href: '/admin/contacts', label: 'Contatos', icon: Users },
+  { href: '/admin/deals', label: 'Pipeline', icon: Kanban },
+  { href: '/admin/activities', label: 'Atividades', icon: PhoneCall },
   { href: '/admin/whatsapp', label: 'WhatsApp', icon: MessageSquare },
-  { href: '/admin/relatorios', label: 'Relatórios', icon: BarChart3 },
+  { href: '/admin/relatorios', label: 'Relatórios', icon: ChartBar },
   { href: '/admin/analytics', label: 'Analytics', icon: TrendingUp },
-  { href: '/admin/sorteio', label: 'Sorteio', icon: Gift },
-  { href: '/admin/certificados', label: 'Certificados', icon: Award },
   { href: '/admin/admins', label: 'Admins', icon: Shield },
   { href: '/admin/config', label: 'Configurações', icon: Settings },
 ]

@@ -1,8 +1,7 @@
 'use client'
 
-import { LogOut, ExternalLink } from 'lucide-react'
+import { LogOut } from 'lucide-react'
 import { useRouter } from 'next/navigation'
-import Link from 'next/link'
 import { ThemeToggle } from '@/components/theme-toggle'
 import { AdminMobileNav } from '@/components/admin/nav'
 import { toast } from 'sonner'
@@ -25,10 +24,6 @@ export function AdminHeader() {
     <header className="flex items-center justify-between border-b border-border bg-card px-4 py-3 md:px-6" role="banner">
       <div className="flex items-center gap-2">
         <AdminMobileNav />
-        <Link href="/" className="flex items-center gap-1.5 rounded-md px-2 py-1 text-sm text-muted hover:text-foreground transition-colors">
-          <ExternalLink className="size-4" />
-          Site
-        </Link>
       </div>
       <div className="flex items-center gap-2">
         <ThemeToggle />
