@@ -39,6 +39,7 @@ export function ContactsClient({ contacts: initialContacts }: ContactsClientProp
   const [busca, setBusca] = useState('')
   const [filtroVendedor, setFiltroVendedor] = useState('')
   const [filtroEmpresa, setFiltroEmpresa] = useState('')
+  const [filtroEvento, setFiltroEvento] = useState('')
   const [currentPage, setCurrentPage] = useState(1)
   const [editContact, setEditContact] = useState<Contact | null>(null)
   const [showForm, setShowForm] = useState(false)
@@ -76,8 +77,11 @@ export function ContactsClient({ contacts: initialContacts }: ContactsClientProp
     if (filtroEmpresa) {
       result = result.filter(c => c.empresa === filtroEmpresa)
     }
+    if (filtroEvento) {
+      result = result.filter(c => c.evento === filtroEvento)
+    }
     return result
-  }, [contacts, aba, busca, filtroVendedor, filtroEmpresa])
+  }, [contacts, aba, busca, filtroVendedor, filtroEmpresa, filtroEvento])
 
   const totalPages = Math.ceil(filtrados.length / pageSize)
   const paginados = filtrados.slice((currentPage - 1) * pageSize, currentPage * pageSize)
@@ -146,8 +150,43 @@ export function ContactsClient({ contacts: initialContacts }: ContactsClientProp
     return Array.from(set).sort()
   }, [contacts])
 
+  const eventosUnicos = useMemo(() => {
+    const set = new Set(contacts.map(c => c.evento).filter(Boolean) as string[])
+    return Array.from(set).sort()
+  }, [contacts])
+
   return (
     <div className="space-y-4">
+      {/* Abas: Evento */}
+      <div className="flex flex-wrap gap-3 items-center">
+        <span className="text-xs font-medium text-muted shrink-0">Evento:</span>
+        <div className="flex gap-1 rounded-lg border border-border p-1 overflow-x-auto">
+          <button
+            onClick={() => { setFiltroEvento(''); setCurrentPage(1) }}
+            className={`rounded-md px-4 py-1.5 text-xs font-medium whitespace-nowrap transition-colors ${
+              !filtroEvento
+                ? 'bg-primary text-primary-foreground shadow-sm'
+                : 'text-muted hover:text-foreground'
+            }`}
+          >
+            Todos
+          </button>
+          {eventosUnicos.map(ev => (
+            <button
+              key={ev}
+              onClick={() => { setFiltroEvento(ev); setCurrentPage(1) }}
+              className={`rounded-md px-4 py-1.5 text-xs font-medium whitespace-nowrap transition-colors ${
+                filtroEvento === ev
+                  ? 'bg-primary text-primary-foreground shadow-sm'
+                  : 'text-muted hover:text-foreground'
+              }`}
+            >
+              {ev}
+            </button>
+          ))}
+        </div>
+      </div>
+
       {/* Abas: Todos / Leads / Manuais */}
       <div className="flex gap-1 rounded-lg border border-border p-1 w-fit">
         {([{ key: 'todos', label: 'Todos' }, { key: 'leads', label: 'Leads' }, { key: 'manuais', label: 'Manuais' }] as const).map(tab => (
@@ -217,12 +256,14 @@ export function ContactsClient({ contacts: initialContacts }: ContactsClientProp
             <Inbox className="size-12 text-muted/40" />
             <p className="text-sm text-muted">
               {busca
-                ? 'Nenhum contato encontrado para esta busca.'
-                : aba === 'leads'
-                  ? 'Nenhum lead encontrado. Leads vêm do site ou sorteio.'
-                  : aba === 'manuais'
-                    ? 'Nenhum contato manual. Crie um novo contato com o botão acima.'
-                    : 'Nenhum contato cadastrado.'}
+                ? 'Nenhum lead encontrado para esta busca.'
+                : filtroEvento
+                  ? `Nenhum lead encontrado para o evento "${filtroEvento}".`
+                  : aba === 'leads'
+                    ? 'Nenhum lead encontrado. Leads vêm do site ou sorteio.'
+                    : aba === 'manuais'
+                      ? 'Nenhum lead manual. Crie um novo lead com o botão acima.'
+                      : 'Nenhum lead cadastrado.'}
             </p>
           </div>
         ) : (
