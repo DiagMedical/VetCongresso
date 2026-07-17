@@ -268,6 +268,18 @@ export async function updateDeal(id: string, formData: Partial<DealFormData>): P
   return data as Deal
 }
 
+export async function listarDealHistory(dealId: string): Promise<{ stage_nome: string; created_at: string }[]> {
+  const supabase = createServiceClient()
+  const { data, error } = await supabase
+    .from('deal_stage_history')
+    .select('stage_nome, created_at')
+    .eq('deal_id', dealId)
+    .order('created_at', { ascending: false })
+
+  if (error) throw new Error('Erro ao carregar histórico: ' + error.message)
+  return (data ?? []) as { stage_nome: string; created_at: string }[]
+}
+
 export async function moveDealStage(id: string, stageId: string): Promise<Deal> {
   const supabase = createServiceClient()
 
@@ -288,6 +300,15 @@ export async function moveDealStage(id: string, stageId: string): Promise<Deal> 
     .single()
 
   if (error) throw new Error('Erro ao mover deal: ' + error.message)
+
+  // Registra no histórico
+  const stageNome = stage.data?.nome ?? 'Desconhecido'
+  await supabase.from('deal_stage_history').insert({
+    deal_id: id,
+    stage_id: stageId,
+    stage_nome: stageNome,
+  }).maybeSingle()
+
   return data as Deal
 }
 
