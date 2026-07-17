@@ -19,7 +19,7 @@ import {
 } from '@/components/ui/dialog'
 import { formatDate } from '@/lib/utils'
 import { INTERESSES_VET_PADRAO, INTERESSES_HUMANO_PADRAO } from '@/lib/interesses'
-import { createContact, updateContact, deleteContact, sendWhatsAppToContact } from '@/lib/actions/crm'
+import { createContact, updateContact, deleteContact, sendWhatsAppToContact, duplicarLeadsEntreEventos } from '@/lib/actions/crm'
 import type { Contact } from '@/types'
 
 interface ContactsClientProps {
@@ -58,6 +58,10 @@ export function ContactsClient({ contacts: initialContacts }: ContactsClientProp
   const [whatsappContact, setWhatsappContact] = useState<Contact | null>(null)
   const [whatsappMsg, setWhatsappMsg] = useState('')
   const [whatsappEnviando, setWhatsappEnviando] = useState(false)
+  const [showDuplicar, setShowDuplicar] = useState(false)
+  const [dupDestino, setDupDestino] = useState('')
+  const [dupEmpresa, setDupEmpresa] = useState('')
+  const [dupEnviando, setDupEnviando] = useState(false)
   const pageSize = 20
 
   // Contagens por aba
@@ -261,6 +265,12 @@ export function ContactsClient({ contacts: initialContacts }: ContactsClientProp
             onClose={() => setShowForm(false)}
           />
         </Dialog>
+        <button
+          onClick={() => setShowDuplicar(true)}
+          className="h-10 rounded-md border border-border bg-card px-3 text-sm text-muted hover:text-foreground transition-colors"
+        >
+          🔄 Duplicar
+        </button>
       </div>
 
       {/* Cards Mobile (< md) */}
@@ -537,6 +547,63 @@ export function ContactsClient({ contacts: initialContacts }: ContactsClientProp
               <Button onClick={handleSendWhatsApp} disabled={!whatsappMsg.trim() || whatsappEnviando} className="gap-2">
                 {whatsappEnviando ? <Loader2 className="size-4 animate-spin" /> : <Send className="size-4" />}
                 {whatsappEnviando ? 'Enviando...' : 'Enviar'}
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Duplicar Leads */}
+      <Dialog open={showDuplicar} onOpenChange={open => { if (!open) { setShowDuplicar(false); setDupDestino(''); setDupEmpresa('') } }}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Duplicar Leads</DialogTitle>
+            <DialogDescription>Copie leads de um evento para outro.</DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-foreground">Evento de origem</label>
+              <select
+                value={filtroEvento || ''}
+                onChange={e => setFiltroEvento(e.target.value)}
+                className="w-full h-10 rounded-md border border-border bg-background px-3 text-sm text-foreground"
+              >
+                <option value="">Selecione um evento</option>
+                {eventosUnicos.map(ev => <option key={ev} value={ev}>{ev}</option>)}
+              </select>
+            </div>
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-foreground">Novo evento (destino)</label>
+              <Input value={dupDestino} onChange={e => setDupDestino(e.target.value)} placeholder="Ex: Congresso Médico 2026" />
+            </div>
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-foreground">Empresa (opcional)</label>
+              <select value={dupEmpresa} onChange={e => setDupEmpresa(e.target.value)} className="w-full h-10 rounded-md border border-border bg-background px-3 text-sm text-foreground">
+                <option value="">Todas</option>
+                <option value="vet">Diagnostic Vet</option>
+                <option value="humana">Diagnostic Medical</option>
+              </select>
+            </div>
+            <div className="flex items-center justify-end gap-3 pt-2 border-t border-border">
+              <DialogClose type="button" className="rounded-md px-4 py-2 text-sm text-muted hover:text-foreground transition-colors">
+                Cancelar
+              </DialogClose>
+              <Button onClick={async () => {
+                if (!filtroEvento || !dupDestino) { toast.error('Preencha origem e destino'); return }
+                setDupEnviando(true)
+                try {
+                  const res = await duplicarLeadsEntreEventos(filtroEvento, dupDestino, dupEmpresa || undefined)
+                  toast.success(`${res.total} leads duplicados para "${dupDestino}"!`)
+                  setShowDuplicar(false)
+                  router.refresh()
+                } catch (e) {
+                  toast.error(e instanceof Error ? e.message : 'Erro ao duplicar')
+                } finally {
+                  setDupEnviando(false)
+                }
+              }} disabled={dupEnviando} className="gap-2">
+                {dupEnviando ? <Loader2 className="size-4 animate-spin" /> : null}
+                {dupEnviando ? 'Duplicando...' : 'Duplicar'}
               </Button>
             </div>
           </div>
