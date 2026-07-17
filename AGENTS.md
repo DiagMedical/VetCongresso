@@ -1114,5 +1114,6 @@ This version has breaking changes — APIs, conventions, and file structure may 
 - `app/admin/contacts/contacts-client.tsx` — evento: text → select + filtro combinado + duplicar atualizado
 
 **Commits:**
-- Pendente
+- `53952d7` — "Eventos gerenciáveis: aba Eventos + select no lead"
+- `ad75ea6` — "Fix eventos page: remove subquery sem FK + contagem manual"
 <!-- END:opencode-session -->

@@ -40,18 +40,18 @@ export default async function AdminDashboard() {
 
       {/* KPIs */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
-        <AnimatedKpi title="Total de Contatos" value={data.total_contatos} icon={<Users className="size-5" />} className="animate-glow" />
-        <AnimatedKpi title="Deals Abertos" value={data.deals_abertos} icon={<Kanban className="size-5" />} />
-        <AnimatedKpi title="Pipeline Total" value={fmt(data.valor_pipeline)} icon={<DollarSign className="size-5" />} />
-        <AnimatedKpi title="Pipeline Ponderado" value={fmt(data.valor_pipeline_ponderado)} icon={<BarChart3 className="size-5" />} />
-        <AnimatedKpi title="Taxa de Conversão" value={`${data.taxa_conversao}%`} icon={<TrendingUp className="size-5" />} />
-        <AnimatedKpi title="Fechados no Mês" value={data.deals_fechados_mes} icon={<Target className="size-5" />} />
+        <AnimatedKpi title="Total de Contatos" value={data.total_contatos} icon={<Users className="size-5" />} gradient="primary" className="animate-glow" />
+        <AnimatedKpi title="Deals Abertos" value={data.deals_abertos} icon={<Kanban className="size-5" />} gradient="cyan" />
+        <AnimatedKpi title="Pipeline Total" value={fmt(data.valor_pipeline)} icon={<DollarSign className="size-5" />} gradient="purple" />
+        <AnimatedKpi title="Pipeline Ponderado" value={fmt(data.valor_pipeline_ponderado)} icon={<BarChart3 className="size-5" />} gradient="cyan" />
+        <AnimatedKpi title="Taxa de Conversão" value={`${data.taxa_conversao}%`} icon={<TrendingUp className="size-5" />} gradient="green" />
+        <AnimatedKpi title="Fechados no Mês" value={data.deals_fechados_mes} icon={<Target className="size-5" />} gradient="rose" />
       </div>
 
       {/* Pipeline Ponderado + Ranking de Vendedores */}
       <div className="grid gap-6 lg:grid-cols-2">
         {/* Funil de Conversão */}
-        <section className="rounded-2xl border border-border bg-card/80 p-5 shadow-[0_0_0_1px_hsl(var(--border))] backdrop-blur-sm">
+        <section className="rounded-2xl border border-border bg-card/80 p-5 shadow-[0_0_0_1px_hsl(var(--border))] backdrop-blur-sm animate-fade-in-1">
           <h3 className="mb-4 text-sm font-semibold text-foreground">Funil de Conversão</h3>
           {data.deals_por_stage.length === 0 ? (
             <p className="text-sm text-muted/60 py-4 text-center">Nenhum deal cadastrado.</p>
@@ -83,7 +83,7 @@ export default async function AdminDashboard() {
         </section>
 
         {/* Ranking de Vendedores */}
-        <section className="rounded-2xl border border-border bg-card/80 p-5 shadow-[0_0_0_1px_hsl(var(--border))] backdrop-blur-sm">
+        <section className="rounded-2xl border border-border bg-card/80 p-5 shadow-[0_0_0_1px_hsl(var(--border))] backdrop-blur-sm animate-fade-in-2">
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-sm font-semibold text-foreground">Ranking de Vendedores</h3>
             <Award className="size-4 text-accent" />
@@ -125,7 +125,7 @@ export default async function AdminDashboard() {
       </div>
 
       {/* Deals Recentes */}
-      <section className="rounded-2xl border border-border bg-card/80 p-5 shadow-[0_0_0_1px_hsl(var(--border))] backdrop-blur-sm">
+      <section className="rounded-2xl border border-border bg-card/80 p-5 shadow-[0_0_0_1px_hsl(var(--border))] backdrop-blur-sm animate-fade-in-3">
         <h3 className="mb-4 text-sm font-semibold text-foreground">Deals Recentes</h3>
         {data.deals_recentes.length === 0 ? (
           <p className="text-sm text-muted/60 py-4 text-center">Nenhum deal cadastrado ainda.</p>
@@ -135,12 +135,12 @@ export default async function AdminDashboard() {
             <div className="hidden md:block overflow-x-auto">
               <table className="min-w-[600px] w-full text-sm">
                 <thead>
-                  <tr className="border-b border-border">
-                    <th className="px-3 py-2.5 text-left font-medium text-muted">Título</th>
-                    <th className="px-3 py-2.5 text-left font-medium text-muted hidden sm:table-cell">Contato</th>
-                    <th className="px-3 py-2.5 text-left font-medium text-muted">Estágio</th>
-                    <th className="px-3 py-2.5 text-left font-medium text-muted hidden md:table-cell">Valor</th>
-                    <th className="px-3 py-2.5 text-left font-medium text-muted">Data</th>
+                  <tr className="border-b border-border bg-primary/[0.03]">
+                    <th className="px-3 py-2.5 text-left font-medium text-muted text-xs uppercase tracking-wider">Título</th>
+                    <th className="px-3 py-2.5 text-left font-medium text-muted text-xs uppercase tracking-wider hidden sm:table-cell">Contato</th>
+                    <th className="px-3 py-2.5 text-left font-medium text-muted text-xs uppercase tracking-wider">Estágio</th>
+                    <th className="px-3 py-2.5 text-left font-medium text-muted text-xs uppercase tracking-wider hidden md:table-cell">Valor</th>
+                    <th className="px-3 py-2.5 text-left font-medium text-muted text-xs uppercase tracking-wider">Data</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -195,7 +195,7 @@ export default async function AdminDashboard() {
 
       {/* Ações Rápidas */}
       {/* Tempo Médio no Pipeline */}
-      <section className="rounded-2xl border border-border bg-card/80 p-5 shadow-[0_0_0_1px_hsl(var(--border))] backdrop-blur-sm">
+      <section className="rounded-2xl border border-border bg-card/80 p-5 shadow-[0_0_0_1px_hsl(var(--border))] backdrop-blur-sm animate-fade-in-4">
         <h3 className="mb-4 text-sm font-semibold text-foreground">⏱️ Tempo Médio no Pipeline</h3>
         {data.tempo_medio_por_stage.length === 0 ? (
           <p className="text-sm text-muted/60 py-4 text-center">Sem dados suficientes.</p>
@@ -217,7 +217,7 @@ export default async function AdminDashboard() {
 
       <div className="grid gap-6 lg:grid-cols-2">
         {/* Leads sem Follow-up */}
-        <section className="rounded-2xl border border-border bg-card/80 p-5 shadow-[0_0_0_1px_hsl(var(--border))] backdrop-blur-sm">
+        <section className="rounded-2xl border border-border bg-card/80 p-5 shadow-[0_0_0_1px_hsl(var(--border))] backdrop-blur-sm animate-fade-in-5">
           <h3 className="mb-4 text-sm font-semibold text-foreground flex items-center gap-2">
             <span className="size-2 rounded-full bg-red-500 animate-pulse" />
             Leads sem Follow-up
@@ -248,7 +248,7 @@ export default async function AdminDashboard() {
         </section>
 
         {/* Deals Parados */}
-        <section className="rounded-2xl border border-border bg-card/80 p-5 shadow-[0_0_0_1px_hsl(var(--border))] backdrop-blur-sm">
+        <section className="rounded-2xl border border-border bg-card/80 p-5 shadow-[0_0_0_1px_hsl(var(--border))] backdrop-blur-sm animate-fade-in-6">
           <h3 className="mb-4 text-sm font-semibold text-foreground flex items-center gap-2">
             <span className="size-2 rounded-full bg-yellow-500 animate-pulse" />
             Deals Parados
@@ -283,7 +283,7 @@ export default async function AdminDashboard() {
       </div>
 
       {/* Atividades Recentes */}
-      <section className="rounded-2xl border border-border bg-card/80 p-5 shadow-[0_0_0_1px_hsl(var(--border))] backdrop-blur-sm">
+      <section className="rounded-2xl border border-border bg-card/80 p-5 shadow-[0_0_0_1px_hsl(var(--border))] backdrop-blur-sm animate-fade-in-7">
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-sm font-semibold text-foreground">Atividades Recentes</h3>
         </div>

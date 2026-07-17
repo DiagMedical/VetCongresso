@@ -389,17 +389,17 @@ export function ContactsClient({ contacts: initialContacts, eventos: initialEven
           <div className="overflow-x-auto">
             <table className="min-w-[700px] w-full text-sm">
               <thead>
-                <tr className="border-b border-border">
-                  <th className="px-3 py-2.5 text-left font-medium text-muted">Nome</th>
-                  <th className="px-3 py-2.5 text-left font-medium text-muted hidden sm:table-cell">Email</th>
-                  <th className="px-3 py-2.5 text-left font-medium text-muted hidden md:table-cell">Telefone</th>
-                  <th className="px-3 py-2.5 text-left font-medium text-muted hidden lg:table-cell">Vendedor</th>
-                  <th className="px-3 py-2.5 text-left font-medium text-muted hidden lg:table-cell">Empresa</th>
-                  <th className="px-3 py-2.5 text-left font-medium text-muted hidden xl:table-cell">Evento</th>
-                  <th className="px-3 py-2.5 text-left font-medium text-muted hidden lg:table-cell">Origem</th>
-                  <th className="px-3 py-2.5 text-left font-medium text-muted hidden xl:table-cell">Interesses</th>
-                  <th className="px-3 py-2.5 text-left font-medium text-muted">Data</th>
-                  <th className="px-3 py-2.5 text-right font-medium text-muted">Ações</th>
+                <tr className="border-b border-border bg-primary/[0.03]">
+                  <th className="px-3 py-2.5 text-left font-medium text-muted text-xs uppercase tracking-wider">Nome</th>
+                  <th className="px-3 py-2.5 text-left font-medium text-muted text-xs uppercase tracking-wider hidden sm:table-cell">Email</th>
+                  <th className="px-3 py-2.5 text-left font-medium text-muted text-xs uppercase tracking-wider hidden md:table-cell">Telefone</th>
+                  <th className="px-3 py-2.5 text-left font-medium text-muted text-xs uppercase tracking-wider hidden lg:table-cell">Vendedor</th>
+                  <th className="px-3 py-2.5 text-left font-medium text-muted text-xs uppercase tracking-wider hidden lg:table-cell">Empresa</th>
+                  <th className="px-3 py-2.5 text-left font-medium text-muted text-xs uppercase tracking-wider hidden xl:table-cell">Evento</th>
+                  <th className="px-3 py-2.5 text-left font-medium text-muted text-xs uppercase tracking-wider hidden lg:table-cell">Origem</th>
+                  <th className="px-3 py-2.5 text-left font-medium text-muted text-xs uppercase tracking-wider hidden xl:table-cell">Interesses</th>
+                  <th className="px-3 py-2.5 text-left font-medium text-muted text-xs uppercase tracking-wider">Data</th>
+                  <th className="px-3 py-2.5 text-right font-medium text-muted text-xs uppercase tracking-wider">Ações</th>
                 </tr>
               </thead>
               <tbody>
