@@ -9,6 +9,7 @@ import {
   Settings,
   TrendingUp,
   Shield,
+  Award,
   Menu,
   X,
   PhoneCall,
@@ -27,6 +28,7 @@ const links = [
   { href: '/admin/relatorios', label: 'Relatórios', icon: ChartBar },
   { href: '/admin/analytics', label: 'Analytics', icon: TrendingUp },
   { href: '/admin/admins', label: 'Admins', icon: Shield },
+  { href: '/admin/certificados', label: 'Certificados', icon: Award },
   { href: '/admin/config', label: 'Configurações', icon: Settings },
 ]
 

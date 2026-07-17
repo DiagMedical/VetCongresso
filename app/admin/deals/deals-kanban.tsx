@@ -189,7 +189,8 @@ export function DealsKanban({ deals: initialDeals, stages }: DealsKanbanProps) {
               <div className="flex flex-col gap-2 p-3 min-h-[200px]">
                 {stageDeals.length === 0 && (
                   <div className="flex flex-1 items-center justify-center py-8">
-                    <p className="text-xs text-muted/50">Arraste deals para cá</p>
+                    <p className="hidden md:block text-xs text-muted/50">Arraste deals para cá</p>
+                    <p className="md:hidden text-xs text-muted/50">Nenhum deal nesta etapa</p>
                   </div>
                 )}
                 {stageDeals.map(deal => (
@@ -209,7 +210,7 @@ export function DealsKanban({ deals: initialDeals, stages }: DealsKanbanProps) {
                           </p>
                         )}
                       </div>
-                      <div className="flex shrink-0 gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <div className="flex shrink-0 gap-0.5 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
                         <button
                           onClick={() => { setEditDeal(deal); loadContacts() }}
                           className="rounded-md p-1 text-muted hover:text-foreground transition-colors"
