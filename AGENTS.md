@@ -1022,3 +1022,47 @@ This version has breaking changes — APIs, conventions, and file structure may 
 **Commits:**
 - Pendente
 <!-- END:opencode-session -->
+
+<!-- BEGIN:opencode-session -->
+## Session — 17/07/2026 (9)
+
+### PWA Completo + Ajustes Mobile
+
+**Problemas resolvidos:**
+- App não tinha service worker — zero cache offline, PWA incompleto
+- Dashboard "Deals Recentes" sem cards mobile (scroll horizontal)
+- Scanner sem loading skeleton
+- Pipeline Kanban: botões de ação invisíveis em touch (opacity-0 no hover)
+- Skeleton "Contatos" desatualizado (título errado)
+- Certificados não aparecia na navegação
+
+**Soluções:**
+
+1. **PWA completo** — `public/sw.js` com stale-while-revalidate para assets estáticos, network-first para API, offline fallback para navegação. `components/sw-register.tsx` com registro automático e retry. Página `/offline` amigável com botão "Tentar Novamente". Viewport export com `viewportFit: 'cover'` para safe-area no iOS.
+
+2. **Dashboard Deals Recentes** — Cards mobile (`md:hidden`) com título, valor, estágio, contato e data. Tabela mantida em desktop.
+
+3. **Scanner loading** — `app/admin/scanner/loading.tsx` com skeleton do QR preview + sidebar. `app/admin/scanner/manual/loading.tsx` com busca e linhas de tabela.
+
+4. **Kanban touch** — Botões de ação (editar/excluir) sempre visíveis em mobile (`md:opacity-0 md:group-hover:opacity-100`). Texto "Arraste deals para cá" substituído por "Nenhum deal nesta etapa" em mobile.
+
+5. **Nav** — Link "Certificados" com ícone Award entre Admins e Configurações.
+
+**Arquivos alterados/novos:**
+- `public/sw.js` (novo) — service worker
+- `components/sw-register.tsx` (novo) — registro automático
+- `app/offline/page.tsx` (novo) — página offline
+- `app/layout.tsx` — viewport export + SwRegister
+- `app/admin/page.tsx` — cards mobile Deals Recentes
+- `app/admin/scanner/loading.tsx` (novo)
+- `app/admin/scanner/manual/loading.tsx` (novo)
+- `app/admin/deals/deals-kanban.tsx` — botões visíveis em mobile
+- `app/admin/contacts/loading.tsx` — Contatos → Leads
+- `components/admin/nav.tsx` — +Certificados
+
+**Commits:**
+- `bf31be5` — "PWA completo: service worker com cache offline + offline fallback page + viewport fit"
+- `ef6dfd8` — "Dashboard: Deals Recentes com cards mobile (md:hidden)"
+- `5a6d161` — "Loading scanner + fix Contatos→Leads no skeleton"
+- `d01d62d` — "Kanban mobile + Certificados nav + AGENTS.md"
+<!-- END:opencode-session -->
