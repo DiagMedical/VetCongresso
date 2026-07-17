@@ -235,6 +235,7 @@ export function ContactsClient({ contacts: initialContacts }: ContactsClientProp
                   <th className="px-3 py-2.5 text-left font-medium text-muted hidden md:table-cell">Telefone</th>
                   <th className="px-3 py-2.5 text-left font-medium text-muted hidden lg:table-cell">Vendedor</th>
                   <th className="px-3 py-2.5 text-left font-medium text-muted hidden lg:table-cell">Empresa</th>
+                  <th className="px-3 py-2.5 text-left font-medium text-muted hidden xl:table-cell">Evento</th>
                   <th className="px-3 py-2.5 text-left font-medium text-muted hidden lg:table-cell">Origem</th>
                   <th className="px-3 py-2.5 text-left font-medium text-muted hidden xl:table-cell">Interesses</th>
                   <th className="px-3 py-2.5 text-left font-medium text-muted">Data</th>
@@ -273,6 +274,9 @@ export function ContactsClient({ contacts: initialContacts }: ContactsClientProp
                           {contact.empresa === 'vet' ? 'Vet' : 'Humana'}
                         </span>
                       ) : <span className="text-muted/40">—</span>}
+                    </td>
+                    <td className="px-3 py-2.5 text-muted truncate max-w-[140px] hidden xl:table-cell">
+                      {contact.evento || <span className="text-muted/40">—</span>}
                     </td>
                     <td className="px-3 py-2.5 text-muted hidden lg:table-cell">
                       {contact.origem || <span className="text-muted/40">—</span>}
