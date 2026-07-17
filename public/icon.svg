@@ -4,76 +4,42 @@
       <stop offset="0%" stop-color="#00f0f0"/>
       <stop offset="100%" stop-color="#8b5cf6"/>
     </linearGradient>
+    <linearGradient id="g2" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#8b5cf6"/>
+      <stop offset="100%" stop-color="#00f0f0"/>
+    </linearGradient>
   </defs>
 
-  <!-- Fundo -->
-  <rect width="512" height="512" rx="80" fill="#0d0a1a"/>
+  <!-- Fundo arredondado -->
+  <rect width="512" height="512" rx="96" fill="#0d0a1a"/>
 
-  <!-- Anel externo Diagnostic Vet -->
-  <circle cx="256" cy="256" r="210" fill="none" stroke="#8b5cf6" stroke-width="10" opacity=".25"/>
-  <circle cx="256" cy="256" r="195" fill="none" stroke="#8b5cf6" stroke-width="4" opacity=".4"/>
+  <!-- Anéis decorativos externos -->
+  <circle cx="256" cy="256" r="215" fill="none" stroke="#8b5cf6" stroke-width="6" opacity=".12"/>
+  <circle cx="256" cy="256" r="200" fill="none" stroke="#8b5cf6" stroke-width="2" opacity=".25"/>
 
-  <!-- Anel interno (marca d'água) -->
-  <circle cx="256" cy="256" r="130" fill="none" stroke="url(#g)" stroke-width="2" opacity=".2"/>
+  <!-- Letra "D" estilizada (Diagnostic) -->
+  <g transform="translate(256,256)">
+    <!-- Pilar vertical do D -->
+    <rect x="-38" y="-125" width="52" height="250" rx="16" fill="url(#g)"/>
 
-  <!-- Cabeça do cavalo (silhueta, perfil direito) -->
-  <g fill="#00f0f0">
-    <!-- Pescoço + cabeça -->
+    <!-- Curva do D (arco à direita) -->
     <path d="
-      M 155,440
-      C 155,340 180,260 215,215
-      C 220,205 230,195 240,190
-      C 245,185 250,182 255,185
-      C 260,190 258,200 252,210
-      C 270,212 300,228 325,250
-      C 345,268 370,280 380,295
-      C 388,306 385,320 370,328
-      C 352,338 330,330 315,322
-      C 305,318 298,320 290,325
-      C 278,332 260,350 245,375
-      C 230,400 210,430 195,445
-      C 185,450 175,448 165,445
-      Z
-    "/>
-    <!-- Narina -->
-    <ellipse cx="360" cy="312" rx="10" ry="8" fill="#0d0a1a"/>
-    <!-- Olho -->
-    <ellipse cx="290" cy="247" rx="7" ry="5" fill="#0d0a1a" transform="rotate(-15,290,247)"/>
+      M 14,-125
+      C 110,-125 175,-80 175,0
+      C 175,80 110,125 14,125
+    " fill="none" stroke="url(#g)" stroke-width="34" stroke-linecap="round"/>
+
+    <!-- Glow sutil -->
+    <path d="
+      M 14,-125
+      C 110,-125 175,-80 175,0
+      C 175,80 110,125 14,125
+    " fill="none" stroke="url(#g)" stroke-width="8" opacity=".25" stroke-linecap="round"/>
   </g>
 
-  <!-- Crina (indigo, sobrepondo o pescoço) -->
-  <g fill="#8b5cf6" opacity=".6">
-    <path d="
-      M 215,215
-      C 200,230 180,270 175,310
-      C 172,340 178,380 185,410
-      C 182,400 178,370 180,340
-      C 184,300 200,260 220,230
-      Z
-    "/>
-    <path d="
-      M 220,225
-      C 208,250 195,290 193,330
-      C 192,360 200,390 208,420
-      C 204,400 200,370 202,340
-      C 206,300 218,265 232,240
-      Z
-    "/>
-  </g>
-
-  <!-- Orelha -->
-  <path d="
-    M 240,190
-    C 235,175 233,160 238,150
-    C 243,142 250,148 252,160
-    C 255,172 252,185 250,192
-    Z
-  " fill="#00f0f0"/>
-
-  <!-- Minicírculo Diagnostic Vet (canto inferior direito) -->
-  <circle cx="390" cy="400" r="35" fill="none" stroke="#8b5cf6" stroke-width="5"/>
-  <circle cx="390" cy="400" r="14" fill="#8b5cf6"/>
-  <!-- Rosto dentro do círculo (simplificado) -->
-  <circle cx="388" cy="396" r="5" fill="#00f0f0"/>
-  <path d="M 382,408 Q 390,402 398,408" fill="none" stroke="#00f0f0" stroke-width="2" stroke-linecap="round"/>
+  <!-- Pontos decorativos -->
+  <circle cx="85" cy="85" r="4" fill="#8b5cf6" opacity=".4"/>
+  <circle cx="427" cy="85" r="4" fill="#8b5cf6" opacity=".3"/>
+  <circle cx="85" cy="427" r="4" fill="#00f0f0" opacity=".3"/>
+  <circle cx="427" cy="427" r="4" fill="#00f0f0" opacity=".4"/>
 </svg>
