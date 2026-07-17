@@ -1,6 +1,7 @@
 'use server'
 
 import { createServiceClient } from '@/lib/supabase/server'
+import { sendText } from '@/lib/whatsapp/client'
 import type { Contact, Deal, PipelineStage, Activity, CrmDashboardData } from '@/types'
 import { contactSchema, dealSchema, pipelineStageSchema, activitySchema } from '@/lib/schemas'
 import type { ContactFormData, DealFormData, PipelineStageFormData, ActivityFormData } from '@/lib/schemas'
@@ -485,4 +486,37 @@ export async function getCrmDashboardData(): Promise<CrmDashboardData> {
     leads_sem_followup: leadsSemFollowup,
     deals_parados: dealsParados,
   }
+}
+
+// ============================================================
+// WhatsApp integrado ao CRM
+// ============================================================
+
+export async function sendWhatsAppToContact(
+  contactId: string,
+  message: string
+): Promise<{ sucesso: boolean }> {
+  const supabase = createServiceClient()
+
+  const { data: contact, error } = await supabase
+    .from('contacts')
+    .select('id, nome, telefone')
+    .eq('id', contactId)
+    .single()
+
+  if (error || !contact) throw new Error('Contato não encontrado')
+  if (!contact.telefone) throw new Error('Contato não possui telefone')
+
+  const result = await sendText(contact.telefone, message)
+
+  await supabase.from('activities').insert({
+    contact_id: contactId,
+    tipo: 'whatsapp',
+    descricao: `📤 WhatsApp enviado para ${contact.nome}: ${message.substring(0, 200)}`,
+    responsavel: 'Admin',
+    concluido: true,
+  })
+
+  if (!result.sucesso) throw new Error(result.erro || 'Erro ao enviar WhatsApp')
+  return { sucesso: true }
 }

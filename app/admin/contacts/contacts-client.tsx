@@ -2,7 +2,7 @@
 
 import { useState, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
-import { Search, Plus, Trash2, Edit3, Inbox, Mail, Phone, Stethoscope, Syringe, Building2 } from 'lucide-react'
+import { Search, Plus, Trash2, Edit3, Inbox, Mail, Phone, Stethoscope, Syringe, Building2, MessageSquare, Send, Loader2 } from 'lucide-react'
 import { toast } from 'sonner'
 import { AdminPagination } from '@/components/admin/pagination'
 import { AdminSectionCard } from '@/components/admin/section-card'
@@ -19,7 +19,7 @@ import {
 } from '@/components/ui/dialog'
 import { formatDate } from '@/lib/utils'
 import { INTERESSES_VET_PADRAO, INTERESSES_HUMANO_PADRAO } from '@/lib/interesses'
-import { createContact, updateContact, deleteContact } from '@/lib/actions/crm'
+import { createContact, updateContact, deleteContact, sendWhatsAppToContact } from '@/lib/actions/crm'
 import type { Contact } from '@/types'
 
 interface ContactsClientProps {
@@ -43,6 +43,9 @@ export function ContactsClient({ contacts: initialContacts }: ContactsClientProp
   const [currentPage, setCurrentPage] = useState(1)
   const [editContact, setEditContact] = useState<Contact | null>(null)
   const [showForm, setShowForm] = useState(false)
+  const [whatsappContact, setWhatsappContact] = useState<Contact | null>(null)
+  const [whatsappMsg, setWhatsappMsg] = useState('')
+  const [whatsappEnviando, setWhatsappEnviando] = useState(false)
   const pageSize = 20
 
   // Contagens por aba
@@ -142,6 +145,22 @@ export function ContactsClient({ contacts: initialContacts }: ContactsClientProp
       router.refresh()
     } catch (e) {
       toast.error(e instanceof Error ? e.message : 'Erro ao excluir lead')
+    }
+  }
+
+  async function handleSendWhatsApp() {
+    if (!whatsappContact || !whatsappMsg.trim()) return
+    setWhatsappEnviando(true)
+    try {
+      await sendWhatsAppToContact(whatsappContact.id, whatsappMsg.trim())
+      toast.success('WhatsApp enviado com sucesso!')
+      setWhatsappContact(null)
+      setWhatsappMsg('')
+      router.refresh()
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : 'Erro ao enviar WhatsApp')
+    } finally {
+      setWhatsappEnviando(false)
     }
   }
 
@@ -271,6 +290,11 @@ export function ContactsClient({ contacts: initialContacts }: ContactsClientProp
                   <button onClick={() => setEditContact(contact)} className="rounded-md p-2 text-muted hover:text-foreground transition-colors" aria-label={`Editar ${contact.nome}`}>
                     <Edit3 className="size-4" />
                   </button>
+                  {contact.telefone && (
+                    <button onClick={() => { setWhatsappContact(contact); setWhatsappMsg('') }} className="rounded-md p-2 text-muted hover:text-green-400 transition-colors" aria-label={`WhatsApp ${contact.nome}`}>
+                      <MessageSquare className="size-4" />
+                    </button>
+                  )}
                   <button onClick={() => handleDelete(contact.id, contact.nome)} className="rounded-md p-2 text-muted hover:text-red-400 transition-colors" aria-label={`Excluir ${contact.nome}`}>
                     <Trash2 className="size-4" />
                   </button>
@@ -426,6 +450,15 @@ export function ContactsClient({ contacts: initialContacts }: ContactsClientProp
                         >
                           <Edit3 className="size-4" />
                         </button>
+                        {contact.telefone && (
+                          <button
+                            onClick={() => { setWhatsappContact(contact); setWhatsappMsg('') }}
+                            className="rounded-md p-2 text-muted hover:text-green-400 hover:bg-green-500/10 transition-colors"
+                            aria-label={`WhatsApp ${contact.nome}`}
+                          >
+                            <MessageSquare className="size-4" />
+                          </button>
+                        )}
                         <button
                           onClick={() => handleDelete(contact.id, contact.nome)}
                           className="rounded-md p-2 text-muted hover:text-red-400 hover:bg-red-500/10 transition-colors"
@@ -463,6 +496,36 @@ export function ContactsClient({ contacts: initialContacts }: ContactsClientProp
             onClose={() => setEditContact(null)}
           />
         )}
+      </Dialog>
+
+      {/* WhatsApp Dialog */}
+      <Dialog open={!!whatsappContact} onOpenChange={open => { if (!open) { setWhatsappContact(null); setWhatsappMsg('') } }}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Enviar WhatsApp</DialogTitle>
+            <DialogDescription>
+              {whatsappContact ? `Enviar mensagem para ${whatsappContact.nome} (${whatsappContact.telefone})` : ''}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+            <textarea
+              value={whatsappMsg}
+              onChange={e => setWhatsappMsg(e.target.value)}
+              rows={4}
+              className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground resize-none"
+              placeholder="Digite sua mensagem..."
+            />
+            <div className="flex items-center justify-end gap-3">
+              <DialogClose onClick={() => { setWhatsappContact(null); setWhatsappMsg('') }} type="button" className="rounded-md px-4 py-2 text-sm text-muted hover:text-foreground transition-colors">
+                Cancelar
+              </DialogClose>
+              <Button onClick={handleSendWhatsApp} disabled={!whatsappMsg.trim() || whatsappEnviando} className="gap-2">
+                {whatsappEnviando ? <Loader2 className="size-4 animate-spin" /> : <Send className="size-4" />}
+                {whatsappEnviando ? 'Enviando...' : 'Enviar'}
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
       </Dialog>
     </div>
   )
