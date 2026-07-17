@@ -5,6 +5,41 @@ This version has breaking changes — APIs, conventions, and file structure may 
 <!-- END:nextjs-agent-rules -->
 
 <!-- BEGIN:opencode-session -->
+## Session — 17/07/2026 (2)
+
+### Contatos: Abas Todos/Leads/Manuais + Interesses Vet/Humano
+
+**Problemas resolvidos:**
+- Leads (site/sorteio) e contatos manuais estavam misturados sem distinção
+- Não era possível registrar quais equipamentos o cliente tem interesse
+- Duas áreas distintas (veterinária e humana) com listas diferentes de equipamentos
+
+**Soluções:**
+
+1. **Abas na página de Contatos** — "Todos", "Leads" (origem site/sorteio), "Manuais" (origem manual). Filtro client-side com contagem por aba. Alterna sem recarregar página.
+
+2. **Interesses Vet + Humano** — Colunas `interesses_vet TEXT[]` e `interesses_humano TEXT[]` na tabela `contacts`. Chips coloridos no formulário (azul = vet, cyan = humano). Balões na tabela com limite visível.
+
+3. **Config gerenciável** — Página `/admin/config` com seções para adicionar/remover itens de cada área. Mostra lista padrão enquanto o admin não personalizar.
+
+4. **Lista padrão** em `lib/interesses.ts`:
+   - **Vet**: ShockWave Medispec, Radial Pet Neo, Magneto Hi-PEMF, PMST LOOP Hi-PEMF, Laser Cirúrgico, Laser Terapêutico, Endoscópio, Processador de Vídeo, Ultrassom Portátil, Outros
+   - **Humano**: ShockWave, Radial, Hi-PEMF, Laser, Endoscopia, Ultrassom, Outros
+
+**Arquivos alterados/novos:**
+- `lib/interesses.ts` (novo) — constantes com listas padrão
+- `scripts/add-interesses.sql` (novo) — migration ALTER TABLE + seed config
+- `scripts/crm-schema.sql` — colunas no CREATE TABLE
+- `types/index.ts` — interesses_vet/interesses_humano em Contact
+- `lib/schemas.ts` — campos nos schemas Zod
+- `lib/actions/crm.ts` — persistência nas server actions
+- `app/admin/contacts/contacts-client.tsx` — abas + chips no form + coluna na tabela
+- `app/admin/config/config-page.tsx` — seções de gerenciamento
+
+**Commits:**
+- `6f21b04` — "Contatos: abas Todos / Leads / Manuais com filtro por origem"
+- `baaa87b` — "Contatos: abas Todos/Leads/Manuais + interesses vet/humano (chips no form, coluna na tabela, config gerenciável)"
+
 ## Session — 17/07/2026
 
 ### Transformação VetCongresso → DiagnosticCRM
