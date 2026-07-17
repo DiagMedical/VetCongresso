@@ -2,7 +2,7 @@
 
 import { useState, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
-import { Search, Plus, Trash2, Edit3, Inbox, Mail, Phone } from 'lucide-react'
+import { Search, Plus, Trash2, Edit3, Inbox, Mail, Phone, Stethoscope, Syringe } from 'lucide-react'
 import { toast } from 'sonner'
 import { AdminPagination } from '@/components/admin/pagination'
 import { AdminSectionCard } from '@/components/admin/section-card'
@@ -18,6 +18,7 @@ import {
   DialogClose,
 } from '@/components/ui/dialog'
 import { formatDate } from '@/lib/utils'
+import { INTERESSES_VET_PADRAO, INTERESSES_HUMANO_PADRAO } from '@/lib/interesses'
 import { createContact, updateContact, deleteContact } from '@/lib/actions/crm'
 import type { Contact } from '@/types'
 
@@ -87,6 +88,8 @@ export function ContactsClient({ contacts: initialContacts }: ContactsClientProp
         vendedor: formData.get('vendedor') as string,
         observacoes: formData.get('observacoes') as string,
         tags: [],
+        interesses_vet: formData.getAll('interesses_vet') as string[],
+        interesses_humano: formData.getAll('interesses_humano') as string[],
       })
       setContacts(prev => [contact, ...prev])
       setShowForm(false)
@@ -106,6 +109,8 @@ export function ContactsClient({ contacts: initialContacts }: ContactsClientProp
         vendedor: formData.get('vendedor') as string,
         observacoes: formData.get('observacoes') as string,
         tags: [],
+        interesses_vet: formData.getAll('interesses_vet') as string[],
+        interesses_humano: formData.getAll('interesses_humano') as string[],
       })
       setContacts(prev => prev.map(c => c.id === id ? updated : c))
       setEditContact(null)
@@ -212,6 +217,7 @@ export function ContactsClient({ contacts: initialContacts }: ContactsClientProp
                   <th className="px-3 py-2.5 text-left font-medium text-muted hidden md:table-cell">Telefone</th>
                   <th className="px-3 py-2.5 text-left font-medium text-muted hidden lg:table-cell">Vendedor</th>
                   <th className="px-3 py-2.5 text-left font-medium text-muted hidden lg:table-cell">Origem</th>
+                  <th className="px-3 py-2.5 text-left font-medium text-muted hidden xl:table-cell">Interesses</th>
                   <th className="px-3 py-2.5 text-left font-medium text-muted">Data</th>
                   <th className="px-3 py-2.5 text-right font-medium text-muted">Ações</th>
                 </tr>
@@ -243,6 +249,25 @@ export function ContactsClient({ contacts: initialContacts }: ContactsClientProp
                     </td>
                     <td className="px-3 py-2.5 text-muted hidden lg:table-cell">
                       {contact.origem || <span className="text-muted/40">—</span>}
+                    </td>
+                    <td className="px-3 py-2.5 hidden xl:table-cell">
+                      <div className="flex flex-wrap gap-1 max-w-[200px]">
+                        {[...(contact.interesses_vet ?? []), ...(contact.interesses_humano ?? [])].length === 0 ? (
+                          <span className="text-muted/40">—</span>
+                        ) : (
+                          <>
+                            {(contact.interesses_vet ?? []).slice(0, 2).map(i => (
+                              <span key={i} className="rounded-full bg-primary/10 px-2 py-0.5 text-[10px] text-primary font-medium truncate max-w-[120px]">{i}</span>
+                            ))}
+                            {(contact.interesses_humano ?? []).slice(0, 1).map(i => (
+                              <span key={i} className="rounded-full bg-accent/10 px-2 py-0.5 text-[10px] text-accent font-medium truncate max-w-[120px]">{i}</span>
+                            ))}
+                            {[...(contact.interesses_vet ?? []), ...(contact.interesses_humano ?? [])].length > 3 && (
+                              <span className="text-[10px] text-muted">+{[...(contact.interesses_vet ?? []), ...(contact.interesses_humano ?? [])].length - 3}</span>
+                            )}
+                          </>
+                        )}
+                      </div>
                     </td>
                     <td className="px-3 py-2.5 text-muted whitespace-nowrap">
                       {formatDate(contact.created_at)}
@@ -312,31 +337,98 @@ function ContactFormDialog({
   onSubmit: (data: FormData) => Promise<void>
   onClose: () => void
 }) {
+  const [selVet, setSelVet] = useState<string[]>(contact?.interesses_vet ?? [])
+  const [selHumano, setSelHumano] = useState<string[]>(contact?.interesses_humano ?? [])
+
+  function toggleVet(item: string) {
+    setSelVet(prev => prev.includes(item) ? prev.filter(i => i !== item) : [...prev, item])
+  }
+
+  function toggleHumano(item: string) {
+    setSelHumano(prev => prev.includes(item) ? prev.filter(i => i !== item) : [...prev, item])
+  }
+
+  async function handleSubmit(formData: FormData) {
+    // Adiciona os interesses selecionados ao formData
+    selVet.forEach(item => formData.append('interesses_vet', item))
+    selHumano.forEach(item => formData.append('interesses_humano', item))
+    await onSubmit(formData)
+  }
+
   return (
-    <DialogContent className="sm:max-w-md">
+    <DialogContent className="sm:max-w-lg">
       <DialogHeader>
         <DialogTitle>{title}</DialogTitle>
-        <DialogDescription>
-          Preencha os dados do contato.
-        </DialogDescription>
+        <DialogDescription>Preencha os dados do contato.</DialogDescription>
       </DialogHeader>
-      <form action={onSubmit} className="space-y-4">
+      <form action={handleSubmit} className="space-y-4 max-h-[70vh] overflow-y-auto pr-1">
         <div className="space-y-2">
           <label htmlFor="nome" className="text-sm font-medium text-foreground">Nome *</label>
           <Input id="nome" name="nome" defaultValue={contact?.nome ?? ''} required minLength={3} />
         </div>
-        <div className="space-y-2">
-          <label htmlFor="email" className="text-sm font-medium text-foreground">Email</label>
-          <Input id="email" name="email" type="email" defaultValue={contact?.email ?? ''} />
-        </div>
-        <div className="space-y-2">
-          <label htmlFor="telefone" className="text-sm font-medium text-foreground">Telefone</label>
-          <Input id="telefone" name="telefone" defaultValue={contact?.telefone ?? ''} />
+        <div className="grid grid-cols-2 gap-4">
+          <div className="space-y-2">
+            <label htmlFor="email" className="text-sm font-medium text-foreground">Email</label>
+            <Input id="email" name="email" type="email" defaultValue={contact?.email ?? ''} />
+          </div>
+          <div className="space-y-2">
+            <label htmlFor="telefone" className="text-sm font-medium text-foreground">Telefone</label>
+            <Input id="telefone" name="telefone" defaultValue={contact?.telefone ?? ''} />
+          </div>
         </div>
         <div className="space-y-2">
           <label htmlFor="vendedor" className="text-sm font-medium text-foreground">Vendedor</label>
           <Input id="vendedor" name="vendedor" defaultValue={contact?.vendedor ?? ''} />
         </div>
+
+        {/* Interesses — Área Veterinária */}
+        <div className="space-y-2">
+          <div className="flex items-center gap-2">
+            <Stethoscope className="size-4 text-primary" />
+            <span className="text-sm font-medium text-foreground">Interesses — Veterinária</span>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {INTERESSES_VET_PADRAO.map(item => (
+              <button
+                key={item}
+                type="button"
+                onClick={() => toggleVet(item)}
+                className={`rounded-full border px-3 py-1 text-xs font-medium transition-all ${
+                  selVet.includes(item)
+                    ? 'border-primary bg-primary text-primary-foreground shadow-sm'
+                    : 'border-border text-muted hover:border-foreground/30 hover:text-foreground'
+                }`}
+              >
+                {item}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Interesses — Área Humana */}
+        <div className="space-y-2">
+          <div className="flex items-center gap-2">
+            <Syringe className="size-4 text-accent" />
+            <span className="text-sm font-medium text-foreground">Interesses — Humana</span>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {INTERESSES_HUMANO_PADRAO.map(item => (
+              <button
+                key={item}
+                type="button"
+                onClick={() => toggleHumano(item)}
+                className={`rounded-full border px-3 py-1 text-xs font-medium transition-all ${
+                  selHumano.includes(item)
+                    ? 'border-accent bg-accent text-accent-foreground shadow-sm'
+                    : 'border-border text-muted hover:border-foreground/30 hover:text-foreground'
+                }`}
+              >
+                {item}
+              </button>
+            ))}
+          </div>
+        </div>
+
         <div className="space-y-2">
           <label htmlFor="observacoes" className="text-sm font-medium text-foreground">Observações</label>
           <textarea
@@ -347,7 +439,7 @@ function ContactFormDialog({
             className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground resize-none"
           />
         </div>
-        <div className="flex items-center justify-end gap-3 pt-2">
+        <div className="flex items-center justify-end gap-3 pt-2 border-t border-border">
           <DialogClose onClick={onClose} type="button" className="rounded-md px-4 py-2 text-sm text-muted hover:text-foreground transition-colors">
             Cancelar
           </DialogClose>

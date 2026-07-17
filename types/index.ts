@@ -22,6 +22,8 @@ export interface Contact {
   vendedor: string | null
   observacoes: string | null
   tags: string[]
+  interesses_vet: string[]
+  interesses_humano: string[]
   created_at: string
   updated_at: string
 }

@@ -12,6 +12,8 @@ export const contactSchema = z.object({
   vendedor: z.string().max(60, 'Nome do vendedor muito longo').optional().or(z.literal('')),
   observacoes: z.string().max(1000, 'Observações muito longas').optional().or(z.literal('')),
   tags: z.array(z.string().max(30)).max(10, 'Máximo de 10 tags').default([]),
+  interesses_vet: z.array(z.string().max(60)).max(20, 'Máximo de 20 interesses').default([]),
+  interesses_humano: z.array(z.string().max(60)).max(20, 'Máximo de 20 interesses').default([]),
 })
 
 export const dealSchema = z.object({

@@ -1,9 +1,10 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Mail, RefreshCw, X, UserPlus, Users } from 'lucide-react'
+import { Mail, RefreshCw, X, UserPlus, Users, Stethoscope, Syringe } from 'lucide-react'
 import { getConfiguracoes, salvarConfiguracao } from '@/lib/actions/admin'
 import { EMAIL_CONFIG_KEYS, getEmailConfig } from '@/lib/email/config'
+import { INTERESSES_VET_PADRAO, INTERESSES_HUMANO_PADRAO } from '@/lib/interesses'
 import { AdminSectionCard } from '@/components/admin/section-card'
 import { toast } from 'sonner'
 
@@ -12,6 +13,8 @@ export function ConfigPage() {
   const [loading, setLoading] = useState(true)
   const [salvando, setSalvando] = useState<string | null>(null)
   const [novoVendedor, setNovoVendedor] = useState('')
+  const [novoInteresseVet, setNovoInteresseVet] = useState('')
+  const [novoInteresseHumano, setNovoInteresseHumano] = useState('')
 
   useEffect(() => {
     load()
@@ -61,8 +64,21 @@ export function ConfigPage() {
     toast.success('Vendedor removido!')
   }
 
+  function getLista(chave: string): string[] {
+    try {
+      const raw = config[chave]
+      if (!raw) return []
+      const parsed = JSON.parse(raw)
+      return Array.isArray(parsed) ? parsed : []
+    } catch {
+      return []
+    }
+  }
+
   const emailConfig = getEmailConfig(config)
   const vendedores = getVendedores()
+  const interessesVet = getLista('interesses_vet')
+  const interessesHumano = getLista('interesses_humano')
 
   if (loading) {
     return (
@@ -173,6 +189,138 @@ export function ConfigPage() {
             </div>
           ) : (
             <p className="text-sm text-muted">Nenhum vendedor cadastrado.</p>
+          )}
+        </div>
+      </AdminSectionCard>
+
+      {/* Interesses — Veterinária */}
+      <AdminSectionCard
+        title="Interesses — Veterinária"
+        description="Lista de equipamentos/interesses da área veterinária. Aparece como chips no formulário de contato."
+        icon={<Stethoscope className="size-4 text-primary" aria-hidden="true" />}
+      >
+        <div className="space-y-4">
+          <div className="flex flex-col gap-2 md:flex-row">
+            <input
+              type="text"
+              value={novoInteresseVet}
+              onChange={(e) => setNovoInteresseVet(e.target.value)}
+              onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); (e.target as HTMLInputElement).closest('form')?.querySelector('button')?.click() } }}
+              className="h-11 min-w-0 flex-1 rounded-xl border border-border bg-background px-3 text-sm text-foreground"
+              placeholder="Novo interesse veterinário"
+            />
+            <button
+              onClick={async () => {
+                const item = novoInteresseVet.trim()
+                if (!item) return
+                const atual = interessesVet
+                if (atual.includes(item)) { toast.error('Item já cadastrado'); return }
+                await handleSave('interesses_vet', JSON.stringify([...atual, item]))
+                setNovoInteresseVet('')
+                toast.success('Item adicionado!')
+              }}
+              disabled={!novoInteresseVet.trim() || salvando === 'interesses_vet'}
+              className="inline-flex h-11 items-center justify-center gap-1 rounded-xl bg-primary px-4 text-xs text-primary-foreground transition-all hover:brightness-110 disabled:opacity-50"
+            >
+              <UserPlus className="size-4" aria-hidden="true" />
+              Adicionar
+            </button>
+          </div>
+
+          {interessesVet.length > 0 ? (
+            <div className="flex flex-wrap gap-2">
+              {interessesVet.map((item) => (
+                <div key={item} className="inline-flex items-center gap-1.5 rounded-full bg-primary/10 px-3 py-1.5 text-sm font-medium text-primary ring-1 ring-primary/20">
+                  {item}
+                  <button
+                    onClick={async () => {
+                      const atual = interessesVet
+                      await handleSave('interesses_vet', JSON.stringify(atual.filter((i: string) => i !== item)))
+                      toast.success('Item removido!')
+                    }}
+                    className="rounded-full p-0.5 text-primary/60 transition-colors hover:text-danger"
+                    aria-label={`Remover ${item}`}
+                  >
+                    <X className="size-3.5" />
+                  </button>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div>
+              <p className="text-sm text-muted mb-2">Usando lista padrão. Os itens abaixo aparecem no formulário:</p>
+              <div className="flex flex-wrap gap-2">
+                {INTERESSES_VET_PADRAO.map(item => (
+                  <span key={item} className="rounded-full bg-primary/5 px-3 py-1.5 text-sm text-muted ring-1 ring-border">{item}</span>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      </AdminSectionCard>
+
+      {/* Interesses — Humana */}
+      <AdminSectionCard
+        title="Interesses — Humana"
+        description="Lista de equipamentos/interesses da área humana. Aparece como chips no formulário de contato."
+        icon={<Syringe className="size-4 text-accent" aria-hidden="true" />}
+      >
+        <div className="space-y-4">
+          <div className="flex flex-col gap-2 md:flex-row">
+            <input
+              type="text"
+              value={novoInteresseHumano}
+              onChange={(e) => setNovoInteresseHumano(e.target.value)}
+              onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); (e.target as HTMLInputElement).closest('form')?.querySelector('button')?.click() } }}
+              className="h-11 min-w-0 flex-1 rounded-xl border border-border bg-background px-3 text-sm text-foreground"
+              placeholder="Novo interesse humano"
+            />
+            <button
+              onClick={async () => {
+                const item = novoInteresseHumano.trim()
+                if (!item) return
+                const atual = interessesHumano
+                if (atual.includes(item)) { toast.error('Item já cadastrado'); return }
+                await handleSave('interesses_humano', JSON.stringify([...atual, item]))
+                setNovoInteresseHumano('')
+                toast.success('Item adicionado!')
+              }}
+              disabled={!novoInteresseHumano.trim() || salvando === 'interesses_humano'}
+              className="inline-flex h-11 items-center justify-center gap-1 rounded-xl bg-primary px-4 text-xs text-primary-foreground transition-all hover:brightness-110 disabled:opacity-50"
+            >
+              <UserPlus className="size-4" aria-hidden="true" />
+              Adicionar
+            </button>
+          </div>
+
+          {interessesHumano.length > 0 ? (
+            <div className="flex flex-wrap gap-2">
+              {interessesHumano.map((item) => (
+                <div key={item} className="inline-flex items-center gap-1.5 rounded-full bg-accent/10 px-3 py-1.5 text-sm font-medium text-accent ring-1 ring-accent/20">
+                  {item}
+                  <button
+                    onClick={async () => {
+                      const atual = interessesHumano
+                      await handleSave('interesses_humano', JSON.stringify(atual.filter((i: string) => i !== item)))
+                      toast.success('Item removido!')
+                    }}
+                    className="rounded-full p-0.5 text-accent/60 transition-colors hover:text-danger"
+                    aria-label={`Remover ${item}`}
+                  >
+                    <X className="size-3.5" />
+                  </button>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div>
+              <p className="text-sm text-muted mb-2">Usando lista padrão. Os itens abaixo aparecem no formulário:</p>
+              <div className="flex flex-wrap gap-2">
+                {INTERESSES_HUMANO_PADRAO.map(item => (
+                  <span key={item} className="rounded-full bg-accent/5 px-3 py-1.5 text-sm text-muted ring-1 ring-border">{item}</span>
+                ))}
+              </div>
+            </div>
           )}
         </div>
       </AdminSectionCard>

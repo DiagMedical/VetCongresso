@@ -64,6 +64,8 @@ export async function createContact(formData: ContactFormData): Promise<Contact>
       vendedor: parsed.vendedor || null,
       observacoes: parsed.observacoes || null,
       tags: parsed.tags,
+      interesses_vet: parsed.interesses_vet || [],
+      interesses_humano: parsed.interesses_humano || [],
     })
     .select()
     .single()
@@ -84,6 +86,8 @@ export async function updateContact(id: string, formData: Partial<ContactFormDat
   if (parsed.vendedor !== undefined) updateData.vendedor = parsed.vendedor || null
   if (parsed.observacoes !== undefined) updateData.observacoes = parsed.observacoes || null
   if (parsed.tags !== undefined) updateData.tags = parsed.tags
+  if (parsed.interesses_vet !== undefined) updateData.interesses_vet = parsed.interesses_vet
+  if (parsed.interesses_humano !== undefined) updateData.interesses_humano = parsed.interesses_humano
 
   const { data, error } = await supabase
     .from('contacts')

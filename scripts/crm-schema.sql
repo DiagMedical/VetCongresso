@@ -14,6 +14,8 @@ CREATE TABLE IF NOT EXISTS contacts (
     vendedor TEXT DEFAULT '',
     observacoes TEXT,
     tags TEXT[] DEFAULT '{}',
+    interesses_vet TEXT[] DEFAULT '{}',
+    interesses_humano TEXT[] DEFAULT '{}',
     created_at TIMESTAMPTZ DEFAULT NOW(),
     updated_at TIMESTAMPTZ DEFAULT NOW()
 );
