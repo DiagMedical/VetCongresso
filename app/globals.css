@@ -23,21 +23,21 @@
 
 .dark {
   --background: 255 25% 7%;
-  --foreground: 210 40% 96%;
-  --card: 255 18% 12%;
-  --card-foreground: 210 40% 96%;
-  --primary: 255 90% 60%;
+  --foreground: 260 30% 96%;
+  --card: 260 22% 13%;
+  --card-foreground: 260 30% 96%;
+  --primary: 255 95% 62%;
   --primary-foreground: 0 0% 100%;
-  --accent: 180 100% 50%;
+  --accent: 180 100% 52%;
   --accent-foreground: 0 0% 0%;
-  --success: 160 100% 40%;
+  --success: 160 100% 42%;
   --success-foreground: 0 0% 100%;
-  --danger: 0 84% 60%;
+  --danger: 0 84% 62%;
   --danger-foreground: 0 0% 100%;
-  --muted: 255 18% 52%;
-  --muted-foreground: 255 12% 72%;
-  --border: 255 15% 15%;
-  --ring: 255 90% 60%;
+  --muted: 260 35% 58%;
+  --muted-foreground: 260 22% 80%;
+  --border: 265 25% 24%;
+  --ring: 255 95% 62%;
 }
 
 @theme inline {
@@ -57,6 +57,8 @@
   --color-muted-foreground: hsl(var(--muted-foreground));
   --color-border: hsl(var(--border));
   --color-ring: hsl(var(--ring));
+  --color-card-gradient: linear-gradient(135deg, hsl(260 22% 15%), hsl(260 18% 12%));
+  --color-section-gradient: linear-gradient(135deg, hsl(260 18% 13%), hsl(260 15% 10%));
   --font-sans: var(--font-jakarta, 'Plus Jakarta Sans', system-ui, sans-serif);
   --font-mono: var(--font-geist-mono, ui-monospace, SFMono-Regular, monospace);
 }
@@ -67,7 +69,9 @@
   }
   body {
     background-color: hsl(var(--background));
-    background-image: radial-gradient(ellipse 80% 60% at 50% -15%, hsl(255 90% 60% / 0.08), transparent);
+    background-image:
+      radial-gradient(ellipse 120% 55% at 50% -15%, hsl(255 95% 62% / 0.25), transparent),
+      radial-gradient(ellipse 100% 50% at 80% 30%, hsl(180 100% 52% / 0.1), transparent);
     color: hsl(var(--foreground));
     font-family: var(--font-sans);
     padding-top: env(safe-area-inset-top);

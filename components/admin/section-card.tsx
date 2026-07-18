@@ -21,7 +21,7 @@ export function AdminSectionCard({
   bodyClassName,
 }: AdminSectionCardProps) {
   return (
-    <section className={cn('rounded-2xl border border-border bg-card/80 shadow-[0_0_0_1px_hsl(var(--border))] backdrop-blur-sm hover:shadow-[0_0_0_1px_hsl(var(--border)),0_0_20px_hsl(var(--primary)/0.06)] transition-all duration-300', className)}>
+    <section className={cn('rounded-2xl border border-border bg-card/80 shadow-[0_0_0_1px_hsl(var(--border))] backdrop-blur-sm hover:shadow-[0_0_0_1px_hsl(var(--border)),0_0_24px_hsl(var(--primary)/0.1)] transition-all duration-300', className)}>
       {(title || description || icon) && (
         <div className={cn('border-b border-border px-4 py-4 sm:px-5', headerClassName)}>
           <div className="flex items-start gap-3">

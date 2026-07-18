@@ -14,7 +14,7 @@ export function AdminPageHeader({ title, description, actions, className }: Admi
       'relative overflow-hidden rounded-2xl border border-border bg-card/80 p-5 shadow-[0_0_0_1px_hsl(var(--border))] backdrop-blur-sm lg:p-6',
       className
     )}>
-      <div className="absolute inset-x-0 top-0 h-[2px] bg-gradient-to-r from-transparent via-primary/60 to-transparent shadow-[0_0_8px_hsl(var(--primary)/0.3)]" aria-hidden="true" />
+      <div className="absolute inset-x-0 top-0 h-[3px] bg-gradient-to-r from-transparent via-primary/80 via-accent/40 to-transparent shadow-[0_0_12px_hsl(var(--primary)/0.4)]" aria-hidden="true" />
       <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
         <div className="space-y-1">
           <p className="text-xs font-medium uppercase tracking-[0.24em] text-primary/70">Admin</p>
